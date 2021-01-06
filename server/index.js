@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -33,8 +34,8 @@ app.get('/', (req, res) => {
   res.sendFile('/Users/dylankinzer/College/NuSocial/index.html');
 });
 
-const port = process.env.PORT || 5000;
-server.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+const { PORT, HOST } = process.env;
+server.listen(PORT, () => {
+  console.log(`Server started on port ${PORT} on host: ${HOST}`);
 });
 // app.listen(port, () => console.log(`Server started on port ${port}`));

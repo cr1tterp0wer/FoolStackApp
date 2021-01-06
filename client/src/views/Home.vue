@@ -34,6 +34,7 @@ export default {
 <style scoped>
 .postcard{
   background: #333;
+  color: #fff;
 }
 .postcard:hover{
   background: red;

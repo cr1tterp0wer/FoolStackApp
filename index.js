@@ -14,7 +14,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const APIRoute = require('./routes/api');
+const APIRoute = require('./server/routes/api');
 
 app.use('/api', APIRoute);
 
@@ -31,9 +31,9 @@ app.use('/api', APIRoute);
 //   });
 // });
 app.use(history());
-app.use(express.static('../client/dist/'));
+app.use(express.static('./client/dist/'));
 app.get('/', (req, res) => {
-  res.sendFile('../client/dist/index.html');
+  res.sendFile('/client/dist/index.html');
 });
 
 const listenPort = process.env.PORT || 3000;

@@ -6,8 +6,8 @@ const cors = require('cors');
 // MORGAN for logging
 
 const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+// const server = require('http').createServer(app);
+// const io = require('socket.io')(server);
 
 // Middleware
 app.use(bodyParser.json());
@@ -17,18 +17,18 @@ const APIRoute = require('./routes/api');
 
 app.use('/api', APIRoute);
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
-  // log any disconnects
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
-  // handle a createPost event
-  socket.on('New Post', (post) => {
-    io.emit('New Post', post);
-    console.log(`post:  ${post}`);
-  });
-});
+// io.on('connection', (socket) => {
+//   console.log('a user connected');
+//   // log any disconnects
+//   socket.on('disconnect', () => {
+//     console.log('user disconnected');
+//   });
+//   // handle a createPost event
+//   socket.on('New Post', (post) => {
+//     io.emit('New Post', post);
+//     console.log(`post:  ${post}`);
+//   });
+// });
 
 app.get('/', (req, res) => {
   res.sendFile('/Users/dylankinzer/College/NuSocial/index.html');
@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
 
 const listenPort = process.env.PORT || 3000;
 const listenHost = process.env.HOST;
-server.listen(listenPort, () => {
+app.listen(listenPort, () => {
   console.log(`Server started on port ${listenPort} on host: ${listenHost}`);
 });
 // app.listen(port, () => console.log(`Server started on port ${port}`));

@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "server package.json",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://TheFoolStacks@dev.azure.com/TheFoolStacks/FoolStackApp/_git/FoolStackApp"
+  },
   "scripts": {
     "start": "npm install && node index.js",
     "dev": "nodemon index.js"

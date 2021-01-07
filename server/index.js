@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 // MORGAN for logging
+const history = require('connect-history-api-fallback');
 
 const app = express();
 // const server = require('http').createServer(app);
@@ -29,14 +30,14 @@ app.use('/api', APIRoute);
 //     console.log(`post:  ${post}`);
 //   });
 // });
-
+app.use(history());
+app.use(express.static('../client/dist/'));
 app.get('/', (req, res) => {
-  res.sendFile('/Users/dylankinzer/College/NuSocial/index.html');
+  res.sendFile('../client/dist/index.html');
 });
 
 const listenPort = process.env.PORT || 3000;
-const listenHost = process.env.HOST;
-app.listen(listenPort, listenHost, () => {
-  console.log(`Server started on port ${listenPort} on host: ${listenHost}`);
+app.listen(listenPort, () => {
+  console.log(`Server started on port ${listenPort} on host:`);
 });
 // app.listen(port, () => console.log(`Server started on port ${port}`));

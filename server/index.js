@@ -34,8 +34,9 @@ app.get('/', (req, res) => {
   res.sendFile('/Users/dylankinzer/College/NuSocial/index.html');
 });
 
-const { PORT, HOST } = process.env;
-server.listen(PORT, () => {
-  console.log(`Server started on port ${PORT} on host: ${HOST}`);
+const listenPort = process.env.PORT;
+const listenHost = process.env.HOST;
+server.listen(listenPort, () => {
+  console.log(`Server started on port ${listenPort} on host: ${listenHost}`);
 });
 // app.listen(port, () => console.log(`Server started on port ${port}`));

@@ -4,7 +4,7 @@
   "description": "server package.json",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "npm install && node index.js",
     "dev": "nodemon index.js"
   },
   "author": "Dylan Kinzer",

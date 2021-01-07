@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
 
 const listenPort = process.env.PORT || 3000;
 const listenHost = process.env.HOST;
-app.listen(listenPort, () => {
+app.listen(listenPort, listenHost, () => {
   console.log(`Server started on port ${listenPort} on host: ${listenHost}`);
 });
 // app.listen(port, () => console.log(`Server started on port ${port}`));

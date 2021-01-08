@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 
 const connectionString = 'mongodb://localhost/NuSocial';
 
-mongoose.connect(connectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// mongoose.connect(connectionString, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
 
 const database = mongoose.connection;
 

@@ -1,6 +1,8 @@
 <template>
   <div class="home">
     <h1>Hello</h1>
+  <textarea name="" id="" cols="30" rows="10"></textarea>
+  <button>Submit Post</button>
     <div class='postcard' v-for="post in posts" :key="post._id">
       <h1>{{post.text}}</h1>
       <h1>{{post.createdBy}}</h1>

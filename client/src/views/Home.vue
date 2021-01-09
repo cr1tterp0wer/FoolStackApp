@@ -24,7 +24,7 @@ export default {
     };
   },
   created() {
-    axios.get('http://localhost:5000/api/getAllPosts').then((res) => {
+    axios.get('/api/getAllPosts').then((res) => {
       window.console.log(res);
       this.posts = res.data;
     });

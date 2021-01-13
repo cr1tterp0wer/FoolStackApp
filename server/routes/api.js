@@ -16,7 +16,8 @@ APIRouter.get('/getAllPosts', (req, res) => {
 APIRouter.post('/createPost', (req, res) => {
   Posts.createPost(req.body)
     .then((createdPost) => {
-      res.json(createdPost);
+      res.json(createdPost); // this goes to requester
+      // emit an event that new post is made to all
     })
     .catch(() => {
       // some error handling here..

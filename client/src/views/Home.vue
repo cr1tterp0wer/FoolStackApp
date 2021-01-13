@@ -51,8 +51,15 @@ export default {
   methods: {
     createNewPost() {
       // post to DB here with axios
-      /* eslint-disable no-alert */
-      alert('post to db will go here');
+      axios.post('/api/createPost', {
+        text: this.newPostText,
+        createdBy: 'Dylan',
+      }).then((res) => {
+        this.posts.push(res.data);
+      }).catch((error) => {
+        throw (error);
+      });
+      this.newPostText = '';
     },
   },
 };

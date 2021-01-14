@@ -10,6 +10,7 @@ const CommentSchema = new mongoose.Schema({
   likes: [ObjectId],
 });
 
+
 module.exports = {
   CommentSchema,
 };

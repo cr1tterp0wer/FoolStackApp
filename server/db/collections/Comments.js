@@ -4,8 +4,9 @@ const mongoose = require('mongoose');
 
 const CommentSchema = new mongoose.Schema({
   text: { type: String, required: true },
-  createdBy: { type: String, required: true },
+  createdBy: { type: String, required: true }, // changes to ObjectId once user is made
   createdAt: { type: Date, required: true },
+  updatedAt:{type: Date},
   likes: [ObjectId],
 });
 

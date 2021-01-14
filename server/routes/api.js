@@ -14,6 +14,7 @@ APIRouter.get('/getAllPosts', (req, res) => {
 
 // req.body: { post schema }
 APIRouter.post('/createPost', (req, res) => {
+  // validateToken.then().catch()
   Posts.createPost(req.body)
     .then((createdPost) => {
       res.json(createdPost); // this goes to requester

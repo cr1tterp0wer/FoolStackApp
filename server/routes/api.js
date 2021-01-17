@@ -2,7 +2,7 @@ const express = require('express');
 
 const APIRouter = express.Router();
 
-const Posts = require('../db/collections/Posts');
+const Posts = require('../controllers/PostController');
 
 APIRouter.get('/getAllPosts', (req, res) => {
   Posts.getAllPosts()

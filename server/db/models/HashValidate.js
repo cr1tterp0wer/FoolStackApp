@@ -1,13 +1,11 @@
 const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 
-const ValidateHashSchema = new mongoose.Schema({
+const HashValidateSchema = new mongoose.Schema({
     hash: {type: String, required: true}, // needs to be a url safe 64bit string
     userId: { type: ObjectId, required: true },
     expiry: {type: Date, required: true}
 });
 
 
-module.exports = {
-  ValidateHashSchema
-};
+module.exports = HashValidateSchema;

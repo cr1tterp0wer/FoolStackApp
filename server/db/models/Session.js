@@ -8,6 +8,5 @@ const SessionSchema = new mongoose.Schema({
 });
 
 
-module.exports = {
-  SessionSchema
-};
+module.exports = SessionSchema;
+

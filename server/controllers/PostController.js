@@ -1,24 +1,18 @@
-const { ObjectId } = require('mongodb');
-const mongoose = require('mongoose');
-require('../connection');
-const Comments = require('./Comments');
-
-const PostSchema = new mongoose.Schema({
-  text: { type: String, required: true },
-  createdBy: { type: String, required: true }, // should be ObjectId later
-  createdAt: { type: Date, required: true },
-  updatedAt: {type: Date},
-  comments: [Comments.CommentSchema],
-  likes: [ObjectId], // users ID
-});
-
-const Post = mongoose.model('Post', PostSchema);
-
 /** ***************** CRUD OPERATIONS ON POSTS ************************* */
+const Post = require('../db/models/Post');
+
+/**
+ * Fetches all posts from the db using Post model
+ * @return {Array} - a list of post objects
+ */
 function getAllPosts() {
   return Post.find();
 }
 
+/**
+ * Creates a post in the DB
+ * @return {Object} - the new post object
+ */
 async function createPost(post) {
   const newPost = new Post({
     text: post.text,
@@ -30,11 +24,22 @@ async function createPost(post) {
   return retval; // socket emitter
 }
 
+/**
+ * Deletes a specific post in the DB with given id
+ * @param postId {Integer} - the post id of the target
+ * @return {Object} - the Mongoose response
+ */
 async function deletePost(postId) {
   const retval = await Post.deleteOne({ _id: postId });
   return retval;
 }
 
+/**
+ * Create a new comment to a specific Post
+ * @param postId {Integer} - the post id of the target
+ * @param comment {Object} - the comment data
+ * @return {Object} - the Mongoose response
+ */
 async function addPostComment(postId, comment) {
   const retval = await Post.updateOne(
     { _id: mongoose.Types.ObjectId(postId) },
@@ -43,9 +48,10 @@ async function addPostComment(postId, comment) {
   return retval;
 }
 
-// editPostComment
-
-/* CAUTION: Dangerous */
+/**
+ * Destroys all posts within the database
+ * @return {Object} - the Mongoose response
+ */
 async function deleteAllPosts() {
   const retval = await Post.deleteMany({});
   return retval;

@@ -1,12 +1,19 @@
 import Vue from 'vue';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+import axios from 'axios';
 import App from './App.vue';
 import router from './router';
 import store from './store';
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+// import 'bootstrap/dist/css/bootstrap.css';
+// import 'bootstrap-vue/dist/bootstrap-vue.css';
+import '../custom.scss';
+
+const serverURL = process.env.VUE_APP_SERVER_URL;
+
+if (serverURL) axios.defaults.baseURL = serverURL;
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 Vue.config.productionTip = false;
 

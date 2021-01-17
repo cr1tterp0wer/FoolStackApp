@@ -1,6 +1,7 @@
 <template>
   <b-container>
     {{newPostText}}
+    hello
     <b-row>
       <b-col>
          <b-form-textarea
@@ -65,12 +66,5 @@ export default {
 };
 </script>
 
-<style scoped>
-.postcard {
-  background: #333;
-  color: #fff;
-}
-.postcard:hover {
-  background: rgb(49, 89, 171);
-}
+<style scoped lang="scss">
 </style>

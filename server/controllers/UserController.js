@@ -1,8 +1,51 @@
 const User = require('../db/models/User');
-// createNewUser(){
-//     // 1. see if the user is already in the db (email exists already) do find on user w/ some email
-//     // 2. if no account already --> 
-//     //  create the user w/ a boolean set to false
-//     // save the hash w/ the user id 
-//     // save send email with a unique hash 
-// }
+const Joi = require('@hapi/joi');
+const mongooseErrorHandler = require('mongoose-error-handler');
+
+const schema = Joi.object({
+  email: Joi.string().trim().required(),
+  password:  Joi.string().trim().required().min(6).max(50),
+  username: Joi.string().trim().required()
+});
+
+
+/**
+ * Creates a user in the DB
+ * @param {Object} - user data obj
+ * @return {Object} - the new user object
+ */
+const createUser = async (req, res, next) => {
+
+  try {
+    const params = await schema.validateAsync(req.body);
+
+    const user = await new User({
+      createdAt: new Date(),
+      email: params.email,
+      password_digest: params.password,
+      username: params.username
+    }).save().then((query) => {
+      res.status(200).json({ success: true, msg: query });
+    }).catch((err) => {
+        res.status(400).json({ success: false, msg: mongooseErrorHandler.set(err, req.t) }); 
+    });
+
+  } catch (error) {
+    return next(error);
+  }
+
+}
+
+/**
+ * Destroys all posts within the database
+ * @return {Object} - the Mongoose response
+ */
+async function deleteAllUsers() {
+  const retval = await User.deleteMany({});
+  return retval;
+}
+
+module.exports = {
+  createUser,
+  deleteAllUsers
+}

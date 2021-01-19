@@ -1,4 +1,3 @@
-/** ***************** CRUD OPERATIONS ON POSTS ************************* */
 const Post = require('../db/models/Post');
 
 /**

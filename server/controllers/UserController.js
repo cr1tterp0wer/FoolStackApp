@@ -1,13 +1,13 @@
 const User = require('../db/models/User');
 const Joi = require('@hapi/joi');
 const mongooseErrorHandler = require('mongoose-error-handler');
+const { createUserValidation } = require('../db/models/HashValidation');
 
 const schema = Joi.object({
   email: Joi.string().trim().required(),
   password:  Joi.string().trim().required().min(6).max(50),
-  username: Joi.string().trim().required()
+  username: Joi.string().trim().required().min(6).max(50)
 });
-
 
 /**
  * Creates a user in the DB
@@ -25,6 +25,8 @@ const createUser = async (req, res, next) => {
       password_digest: params.password,
       username: params.username
     }).save().then((query) => {
+      createUserValidation();
+
       res.status(200).json({ success: true, msg: query });
     }).catch((err) => {
         res.status(400).json({ success: false, msg: mongooseErrorHandler.set(err, req.t) }); 

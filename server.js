@@ -9,7 +9,6 @@ const history = require('connect-history-api-fallback');
 morgan("tiny")
 const app = express();
 
-
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());

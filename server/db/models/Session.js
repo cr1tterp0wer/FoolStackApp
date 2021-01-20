@@ -7,6 +7,4 @@ const SessionSchema = new mongoose.Schema({
     expiry: { type: Date }, 
 });
 
-
 module.exports = SessionSchema;
-

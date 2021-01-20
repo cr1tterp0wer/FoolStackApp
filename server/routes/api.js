@@ -1,60 +1,50 @@
 const express = require('express');
-
 const APIRouter = express.Router();
+const PostController = require('../controllers/PostController');
+const UserController = require('../controllers/UserController');
 
-const Posts = require('../controllers/PostController');
+APIRouter.post('/users/new', UserController.createUser);
 
-APIRouter.get('/getAllPosts', (req, res) => {
-  Posts.getAllPosts()
-    .then((posts) => {
-      res.json(posts);
-    })
-    .catch((err) => err);
+APIRouter.post('/users/deleteAll', (req, res) => {
+  UserController.deleteAllUsers()
+    .then((data) => {
+      res.json(data);
+    }).catch((err) => res.json(err));
 });
 
-// req.body: { post schema }
+APIRouter.get('/getAllPosts', (req, res) => {
+  PostController.getAllPosts()
+    .then((posts) => {
+      res.json(posts);
+    }).catch((err) => res.json(err));
+});
+
 APIRouter.post('/createPost', (req, res) => {
-  // validateToken.then().catch()
-  Posts.createPost(req.body)
+  PostController.createPost(req.body)
     .then((createdPost) => {
-      res.json(createdPost); // this goes to requester
-      // emit an event that new post is made to all
-    })
-    .catch(() => {
-      // some error handling here..
-    });
+      res.json(createdPost);
+    }).catch((err) => res.json(err));
 });
 
 APIRouter.delete('/removePost', (req, res) => {
-  Posts.deleteAllPosts(req.body.postId)
+  PostController.deleteAllPosts(req.body.postId)
     .then((success) => {
       res.json(success);
-    })
-    .catch((error) => {
-      res.json(error);
-    });
+    }).catch((err) => res.json(err));
 });
 
-// body {postId: "fjdkfjksdjfk", comment:{}}
 APIRouter.post('/addPostComment', (req, res) => {
-  Posts.addPostComment(req.body.postId, req.body.comment)
+  PostController.addPostComment(req.body.postId, req.body.comment)
     .then((success) => {
       res.json(success);
-    })
-    .catch((err) => {
-      res.json(err);
-      // some error handling here..
-    });
+    }).catch((err) => res.json(err));
 });
 
 APIRouter.post('/deleteAllPosts', (req, res) => {
-  Posts.deleteAllPosts()
+  PostController.deleteAllPosts()
     .then((deletedVerification) => {
       res.json(deletedVerification);
-    })
-    .catch(() => {
-      // some error handling here..
-    });
+    }).catch((err) => res.json(err));
 });
 
 module.exports = APIRouter;

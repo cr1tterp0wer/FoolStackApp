@@ -12,6 +12,14 @@ APIRouter.get('/getAllPosts', (req, res) => {
     .catch((err) => err);
 });
 
+APIRouter.get('/getAllPostComments', (req, res) => {
+  Posts.getAllPostComments()
+    .then((comments) => {
+      res.json(comments);
+    })
+    .catch((err) => err);
+});
+
 // req.body: { post schema }
 APIRouter.post('/createPost', (req, res) => {
   // validateToken.then().catch()

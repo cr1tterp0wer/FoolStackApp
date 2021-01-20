@@ -21,7 +21,19 @@
             {{ post.text }}
           </b-card-text>
           <a href="#" class="card-link">Like</a>
-          <b-link href="#" class="card-link">Comment</b-link>
+          <b-link href="#" class="card-link" @click="createNewComment">Comment</b-link>
+            <b-card v-for="comment in comments"
+              :key="comment._id">
+              <b-card-text>
+               {{ comment.text }}
+              </b-card-text>
+              <a href="#" class="card-link">Like</a>
+            </b-card>
+            <b-form-textarea
+              size="sm"
+              placeholder="What's on your mind?"
+              v-model="newCommentText"
+            ></b-form-textarea>
         </b-card>
       </b-col>
     </b-row>
@@ -40,13 +52,19 @@ export default {
   data() {
     return {
       posts: [],
+      comments: [],
       newPostText: '',
+      newCommentText: '',
     };
   },
   created() {
     axios.get('/api/getAllPosts').then((res) => {
       window.console.log(res);
       this.posts = res.data;
+    });
+    axios.get('/api/getAllPostComments').then((res) => {
+      window.console.log(res);
+      this.comments = res.data;
     });
   },
   methods: {
@@ -61,6 +79,18 @@ export default {
         throw (error);
       });
       this.newPostText = '';
+    },
+    createNewComment() {
+      // post to DB here with axios
+      axios.post('/api/addPostComment', {
+        postId: this.posts[0].ObjectId,
+        comment: this.newCommentText,
+      }).then((res) => {
+        this.comments.push(res.data);
+      }).catch((error) => {
+        throw (error);
+      });
+      this.newCommentText = '';
     },
   },
 };

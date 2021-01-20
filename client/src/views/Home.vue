@@ -2,7 +2,7 @@
   <b-container>
     {{newPostText}}
     hello
-    TESTING THE 
+    TESTING THE
     HEROKU
     PIPELINE!
     <b-row>
@@ -23,7 +23,7 @@
           <b-card-text>
             {{ post.text }}
           </b-card-text>
-          <a href="#" class="card-link">Like</a>
+          <a href="#" class="card-link" @click="onLikeClick(post._id)">Like</a>
           <b-link href="#" class="card-link">Comment</b-link>
         </b-card>
       </b-col>
@@ -64,6 +64,11 @@ export default {
         throw (error);
       });
       this.newPostText = '';
+    },
+    onLikeClick(PostID) {
+      // perform an axios.patch() to the specific endpoint
+      // and feed the proper data
+      window.console.log(`liked button has been clicked ${PostID}`);
     },
   },
 };

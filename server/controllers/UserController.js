@@ -29,25 +29,20 @@ const digestPassword = (password) => {
  */
 const createUser = async (req, res, next) => {
 
-  try {
-    const params = await schema.validateAsync(req.body);
-    params.password = digestPassword(params.password);
+  const params = await schema.validateAsync(req.body);
+  params.password = digestPassword(params.password);
 
-    const user = await new User({
-      createdAt: new Date(),
-      email: params.email,
-      password_digest: params.password,
-      username: params.username
-    }).save().then((query) => {
-      createHashValidation(query._id);
-      res.status(200).json({ success: true, msg: query });
-    }).catch((error) => {
-        res.status(400).json({ success: false, msg: mongooseErrorHandler.set(error, req.t) }); 
-    });
-
-  } catch (error) {
-    return next(error);
-  }
+  const user = await new User({
+    createdAt: new Date(),
+    email: params.email,
+    password_digest: params.password,
+    username: params.username
+  }).save().then((query) => {
+    createHashValidation(query._id);
+    res.status(200).json({ success: true, msg: query });
+  }).catch((error) => {
+      res.status(400).json({ success: false, msg: mongooseErrorHandler.set(error, req.t) }); 
+  });
 
 }
 

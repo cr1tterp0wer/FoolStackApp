@@ -10,14 +10,6 @@ function getAllPosts() {
 }
 
 /**
- * Fetches all comments on a post from the db using Post model
- * @return {Array} - a list of post objects
- */
-function getAllPostComments() {
-  return comments.find();
-}
-
-/**
  * Creates a post in the DB
  * @return {Object} - the new post object
  */

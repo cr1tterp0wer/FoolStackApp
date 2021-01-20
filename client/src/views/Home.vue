@@ -21,8 +21,8 @@
             {{ post.text }}
           </b-card-text>
           <a href="#" class="card-link">Like</a>
-          <b-link href="#" class="card-link" @click="createNewComment">Comment</b-link>
-            <b-card v-for="comment in comments"
+          <b-link href="#" class="card-link" @click="createNewComment(post._id)">Comment</b-link>
+            <b-card v-for="comment in posts"
               :key="comment._id">
               <b-card-text>
                {{ comment.text }}
@@ -52,7 +52,6 @@ export default {
   data() {
     return {
       posts: [],
-      comments: [],
       newPostText: '',
       newCommentText: '',
     };
@@ -61,10 +60,6 @@ export default {
     axios.get('/api/getAllPosts').then((res) => {
       window.console.log(res);
       this.posts = res.data;
-    });
-    axios.get('/api/getAllPostComments').then((res) => {
-      window.console.log(res);
-      this.comments = res.data;
     });
   },
   methods: {
@@ -80,13 +75,15 @@ export default {
       });
       this.newPostText = '';
     },
-    createNewComment() {
+    
+    createNewComment(PostId) {
       // post to DB here with axios
+      const comments = new Comment(this.newCommentText, 'Elliot');
       axios.post('/api/addPostComment', {
-        postId: this.posts[0].ObjectId,
-        comment: this.newCommentText,
+        postId: PostId,
+        comment: comments,
       }).then((res) => {
-        this.comments.push(res.data);
+        this.posts.push(res.data);
       }).catch((error) => {
         throw (error);
       });

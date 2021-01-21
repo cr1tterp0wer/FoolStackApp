@@ -1,15 +1,18 @@
-const User = require('../db/models/User');
 const bcrypt = require('bcrypt');
-const { createHashValidation } = require('../db/models/HashValidation');
 const Joi = require('@hapi/joi');
 const mongooseErrorHandler = require('mongoose-error-handler');
+const { createHashValidation } = require('../db/models/HashValidation');
+const User = require('../db/models/User');
+
 const SALT_ROUNDS = 12;
 
 // Param validation schema
 const schema = Joi.object({
   email: Joi.string().trim().required(),
-  password:  Joi.string().trim().required().min(6).max(50),
-  username: Joi.string().trim().required().min(6).max(50)
+  password: Joi.string().trim().required().min(6)
+    .max(50),
+  username: Joi.string().trim().required().min(6)
+    .max(50),
 });
 
 /**
@@ -20,15 +23,14 @@ const schema = Joi.object({
 const digestPassword = (password) => {
   const salt = bcrypt.genSaltSync(SALT_ROUNDS);
   return bcrypt.hashSync(password, salt);
-}
+};
 
 /**
  * Creates a user in the DB
  * @param {Object} - user data obj
  * @return {Object} - the new user object
  */
-const createUser = async (req, res, next) => {
-
+const createUser = async (req, res) => {
   const params = await schema.validateAsync(req.body);
   params.password = digestPassword(params.password);
 
@@ -36,15 +38,16 @@ const createUser = async (req, res, next) => {
     createdAt: new Date(),
     email: params.email,
     password_digest: params.password,
-    username: params.username
-  }).save().then((query) => {
+    username: params.username,
+  });
+
+  user.save().then((query) => {
     createHashValidation(query._id);
     res.status(200).json({ success: true, msg: query });
   }).catch((error) => {
-      res.status(400).json({ success: false, msg: mongooseErrorHandler.set(error, req.t) }); 
+    res.status(400).json({ success: false, msg: mongooseErrorHandler.set(error, req.t) });
   });
-
-}
+};
 
 /**
  * Destroys all posts within the database
@@ -57,5 +60,5 @@ async function deleteAllUsers() {
 
 module.exports = {
   createUser,
-  deleteAllUsers
-}
+  deleteAllUsers,
+};

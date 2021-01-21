@@ -23,7 +23,7 @@
           <b-card-text>
             {{ post.text }}
           </b-card-text>
-          <a href="#" class="card-link" @click="onLikeClick(post._id)">Like</a>
+          <a href="#" class="card-link" @click="LikePost(post._id)">Like</a>
           <b-link href="#" class="card-link">Comment</b-link>
         </b-card>
       </b-col>
@@ -65,7 +65,7 @@ export default {
       });
       this.newPostText = '';
     },
-    onLikeClick(PostID) {
+    LikePost(PostID) {
       // perform an axios.patch() to the specific endpoint
       // and feed the proper data
       window.console.log(`liked button has been clicked ${PostID}`);

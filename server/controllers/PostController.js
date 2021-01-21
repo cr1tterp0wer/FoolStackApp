@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Post = require('../db/models/Post');
 
 /**
@@ -47,6 +48,19 @@ async function addPostComment(postId, comment) {
   return retval;
 }
 
+function addPostLike(postId, userId) {
+  return new Promise((resolve, reject) => {
+    Post.updateOne(
+      { _id: mongoose.Types.ObjectId(postId) },
+      { $push: { likes: { ...userId, createdAt: new Date() } } },
+    ).then((success) => {
+      resolve(success);
+    }).catch((error) => {
+      reject(error);
+    });
+  });
+}
+
 /**
  * Destroys all posts within the database
  * @return {Object} - the Mongoose response
@@ -62,4 +76,5 @@ module.exports = {
   deletePost,
   addPostComment,
   deleteAllPosts,
+  addPostLike,
 };

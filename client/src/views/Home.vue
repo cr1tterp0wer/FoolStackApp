@@ -18,7 +18,11 @@
           <b-card-text>
             {{ postObj.text }}
           </b-card-text>
-          <a href="#" class="card-link" @click="LikePost(postObj._id)">Like</a>
+          <a
+            href="#"
+            class="card-link"
+            @click="LikePost(postObj._id)">Like ({{postObj.likes.length}})
+          </a>
           <b-link href="#" class="card-link">Comment</b-link>
         </b-card>
       </b-col>
@@ -66,11 +70,8 @@ export default {
       this.newPostText = '';
     },
     LikePost(PostID) {
-      // perform an axios.patch() to the specific endpoint
-      // and feed the proper data
-      window.console.log(`liked button has been clicked ${PostID}`);
       axios.patch('/api/addPostLike', {
-        userId: '6009d55f02c9577e51a17c1d',
+        userId: '6009d55f02c9577e51a17c1d', // TODO: REPLACE WITH DYNAMIC USERID
         postId: PostID,
       }).then((like) => {
         window.console.log(like);

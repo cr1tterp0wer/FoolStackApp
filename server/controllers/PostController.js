@@ -54,8 +54,9 @@ function addPostLike(postId, userId) {
     Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(postId) },
       { $push: { likes: likeObj } },
-    ).select('likes').then((likes) => {
-      resolve(likes);
+      { new: true },
+    ).select({ likes: { $elemMatch: { userId } } }).then((newLike) => {
+      resolve(newLike);
     }).catch((error) => {
       reject(error);
     });

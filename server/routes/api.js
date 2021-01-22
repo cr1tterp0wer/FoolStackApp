@@ -45,7 +45,7 @@ APIRouter.delete('/removePost', (req, res) => {
 
 // body {postId: "fjdkfjksdjfk", comment:{}}
 APIRouter.post('/addPostComment', (req, res) => {
-  Posts.addPostComment(req.body.postId, req.body.comment)
+  Posts.addPostComment(req.body.postId, req.body.text, req.body.createdBy)
     .then((success) => {
       res.json(success);
     })

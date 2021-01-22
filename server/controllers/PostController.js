@@ -40,12 +40,19 @@ async function deletePost(postId) {
  * @param comment {Object} - the comment data
  * @return {Object} - the Mongoose response
  */
-async function addPostComment(postId, comment) {
-  const retval = await Post.updateOne(
-    { _id: mongoose.Types.ObjectId(postId) },
-    { $push: { comments: { ...comment, createdAt: new Date() } } },
-  );
-  return retval;
+async function addPostComment(postId, text, createdBy) {
+  return new Promise((resolve, reject) => {
+    const commentTemp = { postId, text, createdBy, createdAt: new Date(), };
+    Post.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(postId) },
+      { $push: { comments: commentTemp } },
+      { new: true },
+    ).select().then((newComment) => {
+      resolve(newComment);
+    }).catch((error) => {
+      reject(error);
+    });
+  });
 }
 
 /**

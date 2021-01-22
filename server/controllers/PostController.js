@@ -57,7 +57,6 @@ function addPostLike(postId, userId) {
     ).select('likes').then((likes) => {
       resolve(likes);
     }).catch((error) => {
-      console.log(error);
       reject(error);
     });
   });

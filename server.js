@@ -3,10 +3,10 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const morgan = require("morgan");
+const morgan = require('morgan');
 const history = require('connect-history-api-fallback');
 
-morgan("tiny")
+morgan('tiny');
 const app = express();
 
 // Middleware

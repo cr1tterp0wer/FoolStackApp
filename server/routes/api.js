@@ -42,14 +42,12 @@ APIRouter.post('/addPostComment', (req, res) => {
 });
 
 APIRouter.patch('/addPostLike', (req, res) => {
-  // TODO: add token verification .then(addPostLike)
-  PostController.addPostLike(req.body.postId, req.body.userId)
-    .then((likeVerification) => {
-      res.status(200).json({ success: true, msg: likeVerification });
-    }).catch((err) => {
-      res.status(400).json({ success: false, msg: err });
-    });
-});
+  PostController.addPostLike(req.body.postId, req.body.userId).then((likeSuccess) => {
+    res.status(200).json({ success: true, msg: likeSuccess });
+  }).catch((error) => {
+    res.status(400).json({ success: false, msg: error });
+  });
+}); // TODO verify token
 
 APIRouter.post('/deleteAllPosts', (req, res) => {
   PostController.deleteAllPosts()

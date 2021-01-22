@@ -50,12 +50,14 @@ async function addPostComment(postId, comment) {
 
 function addPostLike(postId, userId) {
   return new Promise((resolve, reject) => {
-    Post.updateOne(
+    const likeObj = { userId, createdAt: new Date() };
+    Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(postId) },
-      { $push: { likes: { ...userId, createdAt: new Date() } } },
-    ).then((success) => {
-      resolve(success);
+      { $push: { likes: likeObj } },
+    ).select('likes').then((likes) => {
+      resolve(likes);
     }).catch((error) => {
+      console.log(error);
       reject(error);
     });
   });

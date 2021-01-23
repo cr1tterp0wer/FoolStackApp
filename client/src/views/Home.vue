@@ -92,6 +92,7 @@ export default {
     createNewComment(PostId) {
       // post to DB here with axios
       axios.patch('/api/addPostComment', {
+        userId: this.userId,
         postId: PostId,
         text: this.newCommentText[PostId],
         createdBy: 'Elliot',

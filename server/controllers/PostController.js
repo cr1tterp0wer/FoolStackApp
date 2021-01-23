@@ -40,15 +40,15 @@ async function deletePost(postId) {
  * @param comment {Object} - the comment data
  * @return {Object} - the Mongoose response
  */
-function addPostComment(postId, text, createdBy) {
+function addPostComment(userId, postId, text, createdBy) {
   return new Promise((resolve, reject) => {
     const createdAt = new Date();
-    const commentTemp = {text, createdBy, createdAt };
+    const commentTemp = {userId, text, createdBy, createdAt };
     Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(postId) },
       { $push: { comments: commentTemp } },
       { new: true },
-    ).select({comments: { $elemMatch: { text, createdBy, createdAt } } }).then((newComment) => {
+    ).select({comments: { $elemMatch: { userId, text, createdBy, createdAt } } }).then((newComment) => {
       resolve(newComment);
     }).catch((error) => {
       reject(error);

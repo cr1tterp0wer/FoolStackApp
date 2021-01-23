@@ -35,7 +35,7 @@ APIRouter.delete('/removePost', (req, res) => {
 });
 
 APIRouter.patch('/addPostComment', (req, res) => {
-  PostController.addPostComment(req.body.postId, req.body.text, req.body.createdBy)
+  PostController.addPostComment(req.body.userId, req.body.postId, req.body.text, req.body.createdBy)
     .then((success) => {
       res.json(success);
     }).catch((err) => res.json(err));

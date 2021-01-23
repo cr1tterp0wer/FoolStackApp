@@ -1,4 +1,5 @@
 const express = require('express');
+
 const APIRouter = express.Router();
 const PostController = require('../controllers/PostController');
 const UserController = require('../controllers/UserController');
@@ -39,6 +40,14 @@ APIRouter.post('/addPostComment', (req, res) => {
       res.json(success);
     }).catch((err) => res.json(err));
 });
+
+APIRouter.patch('/addPostLike', (req, res) => {
+  PostController.addPostLike(req.body.postId, req.body.userId).then((likeSuccess) => {
+    res.status(200).json({ success: true, msg: likeSuccess });
+  }).catch((error) => {
+    res.status(400).json({ success: false, msg: error });
+  });
+}); // TODO verify token
 
 APIRouter.post('/deleteAllPosts', (req, res) => {
   PostController.deleteAllPosts()

@@ -1,10 +1,5 @@
 <template>
   <b-container>
-    {{newPostText}}
-    hello
-    TESTING THE 
-    HEROKU
-    PIPELINE!
     <b-row>
       <b-col>
          <b-form-textarea
@@ -18,12 +13,16 @@
     <hr/>
     <b-row>
       <b-col>
-        <b-card v-for="post in posts"
-          :key="post._id" :title="post.createdBy" >
+        <b-card v-for="postObj in posts"
+          :key="postObj._id" :title="postObj.createdBy" >
           <b-card-text>
-            {{ post.text }}
+            {{ postObj.text }}
           </b-card-text>
-          <a href="#" class="card-link">Like</a>
+          <a
+            href="#"
+            class="card-link"
+            @click="LikePost(postObj._id)">Like ({{postObj.likes.length}})
+          </a>
           <b-link href="#" class="card-link">Comment</b-link>
         </b-card>
       </b-col>
@@ -34,6 +33,7 @@
 <script>
 // @ is an alias to /src
 import axios from 'axios';
+import Vue from 'vue';
 
 export default {
   name: 'Home',
@@ -42,14 +42,18 @@ export default {
   },
   data() {
     return {
-      posts: [],
+      posts: {},
       newPostText: '',
+      userId: '600a4745b0fe8908e83e2f1a'
     };
   },
   created() {
     axios.get('/api/getAllPosts').then((res) => {
       window.console.log(res);
-      this.posts = res.data;
+      // this.posts = res.data;
+      res.data.forEach((post) => {
+        Vue.set(this.posts, post._id, post);
+      });
     });
   },
   methods: {
@@ -59,11 +63,23 @@ export default {
         text: this.newPostText,
         createdBy: 'Dylan',
       }).then((res) => {
-        this.posts.push(res.data);
+        // this.posts.push(res.data);
+        Vue.set(this.posts, res.data._id, res.data);
       }).catch((error) => {
         throw (error);
       });
       this.newPostText = '';
+    },
+    LikePost(PostID) {
+      axios.patch('/api/addPostLike', {
+        userId: this.userId, // TODO: REPLACE WITH DYNAMIC USERID
+        postId: PostID,
+      }).then((like) => {
+        window.console.log(like);
+        this.posts[PostID].likes.push(like.data.msg.likes[0]);
+      }).catch((error) => {
+        window.console.log(error);
+      });
     },
   },
 };

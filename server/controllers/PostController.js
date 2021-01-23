@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Post = require('../db/models/Post');
 
 /**
@@ -48,6 +49,30 @@ async function addPostComment(postId, comment) {
 }
 
 /**
+ * Create a new like to a specific Post
+ * @param postId {String} - the post id of the target
+ * @param userId {String} - the comment data
+ * @resolve {Object} - the Mongoose response
+ * @reject {Object} - mongoose response error
+ */
+function addPostLike(postId, userId) {
+  return new Promise((resolve, reject) => {
+    // TODO: unsure if we should check that the user has not already liked
+    // TODO : or guard on front-end only
+    const likeObj = { userId, createdAt: new Date() };
+    Post.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(postId) },
+      { $push: { likes: likeObj } },
+      { new: true },
+    ).select({ likes: { $elemMatch: { userId } } }).then((newLike) => {
+      resolve(newLike);
+    }).catch((error) => {
+      reject(error);
+    });
+  });
+}
+
+/**
  * Destroys all posts within the database
  * @return {Object} - the Mongoose response
  */
@@ -62,4 +87,5 @@ module.exports = {
   deletePost,
   addPostComment,
   deleteAllPosts,
+  addPostLike,
 };

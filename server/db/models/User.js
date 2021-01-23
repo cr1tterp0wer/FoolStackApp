@@ -1,6 +1,5 @@
-const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
-const Sessions = require("./Session");
+const Sessions = require('./Session');
 
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -8,7 +7,7 @@ const UserSchema = new mongoose.Schema({
   createdAt: { type: Date, required: true },
   updatedAt: { type: Date }, // use this as the boolean for whether or not they validated email
   sessions: [Sessions],
-  username: { type: String, required: true, unique: true }
+  username: { type: String, required: true, unique: true },
 });
 
 const UserModel = mongoose.model('User', UserSchema);

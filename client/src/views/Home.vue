@@ -1,5 +1,8 @@
 <template>
   <b-container>
+    <b-button variant='outline-danger' @click='DeleteAllPosts'>
+      Delete All Posts
+    </b-button>
     <b-row>
       <b-col>
          <b-form-textarea
@@ -23,7 +26,20 @@
             class="card-link"
             @click="LikePost(postObj._id)">Like ({{postObj.likes.length}})
           </a>
-          <b-link href="#" class="card-link">Comment</b-link>
+          <b-link href="#" class="card-link" @click="createNewComment(postObj._id)">Comment</b-link>
+            <b-form-textarea
+              size="sm"
+              placeholder="What's on your mind?"
+              v-model="newCommentText[postObj._id]"
+            ></b-form-textarea>
+            <b-card v-for="comment in postObj.comments"
+              :key="comment._id" :title="comment.createdBy">
+              <b-card-text>
+                {{ comment.text }}
+              </b-card-text>
+              <a href="#" class="card-link">Like</a>
+            </b-card>
+            <br/>
         </b-card>
       </b-col>
     </b-row>
@@ -44,7 +60,8 @@ export default {
     return {
       posts: {},
       newPostText: '',
-      userId: '600a4745b0fe8908e83e2f1a'
+      newCommentText: {},
+      userId: '600a4745b0fe8908e83e2f1a',
     };
   },
   created() {
@@ -53,6 +70,7 @@ export default {
       // this.posts = res.data;
       res.data.forEach((post) => {
         Vue.set(this.posts, post._id, post);
+        Vue.set(this.newCommentText, post._id, '');
       });
     });
   },
@@ -65,14 +83,30 @@ export default {
       }).then((res) => {
         // this.posts.push(res.data);
         Vue.set(this.posts, res.data._id, res.data);
+        Vue.set(this.newCommentText, res.data._id, '');
       }).catch((error) => {
         throw (error);
       });
       this.newPostText = '';
     },
+    createNewComment(PostId) {
+      // post to DB here with axios
+      axios.patch('/api/addPostComment', {
+        userId: this.userId,
+        postId: PostId,
+        text: this.newCommentText[PostId],
+        createdBy: 'Elliot',
+      }).then((commenter) => {
+        window.console.log(commenter.data);
+        this.posts[PostId].comments.push(commenter.data.comments[0]);
+      }).catch((error) => {
+        throw (error);
+      });
+      this.newCommentText[PostId] = '';
+    },
     LikePost(PostID) {
       axios.patch('/api/addPostLike', {
-        userId: this.userId, // TODO: REPLACE WITH DYNAMIC USERID
+        userId: this.userId,
         postId: PostID,
       }).then((like) => {
         window.console.log(like);
@@ -80,6 +114,10 @@ export default {
       }).catch((error) => {
         window.console.log(error);
       });
+    },
+
+    DeleteAllPosts() {
+      axios.post('/api/deleteAllPosts');
     },
   },
 };

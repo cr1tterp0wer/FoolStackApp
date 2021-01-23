@@ -64,8 +64,17 @@ function addPostComment(userId, postId, text, createdBy) {
   });
 }
 
+/**
+ * Create a new like to a specific Post
+ * @param postId {String} - the post id of the target
+ * @param userId {String} - the comment data
+ * @resolve {Object} - the Mongoose response
+ * @reject {Object} - mongoose response error
+ */
 function addPostLike(postId, userId) {
   return new Promise((resolve, reject) => {
+    // TODO: unsure if we should check that the user has not already liked
+    // TODO : or guard on front-end only
     const likeObj = { userId, createdAt: new Date() };
     Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(postId) },

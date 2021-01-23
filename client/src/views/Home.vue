@@ -44,6 +44,7 @@ export default {
     return {
       posts: {},
       newPostText: '',
+      userId: '600a4745b0fe8908e83e2f1a'
     };
   },
   created() {
@@ -71,7 +72,7 @@ export default {
     },
     LikePost(PostID) {
       axios.patch('/api/addPostLike', {
-        userId: '6009d55f02c9577e51a17c1d', // TODO: REPLACE WITH DYNAMIC USERID
+        userId: this.userId, // TODO: REPLACE WITH DYNAMIC USERID
         postId: PostID,
       }).then((like) => {
         window.console.log(like);

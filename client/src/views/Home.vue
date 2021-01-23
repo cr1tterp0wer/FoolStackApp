@@ -75,7 +75,7 @@ export default {
         postId: PostID,
       }).then((like) => {
         window.console.log(like);
-        this.posts[PostID].likes.push(like.data.msg);
+        this.posts[PostID].likes.push(like.data.msg.likes[0]);
       }).catch((error) => {
         window.console.log(error);
       });

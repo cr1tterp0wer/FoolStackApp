@@ -42,12 +42,12 @@ async function deletePost(postId) {
  */
 async function addPostComment(postId, text, createdBy) {
   return new Promise((resolve, reject) => {
-    const commentTemp = { postId, text, createdBy, createdAt: new Date(), };
+    const commentTemp = {text, createdBy, createdAt: new Date(), };
     Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(postId) },
       { $push: { comments: commentTemp } },
       { new: true },
-    ).select().then((newComment) => {
+    ).then((newComment) => {
       resolve(newComment);
     }).catch((error) => {
       reject(error);

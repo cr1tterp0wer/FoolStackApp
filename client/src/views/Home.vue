@@ -25,7 +25,7 @@
             <b-card v-for="comment in posts.comments"
               :key="comment._id" :title="comment.createdBy">
               <b-card-text>
-               {{ comment.text }}
+                {{ comment.text }}
               </b-card-text>
               <a href="#" class="card-link">Like</a>
             </b-card>
@@ -82,6 +82,7 @@ export default {
         text: this.newCommentText,
         createdBy: 'Elliot',
       }).then((commenter) => {
+        window.console.log('made it');
         this.posts[0].comments.push(commenter.data);
       }).catch((error) => {
         throw (error);

@@ -7,8 +7,8 @@ const connectionString = process.env.DB_CONNECTION_STRING;
 mongoose.connect(connectionString, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  // useFindAndModify: false,
-  // useCreateIndex: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
 });
 
 const database = mongoose.connection;

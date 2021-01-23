@@ -1,68 +1,59 @@
 const express = require('express');
 
 const APIRouter = express.Router();
+const PostController = require('../controllers/PostController');
+const UserController = require('../controllers/UserController');
 
-const Posts = require('../controllers/PostController');
+APIRouter.post('/users/new', UserController.createUser);
+
+APIRouter.post('/users/deleteAll', (req, res) => {
+  UserController.deleteAllUsers()
+    .then((data) => {
+      res.json(data);
+    }).catch((err) => res.json(err));
+});
 
 APIRouter.get('/getAllPosts', (req, res) => {
-  Posts.getAllPosts()
+  PostController.getAllPosts()
     .then((posts) => {
       res.json(posts);
-    })
-    .catch((err) => err);
+    }).catch((err) => res.json(err));
 });
 
-APIRouter.get('/getAllPostComments', (req, res) => {
-  Posts.getAllPostComments()
-    .then((comments) => {
-      res.json(comments);
-    })
-    .catch((err) => err);
-});
-
-// req.body: { post schema }
 APIRouter.post('/createPost', (req, res) => {
-  // validateToken.then().catch()
-  Posts.createPost(req.body)
+  PostController.createPost(req.body)
     .then((createdPost) => {
-      res.json(createdPost); // this goes to requester
-      // emit an event that new post is made to all
-    })
-    .catch(() => {
-      // some error handling here..
-    });
+      res.json(createdPost);
+    }).catch((err) => res.json(err));
 });
 
 APIRouter.delete('/removePost', (req, res) => {
-  Posts.deleteAllPosts(req.body.postId)
+  PostController.deleteAllPosts(req.body.postId)
     .then((success) => {
       res.json(success);
-    })
-    .catch((error) => {
-      res.json(error);
-    });
+    }).catch((err) => res.json(err));
 });
 
-// body {postId: "fjdkfjksdjfk", comment:{}}
-APIRouter.post('/addPostComment', (req, res) => {
-  Posts.addPostComment(req.body.postId, req.body.text, req.body.createdBy)
+APIRouter.patch('/addPostComment', (req, res) => {
+  PostController.addPostComment(req.body.postId, req.body.text, req.body.createdBy)
     .then((success) => {
       res.json(success);
-    })
-    .catch((err) => {
-      res.json(err);
-      // some error handling here..
-    });
+    }).catch((err) => res.json(err));
 });
+
+APIRouter.patch('/addPostLike', (req, res) => {
+  PostController.addPostLike(req.body.postId, req.body.userId).then((likeSuccess) => {
+    res.status(200).json({ success: true, msg: likeSuccess });
+  }).catch((error) => {
+    res.status(400).json({ success: false, msg: error });
+  });
+}); // TODO verify token
 
 APIRouter.post('/deleteAllPosts', (req, res) => {
-  Posts.deleteAllPosts()
+  PostController.deleteAllPosts()
     .then((deletedVerification) => {
       res.json(deletedVerification);
-    })
-    .catch(() => {
-      // some error handling here..
-    });
+    }).catch((err) => res.json(err));
 });
 
 module.exports = APIRouter;

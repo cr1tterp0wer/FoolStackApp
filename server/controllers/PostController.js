@@ -1,4 +1,4 @@
-/** ***************** CRUD OPERATIONS ON POSTS ************************* */
+const mongoose = require('mongoose');
 const Post = require('../db/models/Post');
 
 /**
@@ -40,15 +40,31 @@ async function deletePost(postId) {
  * @param comment {Object} - the comment data
  * @return {Object} - the Mongoose response
  */
-async function addPostComment(postId, text, createdBy) {
+function addPostComment(postId, text, createdBy) {
   return new Promise((resolve, reject) => {
-    const commentTemp = {text, createdBy, createdAt: new Date(), };
+    const createdAt = new Date();
+    const commentTemp = {text, createdBy, createdAt };
     Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(postId) },
       { $push: { comments: commentTemp } },
       { new: true },
-    ).then((newComment) => {
+    ).select({comments: { $elemMatch: { text, createdBy, createdAt } } }).then((newComment) => {
       resolve(newComment);
+    }).catch((error) => {
+      reject(error);
+    });
+  });
+}
+
+function addPostLike(postId, userId) {
+  return new Promise((resolve, reject) => {
+    const likeObj = { userId, createdAt: new Date() };
+    Post.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(postId) },
+      { $push: { likes: likeObj } },
+      { new: true },
+    ).select({ likes: { $elemMatch: { userId } } }).then((newLike) => {
+      resolve(newLike);
     }).catch((error) => {
       reject(error);
     });
@@ -70,4 +86,5 @@ module.exports = {
   deletePost,
   addPostComment,
   deleteAllPosts,
+  addPostLike,
 };

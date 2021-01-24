@@ -19,6 +19,9 @@
         <b-card v-for="postObj in posts"
           :key="postObj._id" :title="postObj.createdBy" >
           <b-card-text>
+            {{ postObj.createdAt }}
+          </b-card-text>
+          <b-card-text>
             {{ postObj.text }}
           </b-card-text>
           <a
@@ -34,6 +37,9 @@
             ></b-form-textarea>
             <b-card v-for="comment in postObj.comments"
               :key="comment._id" :title="comment.createdBy">
+              <b-card-text>
+                {{ comment.createdAt }}
+              </b-card-text>
               <b-card-text>
                 {{ comment.text }}
               </b-card-text>

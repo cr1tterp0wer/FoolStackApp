@@ -72,14 +72,32 @@ function addPostComment(userId, postId, text, createdBy) {
  */
 function editPostComment(commentId, userId, postId, text) {
   return new Promise((resolve, reject) => {
+    Post.findById(postId).select({
+      comments: {
+        $elemMatch: {
+          _id:commentId, userId, //userId validates ownership
+        },
+      },
+    }).then((result) => {
+      const comment = result.comments[0];
+      comment.text = text;
+      result.save().then((res) => {
+        resolve(res);
+      }).catch((error) => {
+        reject(error);
+      });
+    }).catch((error) => {
+      reject(error);
+    });
+    /*
     Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(postId) },
-      { $push: { comments: commentTemp } },
+      { $set: { comments: {_id:commentId} } },
       { new: true },
     ).select({
       comments: {
         $elemMatch: {
-          commentId, userId, text,
+          commentId, userId, //userId validates ownership
         },
       },
     }).then((newComment) => {
@@ -87,6 +105,7 @@ function editPostComment(commentId, userId, postId, text) {
     }).catch((error) => {
       reject(error);
     });
+    */
   });
 }
 
@@ -130,4 +149,5 @@ module.exports = {
   addPostComment,
   deleteAllPosts,
   addPostLike,
+  editPostComment,
 };

@@ -38,12 +38,13 @@
                 {{ comment.text }}
               </b-card-text>
               <a href="#" class="card-link">Like</a>
-              <b-link href="#" class="card-link" @click="editComment(postObj._id, comment._id)"
+              <b-link href="#" class="card-link"
+                @click="editComment(postObj._id, comment._id, comment.text)"
               >Edit</b-link>
                 <b-form-textarea
                   size="sm"
                   placeholder="What do you want to edit?"
-                  v-model="newEditText[comment._id]"
+                  v-model="comment.text"
                 ></b-form-textarea>
             </b-card>
             <br/>
@@ -112,18 +113,17 @@ export default {
       });
       this.newCommentText[PostId] = '';
     },
-    editComment(PostId, CommentId) {
+    editComment(PostId, CommentId, Text) {
       // post to DB here with axios
       axios.patch('/api/editPostComment', {
         userId: this.userId,
         postId: PostId,
         commentId: CommentId,
-        text: this.newEditText[CommentId],
+        text: Text,
       }).then((commenter) => {
         window.console.log(commenter.data);
-        this.posts[PostId].comments.push(commenter.data.comments[0]);
       }).catch((error) => {
-        throw (error);
+        window.console.log(error);
       });
       this.newCommentText[PostId] = '';
     },

@@ -65,6 +65,32 @@ function addPostComment(userId, postId, text, createdBy) {
 }
 
 /**
+ * Create a new comment to a specific Post
+ * @param postId {Integer} - the post id of the target
+ * @param comment {Object} - the comment data
+ * @return {Object} - the Mongoose response
+ */
+function editPostComment(commentId, userId, postId, text) {
+  return new Promise((resolve, reject) => {
+    Post.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(postId) },
+      { $push: { comments: commentTemp } },
+      { new: true },
+    ).select({
+      comments: {
+        $elemMatch: {
+          commentId, userId, text,
+        },
+      },
+    }).then((newComment) => {
+      resolve(newComment);
+    }).catch((error) => {
+      reject(error);
+    });
+  });
+}
+
+/**
  * Create a new like to a specific Post
  * @param postId {String} - the post id of the target
  * @param userId {String} - the comment data

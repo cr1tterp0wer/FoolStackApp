@@ -44,7 +44,7 @@ function addPostComment(userId, postId, text, createdBy) {
   return new Promise((resolve, reject) => {
     const createdAt = new Date();
     const commentTemp = {
-      userId, text, createdBy, createdAt,
+      userId, text, createdBy, createdAt, updatedAt: createdAt,
     };
     Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(postId) },

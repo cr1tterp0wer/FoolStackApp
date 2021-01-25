@@ -38,7 +38,7 @@
             <b-card v-for="comment in postObj.comments"
               :key="comment._id" :title="comment.createdBy">
               <b-card-text>
-                {{ comment.createdAt }}
+                {{ comment.updatedAt }}
               </b-card-text>
               <b-card-text>
                 {{ comment.text }}

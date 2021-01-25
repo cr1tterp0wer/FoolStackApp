@@ -128,6 +128,14 @@ export default {
         text: Text,
       }).then((commenter) => {
         window.console.log(commenter.data);
+        axios.get('/api/getAllPosts').then((res) => {
+          window.console.log(res);
+          // this.posts = res.data;
+          res.data.forEach((post) => {
+            Vue.set(this.posts, post._id, post);
+            Vue.set(this.newCommentText, post._id, '');
+          });
+        });
       }).catch((error) => {
         window.console.log(error);
       });

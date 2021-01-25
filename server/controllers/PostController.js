@@ -72,6 +72,7 @@ function addPostComment(userId, postId, text, createdBy) {
  */
 function editPostComment(commentId, userId, postId, text) {
   return new Promise((resolve, reject) => {
+    const updatedTemp = new Date();
     Post.findById(postId).select({
       comments: {
         $elemMatch: {
@@ -82,30 +83,19 @@ function editPostComment(commentId, userId, postId, text) {
       const comment = result.comments[0];
       comment.text = text;
       result.save().then((res) => {
-        resolve(res);
+        const commentor = res.comments[0];
+        commentor.updatedAt = updatedTemp;
+        res.save().then((fin) => {
+          resolve(fin);
+        }).catch((error) => {
+          reject(error);
+        });
       }).catch((error) => {
         reject(error);
       });
     }).catch((error) => {
       reject(error);
     });
-    /*
-    Post.findOneAndUpdate(
-      { _id: mongoose.Types.ObjectId(postId) },
-      { $set: { comments: {_id:commentId} } },
-      { new: true },
-    ).select({
-      comments: {
-        $elemMatch: {
-          commentId, userId, //userId validates ownership
-        },
-      },
-    }).then((newComment) => {
-      resolve(newComment);
-    }).catch((error) => {
-      reject(error);
-    });
-    */
   });
 }
 

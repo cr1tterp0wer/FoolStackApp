@@ -41,6 +41,14 @@ APIRouter.patch('/addPostComment', (req, res) => {
     }).catch((err) => res.json(err));
 });
 
+APIRouter.patch('/editPostComment', (req, res) => {
+  PostController.editPostComment(req.body.commentId,
+    req.body.userId, req.body.postId, req.body.text)
+    .then((success) => {
+      res.json(success);
+    }).catch((err) => res.json(err));
+});
+
 APIRouter.patch('/addPostLike', (req, res) => {
   PostController.addPostLike(req.body.postId, req.body.userId).then((likeSuccess) => {
     res.status(200).json({ success: true, msg: likeSuccess });

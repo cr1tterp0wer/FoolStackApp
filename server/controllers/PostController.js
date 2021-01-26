@@ -44,7 +44,7 @@ function addPostComment(userId, postId, text, createdBy) {
   return new Promise((resolve, reject) => {
     const createdAt = new Date();
     const commentTemp = {
-      userId, text, createdBy, createdAt,
+      userId, text, createdBy, createdAt, updatedAt: createdAt,
     };
     Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(postId) },
@@ -58,6 +58,41 @@ function addPostComment(userId, postId, text, createdBy) {
       },
     }).then((newComment) => {
       resolve(newComment);
+    }).catch((error) => {
+      reject(error);
+    });
+  });
+}
+
+/**
+ * Create a new comment to a specific Post
+ * @param postId {Integer} - the post id of the target
+ * @param comment {Object} - the comment data
+ * @return {Object} - the Mongoose response
+ */
+function editPostComment(commentId, userId, postId, text) {
+  return new Promise((resolve, reject) => {
+    Post.findByIdAndUpdate(postId).select({
+      comments: {
+        $elemMatch: {
+          _id: commentId, userId, // userId validates ownership
+        },
+      },
+    }).then((result) => {
+      const comment = result.comments[0];
+      comment.text = text;
+      result.save()
+        .then((res) => {
+          const commentor = res.comments[0];
+          commentor.updatedAt = new Date();
+          res.save().then((fin) => {
+            resolve(fin);
+          }).catch((error) => {
+            reject(error);
+          });
+        }).catch((error) => {
+          reject(error);
+        });
     }).catch((error) => {
       reject(error);
     });
@@ -104,4 +139,5 @@ module.exports = {
   addPostComment,
   deleteAllPosts,
   addPostLike,
+  editPostComment,
 };

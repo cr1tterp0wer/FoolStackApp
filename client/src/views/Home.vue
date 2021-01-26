@@ -19,6 +19,9 @@
         <b-card v-for="postObj in posts"
           :key="postObj._id" :title="postObj.createdBy" >
           <b-card-text>
+            {{ stringToLocaleDate(postObj.createdAt) }}
+          </b-card-text>
+          <b-card-text>
             {{ postObj.text }}
           </b-card-text>
           <a
@@ -35,9 +38,20 @@
             <b-card v-for="comment in postObj.comments"
               :key="comment._id" :title="comment.createdBy">
               <b-card-text>
+                {{ stringToLocaleDate(comment.updatedAt)}}
+              </b-card-text>
+              <b-card-text>
                 {{ comment.text }}
               </b-card-text>
               <a href="#" class="card-link">Like</a>
+              <b-link href="#" class="card-link"
+                @click="editComment(postObj._id, comment._id, comment.text)"
+              >Edit</b-link>
+                <b-form-textarea
+                  size="sm"
+                  placeholder="What do you want to edit?"
+                  v-model="comment.text"
+                ></b-form-textarea>
             </b-card>
             <br/>
         </b-card>
@@ -61,6 +75,7 @@ export default {
       posts: {},
       newPostText: '',
       newCommentText: {},
+      newEditText: {},
       userId: '600a4745b0fe8908e83e2f1a',
     };
   },
@@ -104,6 +119,22 @@ export default {
       });
       this.newCommentText[PostId] = '';
     },
+    editComment(PostId, CommentId, Text) {
+      // post to DB here with axios
+      axios.patch('/api/editPostComment', {
+        userId: this.userId,
+        postId: PostId,
+        commentId: CommentId,
+        text: Text,
+      }).then((commenter) => {
+        const returnedComment = commenter.data.comments[0];
+        const commentMatch = this.posts[PostId].comments.find(
+          (element) => element._id === CommentId,
+        );
+        commentMatch.updatedAt = returnedComment.updatedAt;
+        commentMatch.text = returnedComment.text;
+      });
+    },
     LikePost(PostID) {
       axios.patch('/api/addPostLike', {
         userId: this.userId,
@@ -114,6 +145,10 @@ export default {
       }).catch((error) => {
         window.console.log(error);
       });
+    },
+    stringToLocaleDate(stringDate) {
+      const date = new Date(stringDate);
+      return `${date.toLocaleDateString('en-US')} ${date.toLocaleTimeString()}`;
     },
 
     DeleteAllPosts() {

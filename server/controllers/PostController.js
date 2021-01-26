@@ -72,27 +72,27 @@ function addPostComment(userId, postId, text, createdBy) {
  */
 function editPostComment(commentId, userId, postId, text) {
   return new Promise((resolve, reject) => {
-    const updatedTemp = new Date();
-    Post.findById(postId).select({
+    Post.findByIdAndUpdate(postId).select({
       comments: {
         $elemMatch: {
-          _id:commentId, userId, //userId validates ownership
+          _id: commentId, userId, // userId validates ownership
         },
       },
     }).then((result) => {
       const comment = result.comments[0];
       comment.text = text;
-      result.save().then((res) => {
-        const commentor = res.comments[0];
-        commentor.updatedAt = updatedTemp;
-        res.save().then((fin) => {
-          resolve(fin);
+      result.save()
+        .then((res) => {
+          const commentor = res.comments[0];
+          commentor.updatedAt = new Date();
+          res.save().then((fin) => {
+            resolve(fin);
+          }).catch((error) => {
+            reject(error);
+          });
         }).catch((error) => {
           reject(error);
         });
-      }).catch((error) => {
-        reject(error);
-      });
     }).catch((error) => {
       reject(error);
     });

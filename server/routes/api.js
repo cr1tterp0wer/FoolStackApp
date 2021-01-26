@@ -42,7 +42,8 @@ APIRouter.patch('/addPostComment', (req, res) => {
 });
 
 APIRouter.patch('/editPostComment', (req, res) => {
-  PostController.editPostComment(req.body.commentId, req.body.userId, req.body.postId, req.body.text)
+  PostController.editPostComment(req.body.commentId,
+    req.body.userId, req.body.postId, req.body.text)
     .then((success) => {
       res.json(success);
     }).catch((err) => res.json(err));

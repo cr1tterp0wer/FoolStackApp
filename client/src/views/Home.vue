@@ -19,7 +19,7 @@
         <b-card v-for="postObj in posts"
           :key="postObj._id" :title="postObj.createdBy" >
           <b-card-text>
-            {{ postObj.createdAt }}
+            {{ stringToLocaleDate(postObj.createdAt) }}
           </b-card-text>
           <b-card-text>
             {{ postObj.text }}
@@ -38,7 +38,7 @@
             <b-card v-for="comment in postObj.comments"
               :key="comment._id" :title="comment.createdBy">
               <b-card-text>
-                {{ comment.updatedAt }}
+                {{ stringToLocaleDate(comment.updatedAt)}}
               </b-card-text>
               <b-card-text>
                 {{ comment.text }}
@@ -127,19 +127,13 @@ export default {
         commentId: CommentId,
         text: Text,
       }).then((commenter) => {
-        window.console.log(commenter.data);
-        axios.get('/api/getAllPosts').then((res) => {
-          window.console.log(res);
-          // this.posts = res.data;
-          res.data.forEach((post) => {
-            Vue.set(this.posts, post._id, post);
-            Vue.set(this.newCommentText, post._id, '');
-          });
-        });
-      }).catch((error) => {
-        window.console.log(error);
+        const returnedComment = commenter.data.comments[0];
+        const commentMatch = this.posts[PostId].comments.find(
+          (element) => element._id === CommentId,
+        );
+        commentMatch.updatedAt = returnedComment.updatedAt;
+        commentMatch.text = returnedComment.text;
       });
-      this.newCommentText[PostId] = '';
     },
     LikePost(PostID) {
       axios.patch('/api/addPostLike', {
@@ -151,6 +145,10 @@ export default {
       }).catch((error) => {
         window.console.log(error);
       });
+    },
+    stringToLocaleDate(stringDate) {
+      const date = new Date(stringDate);
+      return `${date.toLocaleDateString('en-US')} ${date.toLocaleTimeString()}`;
     },
 
     DeleteAllPosts() {

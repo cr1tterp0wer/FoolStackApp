@@ -136,6 +136,5 @@ async function deleteAllUsers() {
 module.exports = {
   usersNew,
   usersRegister,
-  deleteAllUsers,
-  validateUser,
+  deleteAllUsers
 };

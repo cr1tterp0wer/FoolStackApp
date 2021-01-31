@@ -137,4 +137,5 @@ module.exports = {
   usersNew,
   usersRegister,
   deleteAllUsers,
+  validateUser,
 };

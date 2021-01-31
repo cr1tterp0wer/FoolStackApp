@@ -40,22 +40,14 @@ HashValidationSchema.methods.createHashValidation = async (userID) => {
   });
 
   return model;
-<<<<<<< HEAD
-}
-=======
 };
->>>>>>> master
 
 /**
  * Deletes an email validation hash given a new userID
  * @param {Mongodb.ID} userID - new user id
  * @return {*}
  */
-<<<<<<< HEAD
-const deleteHashValidation = async (userID) => {
-=======
 HashValidationSchema.methods.deleteHashValidation = async (userID) => {
->>>>>>> master
   // deleteMany to remove all rows just in case there exists more than one
   let model = HashValidationModel.deleteMany({ userID: userID }).then((query) => {
     return query
@@ -66,14 +58,7 @@ HashValidationSchema.methods.deleteHashValidation = async (userID) => {
   return model;
 }
 
-<<<<<<< HEAD
-module.exports = {
-  createHashValidation,
-  deleteHashValidation,
-};
-=======
 const HashValidationModel = mongoose.model('HashValidation', HashValidationSchema);
 const HashValidation = new HashValidationModel();
 
 module.exports = HashValidation;
->>>>>>> master

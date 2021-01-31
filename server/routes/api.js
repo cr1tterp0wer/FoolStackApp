@@ -3,10 +3,14 @@ const express = require('express');
 const APIRouter = express.Router();
 const PostController = require('../controllers/PostController');
 const UserController = require('../controllers/UserController');
+const SessionController = require('../controllers/SessionController');
 
-APIRouter.post('/users/new', UserController.createUser);
+APIRouter.post('/auth/new', SessionController.sessionsNew);
+APIRouter.delete('/auth/delete', SessionController.sessionsDestroy);
+APIRouter.get('/users/register', UserController.usersRegister);
+APIRouter.post('/users/new', UserController.usersNew);
 
-APIRouter.post('/users/deleteAll', (req, res) => {
+APIRouter.delete('/users/deleteAll', (req, res) => {
   UserController.deleteAllUsers()
     .then((data) => {
       res.json(data);

@@ -2,7 +2,7 @@ require('../../helpers/dateTime.js');
 const { ObjectId } = require('mongodb');
 const MUUID = require('uuid-mongodb');
 const mongoose = require('mongoose');
-const HASH_VALIDATION_TTL_DAYS = 7;
+const HASH_VALIDATION_TTL_DAYS = parseInt(process.env.HASH_VALIDATION_TTL_DAYS);
 
 const HashValidationSchema = new mongoose.Schema({
   _id: { type: 'object', value: { type: 'Buffer' }, default: ()=> MUUID.v1() },
@@ -21,14 +21,12 @@ HashValidationSchema
     this._id = MUUID.from(value);
   });
 
-const HashValidationModel = mongoose.model('HashValidation', HashValidationSchema);
-
 /**
  * Creates a new email validation hash given a new userID
  * @param {Mongodb.ID} userID - new user id
  * @return {*}
  */
-const createHashValidation = async (userID) => {
+HashValidationSchema.methods.createHashValidation = async (userID) => {
   let date = new Date();
   date.addDays(HASH_VALIDATION_TTL_DAYS);
 
@@ -40,18 +38,27 @@ const createHashValidation = async (userID) => {
   }).catch((error) => {
     return error;
   });
-}
+
+  return model;
+};
 
 /**
- * Removes a specified hash given a new userID
+ * Deletes an email validation hash given a new userID
  * @param {Mongodb.ID} userID - new user id
  * @return {*}
  */
-const removeHashValidation = async (userID) => {
-  HashValidation.find({ userID: userID }).remove().exec();
+HashValidationSchema.methods.deleteHashValidation = async (userID) => {
+  // deleteMany to remove all rows just in case there exists more than one
+  let model = HashValidationModel.deleteMany({ userID: userID }).then((query) => {
+    return query
+  }).catch((error) => {
+    return error;
+  });
+
+  return model;
 }
 
-module.exports = {
-  createHashValidation,
-  removeHashValidation
-};
+const HashValidationModel = mongoose.model('HashValidation', HashValidationSchema);
+const HashValidation = new HashValidationModel();
+
+module.exports = HashValidation;

@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const mongooseErrorHandler = require('mongoose-error-handler');
 const HashValidation = require('../db/models/HashValidation');
 const User = require('../db/models/User');
+
 const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || '8888';
 
@@ -19,7 +20,7 @@ const userCreateParams = Joi.object({
 // UserRegister Param validation schema
 const userRegisterParams = Joi.object({
   userID: Joi.string().trim().required(),
-  vhs: Joi.string().guid()
+  vhs: Joi.string().guid(),
 });
 
 /**
@@ -31,33 +32,33 @@ const userRegisterParams = Joi.object({
  */
 const sendMailValidation = (email, hash, userID) => {
   // The url must include the http protocol or the email link will not render~
-  const URL = HOST + ':' + PORT + '/api/users/register?userID=' + userID + '&vhs=' + hash;
+  const URL = `${HOST}:${PORT}/api/users/register?userID=${userID}&vhs=${hash}`;
 
-  let transport = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      auth: {
-         user: process.env.EMAIL,
-         pass: process.env.EMAIL_PASS
-      }
+  const transport = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS,
+    },
   });
 
   const message = {
-      from: 'nusocial.contact@gmail.com',
-      to: email,
-      subject: 'Register NU Social Account',
-      html: '<html><body>' +
-        '<h3>Click the link to complete your NU Social Account validation</h3>' +
-        '<a href="' + URL + '">' + URL + '</a>' +
-        '</body></html>'
+    from: 'nusocial.contact@gmail.com',
+    to: email,
+    subject: 'Register NU Social Account',
+    html: `${'<html><body>'
+        + '<h3>Click the link to complete your NU Social Account validation</h3>'
+        + '<a href="'}${URL}">${URL}</a>`
+        + '</body></html>',
   };
 
-  transport.sendMail(message, function(err, info) {
+  transport.sendMail(message, (err/* , info */) => {
     if (err) {
-      console.log(err)
+      /* eslint-disable no-console */
+      console.log(err);
     }
   });
-
 };
 
 /**
@@ -70,7 +71,7 @@ const sendMailValidation = (email, hash, userID) => {
 const usersRegister = async (req, res) => {
   let params = {
     userID: req.query.userID,
-    vhs: req.query.vhs
+    vhs: req.query.vhs,
   };
 
   // Register params
@@ -93,7 +94,6 @@ const usersRegister = async (req, res) => {
   }).catch((error) => {
     res.status(400).json({ success: false, msg: error });
   });
-
 };
 
 /**
@@ -102,16 +102,16 @@ const usersRegister = async (req, res) => {
  * @param {Object} - user data obj
  * @return {Object} - the new user object
  */
-const usersNew = async (req, res, next) => {
+const usersNew = async (req, res /* next */) => {
   const params = await userCreateParams.validateAsync(req.body);
   const user = new User({
     createdAt: new Date(),
     email: params.email,
     username: params.username,
   });
-  user.password_digest = user.digestPassword(params.password)
+  user.password_digest = user.digestPassword(params.password);
 
-  user.save().then((userStatus) => {
+  user.save().then((/* userStatus */) => {
     HashValidation.createHashValidation(user._id).then((query) => {
       sendMailValidation(params.email, query._id, query.userID);
       res.status(200).json({ success: true, msg: query });
@@ -121,7 +121,6 @@ const usersNew = async (req, res, next) => {
   }).catch((error) => {
     res.status(400).json({ success: false, msg: mongooseErrorHandler.set(error, req.t) });
   });
-
 };
 
 /**
@@ -136,5 +135,5 @@ async function deleteAllUsers() {
 module.exports = {
   usersNew,
   usersRegister,
-  deleteAllUsers
+  deleteAllUsers,
 };

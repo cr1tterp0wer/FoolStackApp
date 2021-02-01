@@ -29,13 +29,10 @@
             class="card-link"
             @click="LikePost(postObj._id)">Like ({{postObj.likes.length}})
           </a>
-          <b-link href="#" class="card-link" @click="createNewComment(postObj._id)">Comment</b-link>
-            <b-form-textarea
-              size="sm"
-              placeholder="What's on your mind?"
-              v-model="newCommentText[postObj._id]"
-            ></b-form-textarea>
-            <b-card v-for="comment in postObj.comments"
+          <b-link @click="showComments=!showComments"
+          class="card-link">Comments ({{postObj.comments.length}})</b-link>
+          <div v-if="showComments">
+            <b-card  id="CommentCard" v-for="comment in postObj.comments"
               :key="comment._id" :title="comment.createdBy">
               <b-card-text>
                 {{ stringToLocaleDate(comment.updatedAt)}}
@@ -53,7 +50,14 @@
                   v-model="comment.text"
                 ></b-form-textarea>
             </b-card>
-            <br/>
+          </div>
+            <b-form-textarea
+              size="sm"
+              placeholder="What's on your mind?"
+              v-model="newCommentText[postObj._id]"
+            ></b-form-textarea>
+            <b-button variant="outline-primary"
+              @click="createNewComment(postObj._id)">Comment</b-button>
         </b-card>
       </b-col>
     </b-row>
@@ -76,6 +80,7 @@ export default {
       newPostText: '',
       newCommentText: {},
       newEditText: {},
+      showComments: false,
       userId: '600a4745b0fe8908e83e2f1a',
     };
   },
@@ -158,5 +163,8 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style scoped>
+#CommentCard{
+  background: gray;
+}
 </style>

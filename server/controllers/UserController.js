@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const mongooseErrorHandler = require('mongoose-error-handler');
 const HashValidation = require('../db/models/HashValidation');
 const User = require('../db/models/User');
+
 const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || '8888';
 
@@ -21,7 +22,7 @@ const userCreateParams = Joi.object({
 // UserRegister Param validation schema
 const userRegisterParams = Joi.object({
   userID: Joi.string().trim().required(),
-  vhs: Joi.string().guid()
+  vhs: Joi.string().guid(),
 });
 
 /**
@@ -33,33 +34,33 @@ const userRegisterParams = Joi.object({
  */
 const sendMailValidation = (email, hash, userID) => {
   // The url must include the http protocol or the email link will not render~
-  const URL = HOST + ':' + PORT + '/api/users/register?userID=' + userID + '&vhs=' + hash;
+  const URL = `${HOST}:${PORT}/api/users/register?userID=${userID}&vhs=${hash}`;
 
-  let transport = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      auth: {
-         user: process.env.EMAIL,
-         pass: process.env.EMAIL_PASS
-      }
+  const transport = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS,
+    },
   });
 
   const message = {
-      from: 'nusocial.contact@gmail.com',
-      to: email,
-      subject: 'Register NU Social Account',
-      html: '<html><body>' +
-        '<h3>Click the link to complete your NU Social Account validation</h3>' +
-        '<a href="' + URL + '">' + URL + '</a>' +
-        '</body></html>'
+    from: 'nusocial.contact@gmail.com',
+    to: email,
+    subject: 'Register NU Social Account',
+    html: `${'<html><body>'
+        + '<h3>Click the link to complete your NU Social Account validation</h3>'
+        + '<a href="'}${URL}">${URL}</a>`
+        + '</body></html>',
   };
 
-  transport.sendMail(message, function(err, info) {
+  transport.sendMail(message, (err/* , info */) => {
     if (err) {
-      console.log(err)
+      /* eslint-disable no-console */
+      console.log(err);
     }
   });
-
 };
 
 /**
@@ -72,7 +73,7 @@ const sendMailValidation = (email, hash, userID) => {
 const usersRegister = async (req, res) => {
   let params = {
     userID: req.query.userID,
-    vhs: req.query.vhs
+    vhs: req.query.vhs,
   };
 
   // Register params
@@ -157,5 +158,5 @@ async function deleteAllUsers() {
 module.exports = {
   usersNew,
   usersRegister,
-  deleteAllUsers
+  deleteAllUsers,
 };

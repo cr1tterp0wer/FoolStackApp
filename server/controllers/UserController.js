@@ -10,6 +10,8 @@ const PORT = process.env.PORT || '8888';
 // UserCreate Param validation schema
 const userCreateParams = Joi.object({
   email: Joi.string().trim().required(),
+  firstname: Joi.string().trim().required(),
+  lastname: Joi.string().trim().required(),
   password: Joi.string().trim().required().min(6)
     .max(50),
   username: Joi.string().trim().required().min(6)
@@ -74,26 +76,31 @@ const usersRegister = async (req, res) => {
   };
 
   // Register params
-  params = await userRegisterParams.validateAsync(params);
+  params = userRegisterParams.validate(params);
+  const validParams = { value, error } = params,
+        valid = error == null;
 
-  const user = await User.findOne({ _id: params.userID });
-  const updateData = { updatedAt: new Date() };
+  if (!valid) {
+    res.status(422).json({ success: false, msg: error })
+  } else {
+    const user = await User.findOne({ _id: value.userID });
+    const updateData = { updatedAt: new Date() };
 
-  HashValidation.deleteHashValidation(params.userID).then((query) => {
-    // If it deleted a hashValidation: update user
-    if (query.deletedCount) {
-      user.updateOne(updateData).then((data) => {
-        res.status(200).json({ success: true, msg: data });
-      }).catch((error) => {
-        res.status(400).json({ success: false, msg: error });
-      });
-    } else { // If hashValidation not found, send error
-      res.status(400).json({ success: false, msg: 'User cannot be validated' });
-    }
-  }).catch((error) => {
-    res.status(400).json({ success: false, msg: error });
-  });
-
+    HashValidation.deleteHashValidation(value.userID).then((query) => {
+      // If it deleted a hashValidation: update user
+      if (query.deletedCount) {
+        user.updateOne(updateData).then((data) => {
+          res.status(200).json({ success: true, msg: data });
+        }).catch((error) => {
+          res.status(400).json({ success: false, msg: error });
+        });
+      } else { // If hashValidation not found, send error
+        res.status(400).json({ success: false, msg: 'User cannot be validated' });
+      }
+    }).catch((error) => {
+      res.status(400).json({ success: false, msg: error });
+    });
+  }
 };
 
 /**
@@ -103,24 +110,38 @@ const usersRegister = async (req, res) => {
  * @return {Object} - the new user object
  */
 const usersNew = async (req, res, next) => {
-  const params = await userCreateParams.validateAsync(req.body);
-  const user = new User({
-    createdAt: new Date(),
-    email: params.email,
-    username: params.username,
-  });
-  user.password_digest = user.digestPassword(params.password)
+  const params = userCreateParams.validate(req.body);
+  const validParams = { value, error } = params,
+        valid = error == null;
 
-  user.save().then((userStatus) => {
-    HashValidation.createHashValidation(user._id).then((query) => {
-      sendMailValidation(params.email, query._id, query.userID);
-      res.status(200).json({ success: true, msg: query });
-    }).catch((error) => {
-      res.status(400).json({ success: false, msg: error });
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message })
+  } else {
+    const user = new User({
+      createdAt: new Date(),
+      email: value.email,
+      firstname: value.firstname,
+      lastname: value.lastname,
+      username: value.username,
     });
-  }).catch((error) => {
-    res.status(400).json({ success: false, msg: mongooseErrorHandler.set(error, req.t) });
-  });
+
+    user.password_digest = user.digestPassword(value.password)
+
+    user.save().then((userStatus) => {
+      HashValidation.createHashValidation(user._id).then((query) => {
+        sendMailValidation(value.email, query._id, query.userID);
+        res.status(200).json({ success: true, message: query });
+      }).catch((error) => {
+        res.status(400).json({ success: false, message: error });
+      });
+    }).catch((error) => {
+      if (error.code == 11000) {
+        res.status(400).json({ success: false, message: 'User exists! Check your email for validation!' });
+      } else {
+        res.status(400).json({ success: false, message: mongooseErrorHandler.set(error, req.t) });
+      }
+    });
+  }
 
 };
 

@@ -8,8 +8,7 @@ const TTL = parseInt(process.env.SESSION_TTL_DAYS);
 
 // SessionLogin Param validation schema
 const sessionLoginParams = Joi.object({
-  username: Joi.string().trim().required().min(6)
-    .max(50),
+  email: Joi.string().trim().required(),
   password: Joi.string().trim().required().min(6)
     .max(50)
 });
@@ -26,36 +25,46 @@ const sessionLogoutParams = Joi.object({
  * @return {Object} - the new session object
  */
 const sessionsNew = async (req, res) => {
-  const params = await sessionLoginParams.validateAsync(req.body);
-  const userModel = new User();
+  const params = sessionLoginParams.validate(req.body);
+  const validParams = { value, error } = params,
+        valid = error == null;
 
-  await User.findOne({ username: params.username }).then((query) => {
-    let validPass = userModel.validatePassword(params.password, query.password_digest);
+  if (!value) {
+    res.status(422).json({ success: false, message: error.details[0].message })
+  } else {
+    const userModel = new User();
 
-    if (validPass) {
-      let today = new Date();
-      let ttl = new Date();
-      ttl.addDays(TTL);
+    await User.findOne({ email: value.email }).then((query) => {
 
-      let session = new Session({
-        user: query,
-        TTL: ttl,
-        createdAt: today,
-        updatedAt: today
-      });
+      if (!query.updatedAt) {
+        res.status(403).json({ success: false, message: 'User not valid! Check your email for validation!' });
+      } else {
+        let validPass = userModel.validatePassword(value.password, query.password_digest);
+        if (validPass) {
+          let today = new Date();
+          let ttl = new Date();
+          ttl.addDays(TTL);
 
-      session.save().then((query) => {
-        res.status(200).json({ success: true, token: query._id });
-      }).catch((error) => {
-        res.status(403).json({ success: false, msg: mongooseErrorHandler.set(error, req.t) });
-      });
-    } else {
-      res.status(403).json({ success: false, msg: 'Invalid Password'});
-    }
-  }).catch((error) => {
-    res.status(400).json({ success: false, msg: error });
-  });
+          let session = new Session({
+            user: query,
+            TTL: ttl,
+            createdAt: today,
+            updatedAt: today
+          });
 
+          session.save().then((query) => {
+            res.status(200).json({ success: true, token: query._id });
+          }).catch((error) => {
+            res.status(403).json({ success: false, message: mongooseErrorHandler.set(error, req.t) });
+          });
+        } else {
+          res.status(403).json({ success: false, message: 'Invalid Password'});
+        }
+      }
+    }).catch((error) => {
+      res.status(400).json({ success: false, message: error });
+    });
+  }
 };
 
 /**

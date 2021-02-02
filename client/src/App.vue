@@ -1,13 +1,23 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      navbar
+  <div id='app'>
+    <Menu/>
+    <div id='content'>
+      <router-view/>
     </div>
-    <router-view/>
   </div>
 </template>
 
-<style lang="scss">
+<script>
+import Menu from './components/menu/Menu.vue';
+
+export default {
+  components: {
+    Menu,
+  },
+};
+</script>
+
+<style lang='scss'>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

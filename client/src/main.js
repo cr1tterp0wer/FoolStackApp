@@ -1,13 +1,10 @@
 import Vue from 'vue';
+import VueSession from 'vue-session';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import axios from 'axios';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-
-// Import Bootstrap an BootstrapVue CSS files (order is important)
-// import 'bootstrap/dist/css/bootstrap.css';
-// import 'bootstrap-vue/dist/bootstrap-vue.css';
 import '../custom.scss';
 
 const serverURL = process.env.VUE_APP_SERVER_URL;
@@ -21,6 +18,8 @@ Vue.config.productionTip = false;
 Vue.use(BootstrapVue);
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin);
+// Use Session Storage
+Vue.use(VueSession);
 
 new Vue({
   router,

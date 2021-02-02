@@ -20,7 +20,7 @@
         v-if="this.userId === this.comment.userId"
         href="#" class="card-link" @click="editMode=true"
         >Edit</b-link
-      >x
+      >
     </b-card>
   </div>
 </template>

@@ -1583,6 +1583,11 @@
   "resolved" "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz"
   "version" "2.0.0"
 
+"joi-objectid@^3.0.1":
+  "integrity" "sha512-V/3hbTlGpvJ03Me6DJbdBI08hBTasFOmipsauOsxOSnsF1blxV537WTl1zPwbfcKle4AK0Ma4OPnzMH4LlvTpQ=="
+  "resolved" "https://registry.npmjs.org/joi-objectid/-/joi-objectid-3.0.1.tgz"
+  "version" "3.0.1"
+
 "joi@^17.3.0":
   "integrity" "sha512-Qh5gdU6niuYbUIUV5ejbsMiiFmBdw8Kcp8Buj2JntszCkCfxJ9Cz76OtHxOZMPXrt5810iDIXs+n1nNVoquHgg=="
   "resolved" "https://registry.npmjs.org/joi/-/joi-17.3.0.tgz"

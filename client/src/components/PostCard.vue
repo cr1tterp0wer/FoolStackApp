@@ -1,6 +1,6 @@
 <template>
   <div class="mb-4">
-    <b-card :title="post.createdBy">
+    <b-card :title="post.author">
       <b-card-text>
         {{ common.stringToLocaleDate(post.createdAt) }}
       </b-card-text>
@@ -15,7 +15,7 @@
       >
       <div v-if="showComments">
        <Comment  v-for="comment in post.comments"
-        :key="comment._id" :Comment="comment" :postId='post._id' :userId="userId"/>
+        :key="comment._id" :Comment="comment" :postID='post._id' :userID="userID"/>
       </div>
       <b-form-textarea
         size="sm"
@@ -39,10 +39,11 @@ export default {
   },
   props: {
     postObj: Object,
-    userId: String,
+    userID: String,
   },
   data() {
     return {
+      author: '',
       post: this.postObj,
       newPostText: '',
       newCommentText: '',
@@ -53,29 +54,38 @@ export default {
   },
   methods: {
     createNewComment() {
-      // post to DB here with axios
-      axios.patch('/api/addPostComment', {
-        userId: this.userId,
-        postId: this.post._id,
+      const data = {
+        userID: this.userID,
+        postID: this.post._id,
         text: this.newCommentText,
-        createdBy: 'Elliot',
-      }).then((commenter) => {
-        window.console.log(commenter.data);
-        this.post.comments.push(commenter.data.comments[0]);
+      };
+      const config = {
+        headers: {
+          Authorization: this.$session.get('nu_social_t'),
+        },
+      };
+      // post to DB here with axios
+      axios.patch('/api/addPostComment', data, config).then((comment) => {
+        this.post.comments.push(comment.data);
       }).catch((error) => {
         throw (error);
       });
       this.newCommentText = '';
     },
     LikePost() {
-      axios.patch('/api/addPostLike', {
-        userId: this.userId,
-        postId: this.post._id,
-      }).then((like) => {
-        window.console.log(like);
-        this.post.likes.push(like.data.msg.likes[0]);
+      const data = {
+        userID: this.userID,
+        postID: this.post._id,
+      };
+      const config = {
+        headers: {
+          Authorization: this.$session.get('nu_social_t'),
+        },
+      };
+      axios.patch('/api/addPostLike', data, config).then((post) => {
+        this.post.likes = post.data.likes;
       }).catch((error) => {
-        window.console.log(error);
+        console.log(error);
       });
     },
   },

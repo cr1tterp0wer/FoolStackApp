@@ -13,11 +13,6 @@ const sessionLoginParams = Joi.object({
     .max(50)
 });
 
-const sessionLogoutParams = Joi.object({
-  username: Joi.string().trim().required().min(6)
-    .max(50)
-});
-
 /**
  * POST: /auth/new
  * Creates a new session in the DB
@@ -34,31 +29,34 @@ const sessionsNew = async (req, res) => {
   } else {
     const userModel = new User();
 
-    await User.findOne({ email: value.email }).then((query) => {
+    User.findOne({ email: value.email }).then((userStatus) => {
 
-      if (!query.updatedAt) {
-        res.status(403).json({ success: false, message: 'User not valid! Check your email for validation!' });
+      if (!userStatus || !userStatus.updatedAt) {
+        res.status(403).json({ success: false, message: 'Invalid Username/Password'});
       } else {
-        let validPass = userModel.validatePassword(value.password, query.password_digest);
+        let validPass = userModel.validatePassword(value.password, userStatus.password_digest);
         if (validPass) {
           let today = new Date();
           let ttl = new Date();
           ttl.addDays(TTL);
 
           let session = new Session({
-            user: query,
-            TTL: ttl,
+            user: userStatus,
+            expiry: ttl,
             createdAt: today,
             updatedAt: today
           });
-
-          session.save().then((query) => {
-            res.status(200).json({ success: true, token: query._id });
+          session.save().then((sessionStatus) => {
+            res.status(200).json({ 
+              success: true, 
+              token: sessionStatus._id,
+              user: userStatus,
+            });
           }).catch((error) => {
             res.status(403).json({ success: false, message: mongooseErrorHandler.set(error, req.t) });
           });
         } else {
-          res.status(403).json({ success: false, message: 'Invalid Password'});
+          res.status(403).json({ success: false, message: 'Invalid Username/Password'});
         }
       }
     }).catch((error) => {
@@ -74,21 +72,19 @@ const sessionsNew = async (req, res) => {
  * @return {Object} - the new session object
  */
 const sessionsDestroy = async (req, res) => {
-  const params = await sessionLogoutParams.validateAsync(req.body);
+  const token = req.headers['authorization'];
+  const session = new Session();
 
-  await User.findOne({ username: params.username }).then((query) => {
-    Session.deleteMany({ user: query }).then((deleteData) => {
-      if (deleteData.deletedCount) {
-        res.status(200).json({ success: true, msg: 'Successfully logged out user_' + query._id });
-      } else {
-        res.status(200).json({ success: true, msg: 'User already logged out' });
-      }
-    }).catch((error) => {
-      res.status(400).json({ success: false, msg: mongooseErrorHandler.set(error, req.t) });
-    });
+  session.deleteSessionByToken(token).then((deleteData) => {
+    if (deleteData.deletedCount) {
+      res.status(200).json({ success: true, message: 'Successfully logged out ' });
+    } else {
+      res.status(200).json({ success: true, message: 'User already logged out' });
+    }
   }).catch((error) => {
-    res.status(400).json({ success: false, msg: mongooseErrorHandler.set(error, req.t) });
+    res.status(400).json({ success: false, message: mongooseErrorHandler.set(error, req.t) });
   });
+
 };
 
 module.exports = {

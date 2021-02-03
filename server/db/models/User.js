@@ -14,6 +14,23 @@ const UserSchema = new mongoose.Schema({
 });
 
 /**
+ * White list certain values so we don't expose 
+ * sensitive data to front-end
+ */
+UserSchema.set('toJSON', {
+  transform: function(doc, ret, options) {
+    var retJson = {
+      id: ret._id,
+      email: ret.email,
+      firstname: ret.firstname,
+      lastname: ret.lastname,
+      username: ret.username
+    };
+    return retJson;
+  }
+});
+
+/**
  * Generates a password digest with bcrypt
  * @param {String} password - Users plaintext password
  * @return {String} hashed password

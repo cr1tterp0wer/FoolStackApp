@@ -8,7 +8,7 @@
     "url": "https://TheFoolStacks@dev.azure.com/TheFoolStacks/FoolStackApp/_git/FoolStackApp"
   },
   "scripts": {
-    "start": "npm install && node server.js",
+    "start": "npm install && npm install --prefix client && node server.js",
     "dev": "concurrently --kill-others-on-fail \"nodemon server.js --delay 1500ms\" \"npm run serve --prefix client\""
   },
   "author": "Dylan Kinzer",
@@ -23,6 +23,7 @@
     "express": "^4.17.1",
     "history": "^5.0.0",
     "joi": "^17.3.0",
+    "joi-objectid": "^3.0.1",
     "mongodb": "^3.6.3",
     "mongoose": "^5.11.2",
     "mongoose-error-handler": "^1.1.0",

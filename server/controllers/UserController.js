@@ -10,7 +10,7 @@ const PORT = process.env.PORT || '8888';
 
 // UserCreate Param validation schema
 const userCreateParams = Joi.object({
-  email: Joi.string().trim().required(),
+  email: Joi.string().trim().regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/).required(),
   firstname: Joi.string().trim().required(),
   lastname: Joi.string().trim().required(),
   password: Joi.string().trim().required().min(6)
@@ -23,6 +23,11 @@ const userCreateParams = Joi.object({
 const userRegisterParams = Joi.object({
   userID: Joi.string().trim().required(),
   vhs: Joi.string().guid(),
+});
+
+// UserRevaliate Param validation schema
+const userRevalidateParams = Joi.object({
+  email: Joi.string().trim().regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/).required(),
 });
 
 /**
@@ -63,6 +68,40 @@ const sendMailValidation = (email, hash, userID) => {
   });
 };
 
+
+/**
+ * POST: /users/revalidate
+ * Resends the new user an email validation link
+ * @param {Object} - the validation data
+ * @return {*}
+ */
+const usersRevalidate = async (req, res) => {
+  // Register params
+  params = userRevalidateParams.validate(req.body);
+  const validParams = { value, error } = params,
+        valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message })
+  } else {
+    User.findOne({ email: value.email }).then((userStatus) => {
+
+    if (!userStatus) {
+      res.status(422).json({ success: false, message: 'Email not found'});
+    } else {
+
+      HashValidation.createHashValidation(userStatus._id).then((hashStatus) => {
+        sendMailValidation(value.email, hashStatus._id, hashStatus.userID);
+        res.status(200).json({ success: true, message: 'Email sent' });
+      }).catch((error) => {
+        res.status(400).json({ success: false, message: error });
+      });
+
+    }
+   });
+  }
+};
+
 /**
  * GET: /users/register
  * Registers/Registers the new user by
@@ -82,7 +121,7 @@ const usersRegister = async (req, res) => {
         valid = error == null;
 
   if (!valid) {
-    res.status(422).json({ success: false, msg: error })
+    res.status(422).json({ success: false, message: error })
   } else {
     const user = await User.findOne({ _id: value.userID });
     const updateData = { updatedAt: new Date() };
@@ -91,15 +130,15 @@ const usersRegister = async (req, res) => {
       // If it deleted a hashValidation: update user
       if (query.deletedCount) {
         user.updateOne(updateData).then((data) => {
-          res.status(200).json({ success: true, msg: data });
+          res.status(200).json({ success: true, message: data });
         }).catch((error) => {
-          res.status(400).json({ success: false, msg: error });
+          res.status(400).json({ success: false, message: error });
         });
       } else { // If hashValidation not found, send error
-        res.status(400).json({ success: false, msg: 'User cannot be validated' });
+        res.status(400).json({ success: false, message: 'User cannot be validated' });
       }
     }).catch((error) => {
-      res.status(400).json({ success: false, msg: error });
+      res.status(400).json({ success: false, message: error });
     });
   }
 };
@@ -129,12 +168,14 @@ const usersNew = async (req, res, next) => {
     user.password_digest = user.digestPassword(value.password)
 
     user.save().then((userStatus) => {
-      HashValidation.createHashValidation(user._id).then((query) => {
-        sendMailValidation(value.email, query._id, query.userID);
-        res.status(200).json({ success: true, message: query });
+
+      HashValidation.createHashValidation(userStatus._id).then((hashStatus) => {
+        sendMailValidation(value.email, hashStatus._id, hashStatus.userID);
+        res.status(200).json({ success: true, message: 'Email sent' });
       }).catch((error) => {
         res.status(400).json({ success: false, message: error });
       });
+
     }).catch((error) => {
       if (error.code == 11000) {
         res.status(400).json({ success: false, message: 'User exists! Check your email for validation!' });
@@ -158,5 +199,6 @@ async function deleteAllUsers() {
 module.exports = {
   usersNew,
   usersRegister,
+  usersRevalidate,
   deleteAllUsers,
 };

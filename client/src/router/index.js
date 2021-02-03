@@ -14,10 +14,12 @@ const routes = [
   },
   {
     path: '/login',
+    name: 'Login',
     component: Login,
   },
   {
     path: '/signup',
+    name: 'Signup',
     component: Signup,
   },
   // {
@@ -33,6 +35,13 @@ const routes = [
 const router = new VueRouter({
   mode: 'history',
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const session = Vue.prototype.$session;
+  session.start();
+  if ((to.name !== 'Login' && to.name !== 'Signup') && !session.get('nu_social_t')) next({ name: 'Login' });
+  else next();
 });
 
 export default router;

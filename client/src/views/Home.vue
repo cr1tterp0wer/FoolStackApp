@@ -1,8 +1,12 @@
 <template>
-  <b-container>
-    <b-button variant='outline-danger' @click='DeleteAllPosts'>
-      Delete All Posts
-    </b-button>
+  <b-container class='py-5'>
+    <b-row class='py-5 mx-auto'>
+      <b-col>
+        <b-button variant='outline-danger' @click='DeleteAllPosts'>
+          Delete All Posts
+        </b-button>
+      </b-col>
+    </b-row>
     <b-row>
       <b-col>
          <b-form-textarea
@@ -16,10 +20,11 @@
     <hr/>
     <b-row>
       <b-col>
-        <PostCard v-for="postObj in posts" :key="postObj._id" :postObj="postObj" :userId='userId' />
+        <PostCard v-for="postObj in posts" :key="postObj._id" :postObj="postObj" :userID='userID' />
         <br>
       </b-col>
     </b-row>
+    <Modal ref='modal'/>
   </b-container>
 </template>
 
@@ -27,47 +32,67 @@
 // @ is an alias to /src
 import axios from 'axios';
 import Vue from 'vue';
+import Modal from '../components/modal/Modal.vue';
 import PostCard from '../components/PostCard.vue';
 
 export default {
   name: 'Home',
   components: {
     PostCard,
+    Modal,
   },
   data() {
     return {
       posts: {},
       newPostText: '',
-      userId: '6009d55f02c9577e51a17c1d',
+      userID: this.$session.get('nu_uid') || '',
     };
   },
+
   created() {
-    axios.get('/api/getAllPosts').then((res) => {
-      window.console.log(res);
-      // this.posts = res.data;
+    axios.get('/api/getAllPosts', {
+      headers: {
+        Authorization: `${this.$session.get('nu_social_t')}`,
+      },
+    }).then((res) => {
       res.data.forEach((post) => {
         Vue.set(this.posts, post._id, post);
-        // Vue.set(this.newCommentText, post._id, '');
       });
+    }).catch((error) => {
+      if (error.response.data.message === 'PROTECTED') {
+        this.$router.push('/login');
+      }
+      this.$refs.modal.show(error);
     });
   },
   methods: {
     createNewPost() {
-      // post to DB here with axios
-      axios.post('/api/createPost', {
+      const data = {
         text: this.newPostText,
-        createdBy: 'Dylan',
-      }).then((res) => {
-        // this.posts.push(res.data);
+        userID: this.$session.get('nu_uid'),
+      };
+      const config = {
+        headers: {
+          Authorization: this.$session.get('nu_social_t'),
+        },
+      };
+      axios.post('/api/createPost', data, config).then((res) => {
         Vue.set(this.posts, res.data._id, res.data);
-        // Vue.set(this.newCommentText, res.data._id, '');
       }).catch((error) => {
+        this.$refs.modal.show([{ body: error.response.data.message }]);
         throw (error);
       });
       this.newPostText = '';
     },
     DeleteAllPosts() {
-      axios.post('/api/deleteAllPosts');
+      const config = {
+        headers: {
+          Authorization: this.$session.get('nu_social_t'),
+        },
+      };
+      axios.delete('/api/deleteAllPosts', config).then(() => {
+        this.posts = {};
+      });
     },
   },
 };

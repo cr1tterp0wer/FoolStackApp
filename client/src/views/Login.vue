@@ -27,7 +27,7 @@
           </b-form>
 
           <b-col class="my-3">
-            <a href="#" class="fsLinkCreateAccount">Create An Account</a>
+            <router-link to="/signup" class="fsLinkCreateAccount">Create An Account</router-link>
           </b-col>
           <b-col class="my-3">
             <a href="#" class="fsLinkForgotPassword my-3">Forgot Password?</a>

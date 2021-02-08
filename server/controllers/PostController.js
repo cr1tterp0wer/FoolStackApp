@@ -28,6 +28,7 @@ const postAddPostCommentParams = Joi.object({
 const postEditPostCommentParams = Joi.object({
   commentID: Joi.objectID().required(),
   text: Joi.string().trim().required(),
+  userID: Joi.string().trim().required()
 });
 
 // PostLike Param validation schema
@@ -152,21 +153,21 @@ const editPostComment = (req, res) => {
   const params = postEditPostCommentParams.validate(req.body);
   const validParams = { value, error } = params,
         valid = error == null;
-
   if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message });
   } else {
-
-    Comment.findOneAndUpdate(
-      { _id: value.commentID },
-      { text: value.text, updatedAt: new Date() },
-      { new: true },
-    ).then((comment) => {
-      res.status(200).json(comment);
-    }).catch((error) => {
-      reject(error);
-    });
-
+    Post.findOneAndUpdate(
+        { 'comments._id': value.commentID, 'comments.userID': value.userID },
+        { $set: { 'comments.$.text': value.text, 'comments.$.updatedAt': new Date()  } },
+        { new: true })
+      .select({ comments: { $elemMatch: { userID: value.userID } } })
+      .then(comment => {
+        res.status(200).json(comment)
+      })
+      .catch(err => {
+        res.json(err);
+      })
+ 
   }
 };
 

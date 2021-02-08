@@ -2,7 +2,7 @@
   <div>
     <b-card
       id="CommentCard"
-      :title="comment.createdBy"
+      :title="comment.author"
     >
       <b-card-text>
         {{ common.stringToLocaleDate(comment.updatedAt) }}
@@ -17,7 +17,7 @@
       </b-card-text>
       <a href="#" class="card-link">Like</a>
       <b-link
-        v-if="this.userId === this.comment.userId"
+        v-if="this.userID === this.comment.userID"
         href="#" class="card-link" @click="editMode=true"
         >Edit</b-link
       >
@@ -33,8 +33,8 @@ export default {
   name: 'Comment',
   props: {
     Comment: {},
-    postId: String,
-    userId: String,
+    postID: String,
+    userID: String,
   },
   data() {
     return {
@@ -45,19 +45,23 @@ export default {
   },
   methods: {
     editComment() {
-      // post to DB here with axios
-      axios.patch('/api/editPostComment', {
-        userId: this.userId,
-        postId: this.postId,
-        commentId: this.comment._id,
+      const config = {
+        headers: {
+          Authorization: this.$session.get('nu_social_t'),
+        },
+      };
+      const data = {
+        userID: this.userID,
+        commentID: this.comment._id,
         text: this.comment.text,
-      }).then((commenter) => {
-        const returnedComment = commenter.data.comments[0];
-        this.comment = returnedComment;
+      };
+      // post to DB here with axios
+      axios.patch('/api/editPostComment', data, config).then((comment) => {
+        [this.comment] = comment.data.comments;
+        this.editMode = false;
       }).catch((error) => {
         window.console.log(error);
       });
-      this.editMode = false;
     },
   },
 };

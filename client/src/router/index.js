@@ -40,7 +40,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const session = Vue.prototype.$session;
   session.start();
-  if ((to.name !== 'Login' && to.name !== 'Signup') && !session.get('nu_social_t')) next({ name: 'Login' });
+  if ((to.name !== 'Login' && to.name !== 'Signup') && !session.get('nu_social_t'))next({ name: 'Login' });
   else next();
 });
 

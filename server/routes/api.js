@@ -39,5 +39,6 @@ APIRouter.delete('/removePost', authValidation, PostController.deleteAllPosts);
 APIRouter.patch('/addPostComment', authValidation, PostController.addPostComment);
 APIRouter.patch('/editPostComment', authValidation, PostController.editPostComment);
 APIRouter.patch('/addPostLike', authValidation, PostController.addPostLike);
+APIRouter.patch('/removePostLike', authValidation, PostController.removePostLike);
 
 module.exports = APIRouter;

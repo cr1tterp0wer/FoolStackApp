@@ -63,7 +63,7 @@ const sendMailValidation = (email, hash, userID) => {
   transport.sendMail(message, (err/* , info */) => {
     if (err) {
       /* eslint-disable no-console */
-      console.log(err);
+      console.log("this is the spot", err);
     }
   });
 };

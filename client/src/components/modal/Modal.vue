@@ -2,7 +2,7 @@
   <b-modal ref='popup' id="modal" :title="title">
 
     <ul>
-      <li v-for="message in messages" :key="message.body">
+      <li v-for="(message, index) in messages" :key="index">
         <b-alert show variant="danger" v-if="error">{{message.body}}</b-alert>
         <b-alert show variant="success" v-show="!error">{{message.body}}</b-alert>
       </li>

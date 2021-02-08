@@ -30,8 +30,8 @@ const postEditPostCommentParams = Joi.object({
   text: Joi.string().trim().required(),
 });
 
-// PostAddPostLike Param validation schema
-const postAddPostLikeParams = Joi.object({
+// PostLike Param validation schema
+const postLikeParams = Joi.object({
   postID: Joi.objectID().required(),
   userID: Joi.objectID().required(),
 });
@@ -170,7 +170,6 @@ const editPostComment = (req, res) => {
   }
 };
 
-//TODO: Fix for new authRoutes
 /**
  * Create a new like to a specific Post
  * @param postId {String} - the post id of the target
@@ -178,22 +177,54 @@ const editPostComment = (req, res) => {
  * @resolve {Object} - the Mongoose response
  * @reject {Object} - mongoose response error
  */
-const addPostLike = (postId, userId) => {
-  return new Promise((resolve, reject) => {
-    // TODO: unsure if we should check that the user has not already liked
-    // TODO : or guard on front-end only
-    const likeObj = { userId, createdAt: new Date() };
+const addPostLike = (req, res) => {
+  const params = postLikeParams.validate(req.body);
+  const validParams = { value, error } = params
+    valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message });
+  } else {
+    const likeObj = { userId: value.userID, createdAt: new Date() };
     Post.findOneAndUpdate(
-      { _id: mongoose.Types.ObjectId(postId) },
+      { _id: mongoose.Types.ObjectId(value.postID) },
       { $push: { likes: likeObj } },
       { new: true },
-    ).select({ likes: { $elemMatch: { userId } } }).then((newLike) => {
-      resolve(newLike);
+    ).select({ likes: { $elemMatch: { userId: value.userID } } }).then((newLike) => {
+      res.json(newLike);
     }).catch((error) => {
-      reject(error);
+      res.json(error)
     });
-  });
+  } 
 }
+
+/**
+ *Remove a like to a specific Post
+ * @param postId {String} - the post id of the target
+ * @param userId {String} - the comment data
+ * @resolve {Object} - the Mongoose response
+ * @reject {Object} - mongoose response error
+ *  
+ */
+const removePostLike = (req, res) => {
+    const params = postLikeParams.validate(req.body);
+  const validParams = { value, error } = params
+    valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message });
+  } else {
+    Post.updateOne(
+      { _id: mongoose.Types.ObjectId(value.postID) },
+      { $pull: { likes: { userId: value.userID } } }
+    ).then(success => {
+      res.json(success);
+    }).catch(error => {
+      res.json(error);
+    });
+  }
+}
+
 
 /**
  * Destroys all posts within the database
@@ -214,5 +245,6 @@ module.exports = {
   addPostComment,
   deleteAllPosts,
   addPostLike,
+  removePostLike,
   editPostComment,
 };

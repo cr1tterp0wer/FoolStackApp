@@ -30,7 +30,7 @@ const sessionsNew = async (req, res) => {
     const userModel = new User();
 
     User.findOne({ email: value.email }).then((userStatus) => {
-
+      console.log(typeof userStatus.updatedAt);
       if (!userStatus || !userStatus.updatedAt) {
         res.status(403).json({ success: false, message: 'Invalid Username/Password'});
       } else {

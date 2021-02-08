@@ -7,9 +7,9 @@
       <b-card-text>
         {{ post.text }}
       </b-card-text>
-      <a href="#" class="card-link" @click="LikePost()"
+      <p :class="{ liked: userLiked }" @click="TogglePostLike()"
         >Like ({{ post.likes.length }})
-      </a>
+      </p>
       <b-link @click="showComments = !showComments" class="card-link"
         >Comments ({{ post.comments.length }})</b-link
       >
@@ -72,8 +72,8 @@ export default {
       });
       this.newCommentText = '';
     },
-    LikePost() {
-      const data = {
+    TogglePostLike() {
+      const likeData = {
         userID: this.userID,
         postID: this.post._id,
       };
@@ -82,15 +82,33 @@ export default {
           Authorization: this.$session.get('nu_social_t'),
         },
       };
-      axios.patch('/api/addPostLike', data, config).then((post) => {
-        this.post.likes = post.data.likes;
-      }).catch((error) => {
-        console.log(error);
-      });
+      if (this.userLiked) {
+        axios.patch('/api/removePostLike', likeData, config).then(() => {
+          this.post.likes.splice(this.post.likes.indexOf(this.userLiked), 1);
+        }).catch((error) => {
+          window.console.log(error);
+        });
+      } else {
+        axios.patch('/api/addPostLike', likeData, config).then((post) => {
+          this.post.likes.push(post.data.likes[0]);
+        }).catch((error) => {
+          window.console.log(error);
+        });
+      }
+    },
+  },
+  computed: {
+    // returns the liked object or undefined
+    userLiked() {
+      return this.post.likes.find((element) => element.userId === this.userID);
     },
   },
 };
 </script>
 
 <style scoped>
+.liked {
+  background: #007bff;
+  color: #fff;
+}
 </style>

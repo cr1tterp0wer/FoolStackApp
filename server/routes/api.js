@@ -41,4 +41,7 @@ APIRouter.patch('/editPostComment', authValidation, PostController.editPostComme
 APIRouter.patch('/addPostLike', authValidation, PostController.addPostLike);
 APIRouter.patch('/removePostLike', authValidation, PostController.removePostLike);
 
+APIRouter.patch('/addCommentLike', authValidation, PostController.addCommentLike);
+
+
 module.exports = APIRouter;

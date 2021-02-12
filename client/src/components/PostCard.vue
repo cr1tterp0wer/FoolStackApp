@@ -66,7 +66,7 @@ export default {
       };
       // post to DB here with axios
       axios.patch('/api/addPostComment', data, config).then((comment) => {
-        this.post.comments.push(comment.data);
+        this.post.comments.push(comment.data.comments[0]);
       }).catch((error) => {
         throw (error);
       });

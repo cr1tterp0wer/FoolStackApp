@@ -5,6 +5,7 @@ const { Comment } = require('../db/models/Comment');
 const User = require('../db/models/User');
 const Post = require('../db/models/Post');
 const { Like } = require('../db/models/Like');
+const { json } = require('body-parser');
 
 // PostCreate Param validation schema
 const postCreateParams = Joi.object({
@@ -37,6 +38,11 @@ const postLikeParams = Joi.object({
   userID: Joi.objectID().required(),
 });
 
+const commentLikeParams = Joi.object({
+  postID: Joi.objectID().required(),
+  userID: Joi.objectID().required(),
+  commentID: Joi.objectID().required(),
+})
 /**
  * Fetches all posts from the db using Post model
  * @return {Array} - a list of post objects
@@ -112,34 +118,28 @@ const addPostComment = (req, res) => {
   if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message })
   } else {
-
     User.findOne({ _id: value.userID }).then((user) => {
       const createdAt = new Date();
-      const newComment = new Comment({
+      const newComment = {
        userID: value.userID,
        text: value.text,
        author: user.username,
        createdAt: createdAt,
        updatedAt: createdAt,
-      });
-
-      newComment.save().then((comment) => {
-        Post.findOneAndUpdate(
-          { _id: value.postID },
-          { $push: { comments: newComment } },
-          { new: true },
-        ).then((post) => {
-          res.status(200).json(comment);
-        }).catch((error) => {
-          res.status(422).json({ success: false, message: error });
-        });
+      };
+      Post.findOneAndUpdate(
+        { _id: value.postID },
+        { $push: { comments: newComment } },
+        { new: true },
+      ).select({ comments: { $elemMatch: {userID: value.userID, createdAt} } })
+        .then((comment) => {
+        res.status(200).json(comment);
       }).catch((error) => {
-        res.status(422).json(error);
+        res.status(422).json({ success: false, message: error });
       });
     }).catch((error) => {
       res.status(422).json(error);
     });
-
   }
 };
 
@@ -194,7 +194,7 @@ const addPostLike = (req, res) => {
     ).select({ likes: { $elemMatch: { userId: value.userID } } }).then((newLike) => {
       res.json(newLike);
     }).catch((error) => {
-      res.json(error)
+      res.json(error);
     });
   } 
 }
@@ -226,7 +226,43 @@ const removePostLike = (req, res) => {
   }
 }
 
-
+/**
+ *Add like to a comment
+ * @param postId {String} - the post id of the target
+ * @param userId {String} - the comment data
+ * @resolve {Object} - the Mongoose response
+ * @reject {Object} - mongoose response error
+ *  
+ */
+const addCommentLike = (req, res) => {
+   const params = commentLikeParams.validate(req.body);
+  const validParams = { value, error } = params
+    valid = error == null;
+  
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message });
+  } else {
+    console.log(value);
+    const likeObj = { userId: value.userID, createdAt: new Date() };
+    Post.findOneAndUpdate(
+      { _id: value.postID },
+      {
+        $push: { 'comments.$[commentMatch].likes': likeObj }
+      },
+      {
+        new: true,
+        "fields": {"comments": 1},
+        'arrayFilters': [
+       { 'commentMatch._id': value.commentID },
+      ]},
+    ).select({ comments: { $elemMatch: { _id: value.commentID } } }).then(success => {
+      let like = success.comments[0].likes.find(element => element.userId == value.userID);
+      res.json({ like });
+    }).catch(error => {
+      res.json(error);
+    })
+  }
+}
 /**
  * Destroys all posts within the database
  * @return {Object} - the Mongoose response
@@ -248,4 +284,5 @@ module.exports = {
   addPostLike,
   removePostLike,
   editPostComment,
+  addCommentLike,
 };

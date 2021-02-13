@@ -25,20 +25,28 @@
         >Edit</b-link
       >
     </b-card>
+    <Modal ref='modal'/>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import common from '../helpers/common';
+import Modal from './modal/Modal.vue';
 
 export default {
   name: 'Comment',
+
   props: {
     Comment: {},
     postID: String,
     userID: String,
   },
+
+  components: {
+    Modal,
+  },
+
   data() {
     return {
       comment: this.Comment,
@@ -46,55 +54,68 @@ export default {
       common,
     };
   },
+
   methods: {
+
+    /**
+     * Updates a comment text
+     */
     editComment() {
-      const config = {
-        headers: {
-          Authorization: this.$session.get('nu_social_t'),
-        },
-      };
       const data = {
         userID: this.userID,
         commentID: this.comment._id,
         text: this.comment.text,
       };
-      // post to DB here with axios
-      axios.patch('/api/editPostComment', data, config).then((comment) => {
+      axios.patch('/api/posts/comments', data).then((comment) => {
         [this.comment] = comment.data.comments;
         this.editMode = false;
+        this.$refs.modal.show([
+          { body: 'Fine tuning?' },
+          { body: 'Your comment has been updated.' },
+        ], false);
       }).catch((error) => {
-        window.console.log(error);
+        this.$refs.modal.show([
+          { body: error.message },
+          { body: error.response.data.message },
+        ]);
       });
     },
+
+    /**
+     * Toggles a like on/off
+     */
     toggleCommentLike() {
       const likeData = {
         userID: this.userID,
         postID: this.postID,
         commentID: this.comment._id,
       };
-      const config = {
-        headers: {
-          Authorization: this.$session.get('nu_social_t'),
-        },
-      };
+
       if (this.userLiked) {
-        axios.patch('/api/removeCommentLike', likeData, config).then(() => {
+        axios.delete('/api/posts/comments/likes', likeData).then(() => {
           window.console.log('successfully removed like from comment');
-        }).catch((err) => {
-          window.console.log(err);
+        }).catch((error) => {
+          this.$refs.modal.show([
+            { body: error.message },
+            { body: error.response.data.message },
+          ]);
         });
       } else {
-        axios.patch('/api/addCommentLike', likeData, config).then(((post) => {
+        axios.post('/api/posts/comments/likes', likeData).then(((post) => {
           this.comment.likes.push(post.data.like);
-        })).catch((err) => {
-          window.console.log(err);
+        })).catch((error) => {
+          this.$refs.modal.show([
+            { body: error.message },
+            { body: error.response.data.message },
+          ]);
         });
       }
     },
   },
+
   computed: {
     userLiked() {
-      return this.comment.likes.find((element) => element.userId === this.userID);
+      return this.comment.likes.find((element) => element.userID === this.userID);
     },
   },
 };

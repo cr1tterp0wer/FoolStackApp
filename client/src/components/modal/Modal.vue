@@ -12,6 +12,8 @@
 </template>
 
 <script>
+const HIDE_EVENT = 'bv::modal::hide';
+
 export default {
   name: 'Modal',
   data() {
@@ -25,10 +27,12 @@ export default {
     title() { return this.error ? 'Error' : 'Success'; },
   },
   methods: {
-    show(messages, error = true) {
+    show(messages, error = true, cb) {
       this.messages = messages;
       this.error = error;
       this.$refs.popup.show();
+
+      if (cb) this.$root.$once(HIDE_EVENT, () => { cb(); });
     },
   },
 };

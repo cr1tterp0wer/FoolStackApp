@@ -13,6 +13,10 @@ const sessionLoginParams = Joi.object({
     .max(50)
 });
 
+// SessionLogout Param validation schema
+const sessionLogoutParams = Joi.object({
+  token: Joi.string().trim().required(),
+});
 /**
  * POST: /auth/new
  * Creates a new session in the DB
@@ -21,16 +25,15 @@ const sessionLoginParams = Joi.object({
  */
 const sessionsNew = async (req, res) => {
   const params = sessionLoginParams.validate(req.body);
-  const validParams = { value, error } = params,
+  const { value, error } = params,
         valid = error == null;
 
-  if (!value) {
+  if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message })
   } else {
     const userModel = new User();
 
     User.findOne({ email: value.email }).then((userStatus) => {
-      console.log(typeof userStatus.updatedAt);
       if (!userStatus || !userStatus.updatedAt) {
         res.status(403).json({ success: false, message: 'Invalid Username/Password'});
       } else {
@@ -46,6 +49,7 @@ const sessionsNew = async (req, res) => {
             createdAt: today,
             updatedAt: today
           });
+
           session.save().then((sessionStatus) => {
             res.status(200).json({ 
               success: true, 
@@ -73,21 +77,26 @@ const sessionsNew = async (req, res) => {
  */
 const sessionsDestroy = async (req, res) => {
   const token = req.headers['authorization'];
-  const session = new Session();
+  const params = sessionLogoutParams.validate({token});
+  const { value, error } = params,
+        valid = error == null;
 
-  session.deleteSessionByToken(token).then((deleteData) => {
-    if (deleteData.deletedCount) {
-      res.status(200).json({ success: true, message: 'Successfully logged out ' });
-    } else {
-      res.status(200).json({ success: true, message: 'User already logged out' });
-    }
-  }).catch((error) => {
-    res.status(400).json({ success: false, message: mongooseErrorHandler.set(error, req.t) });
-  });
-
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message })
+  } else {
+    Session.deleteSessionByToken(token).then((deleteData) => {
+      if (deleteData.deletedCount) {
+        res.status(200).json({ success: true, message: 'Successfully logged out' });
+      } else {
+        res.status(200).json({ success: true, message: 'User already logged out' });
+      }
+    }).catch((error) => {
+      res.status(400).json({ success: false, message: mongooseErrorHandler.set(error, req.t) });
+    });
+  }
 };
 
 module.exports = {
   sessionsNew,
-  sessionsDestroy
+  sessionsDestroy,
 };

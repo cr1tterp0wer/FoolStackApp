@@ -1,47 +1,58 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
-import Login from '../views/Login.vue';
-import Signup from '../views/Signup.vue';
+import store from '../store';
 
 Vue.use(VueRouter);
+
+const HOME = 'Home';
+const LOGIN = 'Login';
+const LOGOUT = 'Login';
+const SIGNUP = 'Signup';
+const AUTH_STUBS = [LOGIN, SIGNUP];
+const UN_AUTH_STUBS = [HOME, LOGOUT];
+
+/**
+ * Guards routes from logged in user
+ */
+const authGuard = (to, from, next) => {
+  store.dispatch('refreshAuth');
+  if (AUTH_STUBS.includes(to.name) && store.state.isLogged) next({ name: HOME });
+  else next();
+};
+
+/**
+ * Guards routes from logged out user
+ */
+const unAuthGuard = (to, from, next) => {
+  store.dispatch('refreshAuth');
+  if (UN_AUTH_STUBS.includes(to.name) && !store.state.isLogged) next({ name: LOGIN });
+  else next();
+};
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: HOME,
+    beforeEnter: unAuthGuard,
+    component: () => import(/* webpackChunkName: 'Home' */ '../views/Home.vue'),
   },
   {
     path: '/login',
-    name: 'Login',
-    component: Login,
+    name: LOGIN,
+    beforeEnter: authGuard,
+    component: () => import(/* webpackChunkName: 'Login' */ '../views/Login.vue'),
   },
   {
     path: '/signup',
-    name: 'Signup',
-    component: Signup,
+    name: SIGNUP,
+    beforeEnter: authGuard,
+    component: () => import(/* webpackChunkName: 'Signup' */ '../views/Signup.vue'),
   },
-  // {
-  //   path: '/about',
-  //   name: 'About',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-  // },
 ];
 
 const router = new VueRouter({
   mode: 'history',
   routes,
-});
-
-router.beforeEach((to, from, next) => {
-  const session = Vue.prototype.$session;
-  session.start();
-  if ((to.name !== 'Login' && to.name !== 'Signup') && !session.get('nu_social_t'))next({ name: 'Login' });
-  else next();
 });
 
 export default router;

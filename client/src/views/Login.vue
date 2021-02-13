@@ -69,6 +69,7 @@ import axios from 'axios';
 import Modal from '../components/modal/Modal.vue';
 
 export default {
+
   data() {
     return {
       form: {
@@ -79,11 +80,17 @@ export default {
       },
     };
   },
+
   components: {
     Modal,
   },
+
   methods: {
 
+    /**
+     * Form onSubmit handler
+     * @param {Object} event - event listener
+     */
     onSubmit(event) {
       event.preventDefault();
       const validation = this.validateInput(this.form);
@@ -94,14 +101,18 @@ export default {
       }
     },
 
+    /**
+     * Logs the User into the app
+     */
     login() {
-      axios.post('/api/auth/new', {
+      axios.post('/api/sessions', {
         email: this.form.email,
         password: this.form.password,
       }).then((res) => {
-        this.$session.set('nu_social_t', res.data.token);
-        this.$session.set('nu_uid', res.data.user.id);
-        this.$store.state.user = res.data.user;
+        this.$store.dispatch('setAuth', {
+          user: res.data.user,
+          token: res.data.token,
+        });
         this.$router.push('/');
       }).catch((error) => {
         this.$refs.modal.show([
@@ -111,8 +122,11 @@ export default {
       });
     },
 
+    /**
+     * Generates a validation email
+     */
     sendEmailValidation() {
-      axios.post('/api/users/revalidate', {
+      axios.post('/api/revalidate', {
         email: this.form.emailValidation,
       }).then(() => {
         this.$refs.modal.show([
@@ -127,6 +141,9 @@ export default {
       });
     },
 
+    /**
+     * Catches errors and handles them with modal
+     */
     onEmailValidation(event) {
       event.preventDefault();
       const errors = this.validateInputEmail(this.form.emailValidation);
@@ -138,6 +155,9 @@ export default {
       }
     },
 
+    /**
+     * Validates email input form submission
+     */
     validateInputEmail(email) {
       const errors = [];
 
@@ -151,6 +171,9 @@ export default {
       return errors;
     },
 
+    /**
+     * Validates {email|password} inputs form submission
+     */
     validateInput(inputs) {
       const validation = {
         errors: [],

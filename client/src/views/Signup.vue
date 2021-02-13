@@ -96,7 +96,7 @@ export default {
       }
     },
     createAccount() {
-      axios.post('/api/users/new', {
+      axios.post('/api/users', {
         email: this.form.email,
         firstname: this.form.firstname,
         lastname: this.form.lastname,

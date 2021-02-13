@@ -7,10 +7,10 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="/">Home</b-nav-item>
-          <b-nav-item href="/login">Login</b-nav-item>
-          <b-nav-item v-on:click='logout()'>Logout</b-nav-item>
-          <b-nav-item href="/signup">Signup</b-nav-item>
+          <b-nav-item v-if='this.$store.state.isLogged' href="/">Home</b-nav-item>
+          <b-nav-item v-if='!this.$store.state.isLogged' href="/login">Login</b-nav-item>
+          <b-nav-item v-if='this.$store.state.isLogged' v-on:click='logout()'>Logout</b-nav-item>
+          <b-nav-item v-if='!this.$store.state.isLogged' href="/signup">Signup</b-nav-item>
         </b-navbar-nav>
 
       </b-collapse>
@@ -25,15 +25,8 @@ export default {
   name: 'Menu',
   methods: {
     logout() {
-      const config = {
-        headers: {
-          Authorization: this.$session.get('nu_social_t'),
-        },
-      };
-
-      axios.delete('/api/auth/delete', config).then(() => {
-        this.$session.remove('nu_social_t');
-        this.$session.remove('nu_uid');
+      axios.delete('/api/sessions').then(() => {
+        this.$store.dispatch('clearAuth');
         this.$router.push('/login');
       }).catch((error) => {
         throw (error);

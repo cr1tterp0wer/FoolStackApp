@@ -37,24 +37,22 @@ import PostCard from '../components/PostCard.vue';
 
 export default {
   name: 'Home',
+
   components: {
     PostCard,
     Modal,
   },
+
   data() {
     return {
       posts: {},
       newPostText: '',
-      userID: this.$session.get('nu_uid') || '',
+      userID: this.$store.state.userID,
     };
   },
 
   created() {
-    axios.get('/api/getAllPosts', {
-      headers: {
-        Authorization: `${this.$session.get('nu_social_t')}`,
-      },
-    }).then((res) => {
+    axios.get('/api/posts').then((res) => {
       res.data.forEach((post) => {
         Vue.set(this.posts, post._id, post);
       });
@@ -62,21 +60,20 @@ export default {
       if (error.response.data.message === 'PROTECTED') {
         this.$router.push('/login');
       }
-      this.$refs.modal.show(error);
     });
   },
+
   methods: {
+
+    /**
+     * Creates a new Post
+     */
     createNewPost() {
       const data = {
         text: this.newPostText,
-        userID: this.$session.get('nu_uid'),
+        userID: this.userID,
       };
-      const config = {
-        headers: {
-          Authorization: this.$session.get('nu_social_t'),
-        },
-      };
-      axios.post('/api/createPost', data, config).then((res) => {
+      axios.post('/api/posts', data).then((res) => {
         Vue.set(this.posts, res.data._id, res.data);
       }).catch((error) => {
         this.$refs.modal.show([{ body: error.response.data.message }]);
@@ -84,20 +81,15 @@ export default {
       });
       this.newPostText = '';
     },
+
+    /**
+     * Deletes all Posts
+     */
     DeleteAllPosts() {
-      const config = {
-        headers: {
-          Authorization: this.$session.get('nu_social_t'),
-        },
-      };
-      axios.delete('/api/deleteAllPosts', config).then(() => {
+      axios.delete('/api/drop-posts').then(() => {
         this.posts = {};
       });
     },
   },
 };
 </script>
-
-<style scoped>
-
-</style>

@@ -16,6 +16,7 @@ const postCreateParams = Joi.object({
 // PostDelete Param validation schema
 const postDeleteParams = Joi.object({
   postID: Joi.objectID().required(),
+  userID: Joi.objectID().required(),
 });
 
 // PostAddPostComment Param validation schema
@@ -47,7 +48,7 @@ const commentLikeParams = Joi.object({
  * Fetches all posts from the db using Post model
  * @return {Array} - a list of post objects
  */
-const getAllPosts = async (req, res, next) => {
+const getPosts = async (req, res, next) => {
   Post.find({}).then((posts) => {
    res.status(200).json(posts);
  }).catch((error) => {
@@ -61,7 +62,7 @@ const getAllPosts = async (req, res, next) => {
  */
 const createPost = async (req, res) => {
   const params = postCreateParams.validate(req.body);
-  const validParams = { value, error } = params,
+  const { value, error } = params,
         valid = error == null;
 
   if (!valid) {
@@ -70,6 +71,7 @@ const createPost = async (req, res) => {
     User.findOne({ _id: value.userID }).then((user) => {
       const newPost = new Post({
         author: user.username,
+        userID: user.id,
         text: value.text,
         user: user,
         createdAt: new Date(),
@@ -91,15 +93,18 @@ const createPost = async (req, res) => {
  * @return {Object} - the Mongoose response
  */
 const deletePost = async (req, res) => {
-  const params = postCreateParams.validate(req.body);
-  const validParams = { value, error } = params,
+  const params = postDeleteParams.validate(req.body);
+  const { value, error } = params,
         valid = error == null;
 
   if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message })
   } else {
-    const retval = await Post.deleteOne({ _id: postID });
-    return retval;
+    Post.deleteOne({ _id: value.postID, userID: value.userID }).then((data) => {
+      res.status(200).json({ postID: value.postID }); 
+    }).catch((error) => {
+      res.status(422).json({ success: false, message: error });
+    });
   }
 };
 
@@ -112,7 +117,7 @@ const deletePost = async (req, res) => {
 const addPostComment = (req, res) => {
 
   const params = postAddPostCommentParams.validate(req.body);
-  const validParams = { value, error } = params,
+  const { value, error } = params,
         valid = error == null;
 
   if (!valid) {
@@ -151,7 +156,7 @@ const addPostComment = (req, res) => {
  */
 const editPostComment = (req, res) => {
   const params = postEditPostCommentParams.validate(req.body);
-  const validParams = { value, error } = params,
+  const { value, error } = params,
         valid = error == null;
   if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message });
@@ -173,25 +178,25 @@ const editPostComment = (req, res) => {
 
 /**
  * Create a new like to a specific Post
- * @param postId {String} - the post id of the target
- * @param userId {String} - the comment data
+ * @param postID {String} - the post id of the target
+ * @param userID {String} - the comment data
  * @resolve {Object} - the Mongoose response
  * @reject {Object} - mongoose response error
  */
 const addPostLike = (req, res) => {
   const params = postLikeParams.validate(req.body);
-  const validParams = { value, error } = params
+  const { value, error } = params
     valid = error == null;
 
   if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message });
   } else {
-    const likeObj = { userId: value.userID, createdAt: new Date() };
+    const likeObj = { userID: value.userID, createdAt: new Date() };
     Post.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(value.postID) },
       { $push: { likes: likeObj } },
       { new: true },
-    ).select({ likes: { $elemMatch: { userId: value.userID } } }).then((newLike) => {
+    ).select({ likes: { $elemMatch: { userID: value.userID } } }).then((newLike) => {
       res.json(newLike);
     }).catch((error) => {
       res.json(error);
@@ -201,23 +206,23 @@ const addPostLike = (req, res) => {
 
 /**
  *Remove a like to a specific Post
- * @param postId {String} - the post id of the target
- * @param userId {String} - the comment data
+ * @param postID {String} - the post id of the target
+ * @param userID {String} - the comment data
  * @resolve {Object} - the Mongoose response
  * @reject {Object} - mongoose response error
  *  
  */
 const removePostLike = (req, res) => {
-    const params = postLikeParams.validate(req.body);
-  const validParams = { value, error } = params
-    valid = error == null;
+  const params = postLikeParams.validate(req.body);
+  const { value, error } = params
+  valid = error == null;
 
   if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message });
   } else {
     Post.updateOne(
       { _id: mongoose.Types.ObjectId(value.postID) },
-      { $pull: { likes: { userId: value.userID } } }
+      { $pull: { likes: { userID: value.userID } } }
     ).then(success => {
       res.json(success);
     }).catch(error => {
@@ -228,22 +233,21 @@ const removePostLike = (req, res) => {
 
 /**
  *Add like to a comment
- * @param postId {String} - the post id of the target
- * @param userId {String} - the comment data
+ * @param postID {String} - the post id of the target
+ * @param userID {String} - the comment data
  * @resolve {Object} - the Mongoose response
  * @reject {Object} - mongoose response error
  *  
  */
 const addCommentLike = (req, res) => {
    const params = commentLikeParams.validate(req.body);
-  const validParams = { value, error } = params
+  const { value, error } = params
     valid = error == null;
   
   if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message });
   } else {
-    console.log(value);
-    const likeObj = { userId: value.userID, createdAt: new Date() };
+    const likeObj = { userID: value.userID, createdAt: new Date() };
     Post.findOneAndUpdate(
       { _id: value.postID },
       {
@@ -256,7 +260,7 @@ const addCommentLike = (req, res) => {
        { 'commentMatch._id': value.commentID },
       ]},
     ).select({ comments: { $elemMatch: { _id: value.commentID } } }).then(success => {
-      let like = success.comments[0].likes.find(element => element.userId == value.userID);
+      let like = success.comments[0].likes.find(element => element.userID == value.userID);
       res.json({ like });
     }).catch(error => {
       res.json(error);
@@ -276,7 +280,7 @@ const deleteAllPosts = (req, res) => {
 };
 
 module.exports = {
-  getAllPosts,
+  getPosts,
   createPost,
   deletePost,
   addPostComment,

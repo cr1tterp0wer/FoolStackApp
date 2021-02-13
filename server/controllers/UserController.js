@@ -39,7 +39,7 @@ const userRevalidateParams = Joi.object({
  */
 const sendMailValidation = (email, hash, userID) => {
   // The url must include the http protocol or the email link will not render~
-  const URL = `${HOST}:${PORT}/api/users/register?userID=${userID}&vhs=${hash}`;
+  const URL = `${HOST}:${PORT}/api/register?userID=${userID}&vhs=${hash}`;
 
   const transport = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -78,7 +78,7 @@ const sendMailValidation = (email, hash, userID) => {
 const usersRevalidate = async (req, res) => {
   // Register params
   params = userRevalidateParams.validate(req.body);
-  const validParams = { value, error } = params,
+  const { value, error } = params,
         valid = error == null;
 
   if (!valid) {
@@ -117,7 +117,7 @@ const usersRegister = async (req, res) => {
 
   // Register params
   params = userRegisterParams.validate(params);
-  const validParams = { value, error } = params,
+  const { value, error } = params,
         valid = error == null;
 
   if (!valid) {
@@ -151,7 +151,7 @@ const usersRegister = async (req, res) => {
  */
 const usersNew = async (req, res, next) => {
   const params = userCreateParams.validate(req.body);
-  const validParams = { value, error } = params,
+  const { value, error } = params,
         valid = error == null;
 
   if (!valid) {
@@ -200,5 +200,4 @@ module.exports = {
   usersNew,
   usersRegister,
   usersRevalidate,
-  deleteAllUsers,
 };

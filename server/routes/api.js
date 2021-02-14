@@ -46,6 +46,7 @@ APIRouter.delete('/posts', authValidation, PostController.deletePost);
 APIRouter.post('/posts/comments', authValidation, PostController.addPostComment);
 APIRouter.patch('/posts/comments', authValidation, PostController.editPostComment);
 APIRouter.post('/posts/comments/likes', authValidation, PostController.addCommentLike);
+APIRouter.delete('/posts/comments/likes', authValidation, PostController.removeCommentLike);
 
 // Likes routes
 APIRouter.post('/posts/likes', authValidation, PostController.addPostLike);

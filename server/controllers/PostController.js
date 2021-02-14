@@ -231,7 +231,7 @@ const removePostLike = (req, res) => {
   }
 }
 
-/**
+/** 
  *Add like to a comment
  * @param postID {String} - the post id of the target
  * @param userID {String} - the comment data
@@ -240,9 +240,9 @@ const removePostLike = (req, res) => {
  *  
  */
 const addCommentLike = (req, res) => {
-   const params = commentLikeParams.validate(req.body);
+  const params = commentLikeParams.validate(req.body);
   const { value, error } = params
-    valid = error == null;
+  valid = error == null;
   
   if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message });
@@ -262,6 +262,40 @@ const addCommentLike = (req, res) => {
     ).select({ comments: { $elemMatch: { _id: value.commentID } } }).then(success => {
       let like = success.comments[0].likes.find(element => element.userID == value.userID);
       res.json({ like });
+    }).catch(error => {
+      res.json(error);
+    })
+  }
+}
+
+/** *Remove like from a comment
+ * @param postID {String} - the post id of the target
+ * @param userID {String} - the comment data
+ * @param commentID {String} - the comment ID
+ * @resolve {Object} - the Mongoose response
+ * @reject {Object} - mongoose response error
+ *  
+ */
+const removeCommentLike = (req, res) => {
+  const params = commentLikeParams.validate(req.body);
+  const { value, error } = params
+    valid = error == null;
+
+  
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message });
+  } else {
+    Post.updateOne(
+      { _id: value.postID },
+      {
+        $pull: { 'comments.$[commentMatch].likes': {userID: value.userID} }
+      },
+      {
+        'arrayFilters': [
+       { 'commentMatch._id': value.commentID },
+      ]},
+    ).then(success => {
+      res.json({ success });
     }).catch(error => {
       res.json(error);
     })
@@ -289,4 +323,5 @@ module.exports = {
   removePostLike,
   editPostComment,
   addCommentLike,
+  removeCommentLike
 };

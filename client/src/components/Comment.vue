@@ -85,23 +85,33 @@ export default {
      * Toggles a like on/off
      */
     toggleCommentLike() {
-      const likeData = {
-        userID: this.userID,
-        postID: this.postID,
-        commentID: this.comment._id,
-      };
-
       if (this.userLiked) {
-        axios.delete('/api/posts/comments/likes', likeData).then(() => {
-          window.console.log('successfully removed like from comment');
-        }).catch((error) => {
-          this.$refs.modal.show([
-            { body: error.message },
-            { body: error.response.data.message },
-          ]);
-        });
+        axios.delete('/api/posts/comments/likes', {
+          data: {
+            userID: this.userID,
+            postID: this.postID,
+            commentID: this.comment._id,
+          },
+        })
+          .then((success) => {
+            if (success.data.success.nModified > 0) {
+              // successfully modified something, remove like from array
+              this.comment.likes.splice(
+                this.comment.likes.findIndex((el) => el.userID === this.userID), 1,
+              );
+            }
+          }).catch((error) => {
+            this.$refs.modal.show([
+              { body: error.message },
+              { body: error.response.data.message },
+            ]);
+          });
       } else {
-        axios.post('/api/posts/comments/likes', likeData).then(((post) => {
+        axios.post('/api/posts/comments/likes', {
+          userID: this.userID,
+          postID: this.postID,
+          commentID: this.comment._id,
+        }).then(((post) => {
           this.comment.likes.push(post.data.like);
         })).catch((error) => {
           this.$refs.modal.show([

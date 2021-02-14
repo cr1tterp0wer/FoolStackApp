@@ -29,13 +29,41 @@
           <b-col class="my-3">
             <router-link to="/signup" class="fsLinkCreateAccount">Create An Account</router-link>
           </b-col>
+
           <b-col class="my-3">
-            <a href="#" class="fsLinkForgotPassword my-3">Forgot Password?</a>
+            <a href="#" class="my-3">Forgot Password?</a>
           </b-col>
+
           <b-col class="my-3">
             <b-button
               href="#"
-              class="fsLinkForgotPassword my-3"
+              class="my-3"
+              v-b-toggle.nuForgotPasswordArea>
+              Forgot Password?
+            </b-button>
+            <b-collapse id="nuForgotPasswordArea">
+              <b-form @submit="onForgotPassword" class="text-left" >
+                <b-form-input
+                  id="nuInputEmailValidation"
+                  type="email"
+                  v-model="form.emailValidationForgotPassword"
+                  placeholder="National University Email"
+                  required
+                ></b-form-input>
+                <b-button
+                  type="submit"
+                  variant="primary"
+                  class="w-100">
+                  Send Password Reset Link
+                </b-button>
+              </b-form>
+            </b-collapse>
+          </b-col>
+
+          <b-col class="my-3">
+            <b-button
+              href="#"
+              class="my-3"
               v-b-toggle.nuValidateArea>
               Resend Email Validation?
             </b-button>
@@ -57,6 +85,7 @@
               </b-form>
             </b-collapse>
           </b-col>
+
         </b-col>
       </b-row>
     <Modal ref='modal'/>
@@ -77,6 +106,7 @@ export default {
         password: '',
         showValidate: false,
         emailValidation: '',
+        emailValidationForgotPassword: '',
       },
     };
   },
@@ -142,6 +172,25 @@ export default {
     },
 
     /**
+     * Generates a password reset email
+     */
+    sendPasswordReset() {
+      axios.post('/api/reset-password', {
+        email: this.form.emailValidationForgotPassword,
+      }).then(() => {
+        this.$refs.modal.show([
+          { body: 'Success' },
+          { body: 'Check your email for a validation link!' },
+        ], false);
+      }).catch((error) => {
+        this.$refs.modal.show([
+          { body: error.message },
+          { body: error.response.data.message },
+        ]);
+      });
+    },
+
+    /**
      * Catches errors and handles them with modal
      */
     onEmailValidation(event) {
@@ -152,6 +201,20 @@ export default {
         this.$refs.modal.show(errors);
       } else {
         this.sendEmailValidation();
+      }
+    },
+
+    /**
+     * Validates email input form submission
+     */
+    onForgotPassword(event) {
+      event.preventDefault();
+      const errors = this.validateInputEmail(this.form.emailValidationForgotPassword);
+
+      if (errors.length) {
+        this.$refs.modal.show(errors);
+      } else {
+        this.sendPasswordReset();
       }
     },
 

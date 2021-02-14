@@ -30,118 +30,7 @@ const userRevalidateParams = Joi.object({
   email: Joi.string().trim().regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/).required(),
 });
 
-/**
- * Send Mail verification from NU social gmail accnt
- * @param {String} email - to email
- * @param {String} hash - validation hash
- * @param {String} userID - the new users ID
- * @return {*}
- */
-const sendMailValidation = (email, hash, userID) => {
-  // The url must include the http protocol or the email link will not render~
-  const URL = `${HOST}:${PORT}/api/register?userID=${userID}&vhs=${hash}`;
-
-  const transport = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const message = {
-    from: 'nusocial.contact@gmail.com',
-    to: email,
-    subject: 'Register NU Social Account',
-    html: `${'<html><body>'
-        + '<h3>Click the link to complete your NU Social Account validation</h3>'
-        + '<a href="'}${URL}">${URL}</a>`
-        + '</body></html>',
-  };
-
-  transport.sendMail(message, (err/* , info */) => {
-    if (err) {
-      /* eslint-disable no-console */
-      console.log("this is the spot", err);
-    }
-  });
-};
-
-
-/**
- * POST: /users/revalidate
- * Resends the new user an email validation link
- * @param {Object} - the validation data
- * @return {*}
- */
-const usersRevalidate = async (req, res) => {
-  // Register params
-  params = userRevalidateParams.validate(req.body);
-  const { value, error } = params,
-        valid = error == null;
-
-  if (!valid) {
-    res.status(422).json({ success: false, message: error.details[0].message })
-  } else {
-    User.findOne({ email: value.email }).then((userStatus) => {
-
-    if (!userStatus) {
-      res.status(422).json({ success: false, message: 'Email not found'});
-    } else {
-
-      HashValidation.createHashValidation(userStatus._id).then((hashStatus) => {
-        sendMailValidation(value.email, hashStatus._id, hashStatus.userID);
-        res.status(200).json({ success: true, message: 'Email sent' });
-      }).catch((error) => {
-        res.status(400).json({ success: false, message: error });
-      });
-
-    }
-   });
-  }
-};
-
-/**
- * GET: /users/register
- * Registers/Registers the new user by
- * removing the hash validation(s) from the db
- * @param {Object} - the validation data
- * @return {*}
- */
-const usersRegister = async (req, res) => {
-  let params = {
-    userID: req.query.userID,
-    vhs: req.query.vhs,
-  };
-
-  // Register params
-  params = userRegisterParams.validate(params);
-  const { value, error } = params,
-        valid = error == null;
-
-  if (!valid) {
-    res.status(422).json({ success: false, message: error })
-  } else {
-    const user = await User.findOne({ _id: value.userID });
-    const updateData = { updatedAt: new Date() };
-
-    HashValidation.deleteHashValidation(value.userID).then((query) => {
-      // If it deleted a hashValidation: update user
-      if (query.deletedCount) {
-        user.updateOne(updateData).then((data) => {
-          res.status(200).json({ success: true, message: data });
-        }).catch((error) => {
-          res.status(400).json({ success: false, message: error });
-        });
-      } else { // If hashValidation not found, send error
-        res.status(400).json({ success: false, message: 'User cannot be validated' });
-      }
-    }).catch((error) => {
-      res.status(400).json({ success: false, message: error });
-    });
-  }
-};
+// REST ENDPOINTS
 
 /**
  * POST: /users/new
@@ -170,7 +59,10 @@ const usersNew = async (req, res, next) => {
     user.save().then((userStatus) => {
 
       HashValidation.createHashValidation(userStatus._id).then((hashStatus) => {
-        sendMailValidation(value.email, hashStatus._id, hashStatus.userID);
+        const title = 'Register NU Social Account';
+        const body = 'Click the link to complete your NU Social Account validation';
+
+        sendMailValidation(value.email, 'register', hashStatus._id, hashStatus.userID, title, body);
         res.status(200).json({ success: true, message: 'Email sent' });
       }).catch((error) => {
         res.status(400).json({ success: false, message: error });
@@ -188,6 +80,162 @@ const usersNew = async (req, res, next) => {
 };
 
 /**
+ * POST: /revalidate
+ * Resends the new user an email validation link
+ * @param {Object} - the validation data
+ * @return {*}
+ */
+const usersRevalidate = async (req, res) => {
+  // Register params
+  const params = userRevalidateParams.validate(req.body);
+  const { value, error } = params,
+        valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message })
+  } else {
+    User.findOne({ email: value.email }).then((userStatus) => {
+
+    if (!userStatus) {
+      res.status(422).json({ success: false, message: 'Email not found'});
+    } else {
+      HashValidation.createHashValidation(userStatus._id).then((hashStatus) => {
+        const title = 'Register NU Social Account';
+        const body = 'Click the link to complete your NU Social Account validation';
+
+        sendMailValidation(value.email,'register', hashStatus._id, hashStatus.userID, title, body);
+        res.status(200).json({ success: true, message: 'Email sent' });
+      }).catch((error) => {
+        res.status(400).json({ success: false, message: error });
+      });
+
+    }
+   });
+  }
+};
+
+/**
+ * GET: /register
+ * Registers/Registers the new user by
+ * removing the hash validation(s) from the db
+ * @param {Object} - the validation data
+ * @return {*}
+ */
+const usersRegister = async (req, res) => {
+  let params = {
+    userID: req.query.userID,
+    vhs: req.query.vhs,
+  };
+
+  // Register params
+  params = userRegisterParams.validate(params);
+  const { value, error } = params,
+        valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error })
+  } else {
+    const user = await User.findOne({ _id: value.userID });
+    const updateData = { updatedAt: new Date() };
+
+    HashValidation.deleteHashValidation(value.userID, value.vhs).then((query) => {
+      // If it deleted a hashValidation: update user
+      if (query.deletedCount) {
+        user.updateOne(updateData).then((data) => {
+          res.status(200).json({ success: true, message: data });
+        }).catch((error) => {
+          res.status(400).json({ success: false, message: error });
+        });
+      } else { // If hashValidation not found, send error
+        res.status(400).json({ success: false, message: 'User cannot be validated' });
+      }
+    }).catch((error) => {
+      res.status(400).json({ success: false, message: error });
+    });
+  }
+};
+
+/**
+ * POST: /reset-password
+ * Begins the password reset process by
+ * adding a password reset hash in the User Model
+ * and sending an email validation
+ * @param {Object} - the validation data
+ * @return {*}
+ */
+const resetPassword = (req, res) => {
+  // Register params
+  const params = userRevalidateParams.validate(req.body);
+  const { value, error } = params,
+        valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error })
+  } else {
+    User.findOne({ email: value.email }).then((userStatus) => {
+      if (!userStatus) {
+        res.status(422).json({ success: false, message: 'Email not found' });
+      } else {
+        HashValidation.createHashValidation(userStatus._id).then((hashStatus) => {
+          const title = 'NU Social Account Password Reset Request';
+          const body = 'Click the link to temporarily reset your password to: ' + hashStatus._id;
+
+          sendMailValidation(value.email, 'validate-password', hashStatus._id, hashStatus.userID, title, body);
+          res.status(200).json({ success: true, message: 'Email sent' });
+        }).catch((error) => {
+          res.status(400).json({ success: false, message: error });
+        });
+      }
+    });
+  }
+};
+
+/**
+ * GET: /validate-password
+ * Resets user password to the hash value
+ * @param {Object} - the validation data
+ * @return {*}
+ */
+const validatePassword = async (req, res) => {
+  let params = {
+    userID: req.query.userID,
+    vhs: req.query.vhs,
+  };
+
+  // Register params
+  params = userRegisterParams.validate(params);
+  const { value, error } = params,
+        valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error })
+  } else {
+    const user = await User.findOne({ _id: value.userID });
+    const updateData = {
+      updatedAt: new Date(),
+      password_digest: user.digestPassword(value.vhs)
+    };
+
+    HashValidation.deleteHashValidation(value.userID, value.vhs).then((query) => {
+      // If it deleted a hashValidation: update user
+      if (query.deletedCount) {
+        user.updateOne(updateData).then((data) => {
+          res.status(200).json({ success: true, message: data });
+        }).catch((error) => {
+          res.status(400).json({ success: false, message: error });
+        });
+      } else { // If hashValidation not found, send error
+        res.status(400).json({ success: false, message: 'Cannot be reset' });
+      }
+    }).catch((error) => {
+      res.status(400).json({ success: false, message: error });
+    });
+  }
+};
+
+// SERVER ACTIONS
+
+/**
  * Destroys all users within the database
  * @return {Object} - the Mongoose response
  */
@@ -196,7 +244,47 @@ async function deleteAllUsers() {
   return retval;
 }
 
+/**
+ * Send Mail verification from NU social gmail accnt
+ * @param {String} email - to email
+ * @param {String} hash - validation hash
+ * @param {String} userID - the new users ID
+ * @return {*}
+ */
+const sendMailValidation = (email, stub, hash, userID, title, body) => {
+  // The url must include the http protocol or the email link will not render~
+  const URL = `${HOST}:${PORT}/api/${stub}?userID=${userID}&vhs=${hash}`;
+
+  const transport = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const message = {
+    from: 'nusocial.contact@gmail.com',
+    to: email,
+    subject: title,
+    html: `${'<html><body>'
+        + '<h3>'+ body +'</h3>'
+        + '<a href="'}${URL}">${URL}</a>`
+        + '</body></html>',
+  };
+
+  transport.sendMail(message, (err/* , info */) => {
+    if (err) {
+      /* eslint-disable no-console */
+      console.log("this is the spot", err);
+    }
+  });
+};
+
 module.exports = {
+  resetPassword,
+  validatePassword,
   usersNew,
   usersRegister,
   usersRevalidate,

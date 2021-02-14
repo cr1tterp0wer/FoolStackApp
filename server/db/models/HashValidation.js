@@ -47,10 +47,11 @@ HashValidationSchema.methods.createHashValidation = async (userID) => {
  * @param {Mongodb.ID} userID - new user id
  * @return {*}
  */
-HashValidationSchema.methods.deleteHashValidation = async (userID) => {
-  // deleteMany to remove all rows just in case there exists more than one
-  let model = HashValidationModel.deleteMany({ userID: userID }).then((query) => {
-    return query
+HashValidationSchema.methods.deleteHashValidation = async (userID, hash) => {
+  const uuid = MUUID.from(hash);
+
+  let model = HashValidationModel.deleteOne({ userID: userID, _id: uuid }).then((query) => {
+    return query;
   }).catch((error) => {
     return error;
   });

@@ -55,8 +55,11 @@ APIRouter.post('/posts/likes', authValidation, PostController.addPostLike);
 APIRouter.delete('/posts/likes', authValidation, PostController.removePostLike);
 
 // Custom Actions routes
-APIRouter.get('/register', UserController.usersRegister);
+APIRouter.get('/', UserController.usersRegister);
 APIRouter.post('/revalidate', UserController.usersRevalidate);
+APIRouter.get('/register', UserController.usersRegister);
 APIRouter.delete('/drop-posts', authValidation, PostController.deleteAllPosts);
+APIRouter.post('/reset-password', UserController.resetPassword);
+APIRouter.get('/validate-password', UserController.validatePassword);
 
 module.exports = APIRouter;

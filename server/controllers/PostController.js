@@ -332,8 +332,6 @@ const addCommentLike = (req, res) => {
   }
 }
 
-<<<<<<< HEAD
-=======
 /** *Remove like from a comment
  * @param postID {String} - the post id of the target
  * @param userID {String} - the comment data
@@ -367,7 +365,6 @@ const removeCommentLike = (req, res) => {
     })
   }
 }
->>>>>>> c780f5c71d9fab2c6ec6f0ed99ab26c1854f0f50
 /**
  * Destroys all posts within the database
  * @return {Object} - the Mongoose response

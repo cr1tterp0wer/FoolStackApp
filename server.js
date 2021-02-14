@@ -6,6 +6,14 @@ const cors = require('cors');
 const morgan = require('morgan');
 const history = require('connect-history-api-fallback');
 
+const HOST = process.env.HOST || 'http://localhost';
+const PORT = process.env.PORT || 8888;
+
+const CORS_OPTS = {
+  origin: process.env.HOST,
+  optionSuccessStatus: 200 // for legacy browsers, ie WINBLOWS
+};
+
 morgan('tiny');
 const app = express();
 
@@ -19,13 +27,11 @@ const APIRoute = require('./server/routes/api');
 app.use('/api', APIRoute);
 app.use(history());
 app.use(express.static('./client/dist/'));
+
 app.get('/', (req, res) => {
   res.sendFile('/client/dist/index.html');
 });
 
-const listenPort = process.env.PORT;
-const listenHost = process.env.HOST;
-app.listen(listenPort, () => {
-  console.log(`Server started on ${listenHost}:${listenPort}`);
+app.listen(PORT, () => {
+  console.log(`Server started on ${HOST}:${PORT}`);
 });
-

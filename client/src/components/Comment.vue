@@ -4,6 +4,9 @@
       id="CommentCard"
       :title="comment.author"
     >
+      <b-link v-if='isCommentOwner' @click="deleteComment" class="m-3 card-link nuDeleteComment" >
+        <b-icon icon="trash"></b-icon>
+      </b-link>
       <b-card-text>
         {{ common.stringToLocaleDate(comment.updatedAt) }}
       </b-card-text>
@@ -33,6 +36,7 @@
 import axios from 'axios';
 import common from '../helpers/common';
 import Modal from './modal/Modal.vue';
+import Bus from '../main';
 
 export default {
   name: 'Comment',
@@ -51,8 +55,13 @@ export default {
     return {
       comment: this.Comment,
       editMode: false,
+      isCommentOwner: false,
       common,
     };
+  },
+
+  mounted() {
+    this.isCommentOwner = this.comment.userID === this.$store.state.userID;
   },
 
   methods: {
@@ -79,6 +88,33 @@ export default {
           { body: error.response.data.message },
         ]);
       });
+    },
+
+    /**
+     * Deletes a comment
+     */
+    deleteComment() {
+      axios.delete('/api/posts/comments', {
+        data: {
+          postID: this.postID,
+          commentID: this.comment._id,
+          userID: this.$store.state.userID,
+        },
+      })
+        .then((success) => {
+          if (success.data.success.nModified > 0) {
+            Bus.$emit('commentDeleted', this.comment._id);
+          } else {
+            this.$refs.modal.show([
+              { body: 'error' },
+            ], true);
+          }
+        })
+        .catch(() => {
+          this.$refs.modal.show([
+            { body: 'error' },
+          ], true);
+        });
     },
 
     /**
@@ -146,5 +182,11 @@ export default {
     padding: 7px;
     border-radius: 7px;
   }
+
+  .nuDeleteComment {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
 
 </style>

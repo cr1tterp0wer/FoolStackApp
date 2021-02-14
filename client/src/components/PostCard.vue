@@ -98,6 +98,10 @@ export default {
     };
   },
 
+  created() {
+    Bus.$on('commentDeleted', this.removeComment);
+  },
+
   mounted() {
     this.isPostOwner = this.post.userID === this.$store.state.userID;
   },
@@ -186,6 +190,14 @@ export default {
           { body: error.response.data.message },
         ]);
       });
+    },
+
+    /**
+     * Removes a comment in this post
+     */
+    removeComment(commentID) {
+      const index = this.post.comments.findIndex((element) => element._id === commentID);
+      this.post.comments.splice(index, 1);
     },
   },
 

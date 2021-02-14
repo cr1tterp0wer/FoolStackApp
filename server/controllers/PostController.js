@@ -211,6 +211,35 @@ const editPostComment = (req, res) => {
 };
 
 /**
+ * Delete a comment
+ * @param postID {String} - the post id of the target
+ * @param userID {String} - the comment data
+ * @param commentID {String} - the comment data
+ * @resolve {Object} - the Mongoose response
+ * @reject {Object} - mongoose response error
+ */
+const deletePostComment = (req, res) => {
+ const params = commentLikeParams.validate(req.body);
+  const { value, error } = params
+    valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message });
+  } else { 
+    Post.updateOne(
+      { _id: value.postID },
+      { $pull: { comments: { _id: value.commentID, userID: value.userID } } }
+    )
+    .then((success) => {
+      res.json({ success });
+      })
+    .catch((error) => {
+      res.json({ error });
+    })
+  }
+}
+
+/**
  * Create a new like to a specific Post
  * @param postID {String} - the post id of the target
  * @param userID {String} - the comment data
@@ -237,6 +266,7 @@ const addPostLike = (req, res) => {
     });
   } 
 }
+
 
 /**
  *Remove a like to a specific Post
@@ -302,6 +332,8 @@ const addCommentLike = (req, res) => {
   }
 }
 
+<<<<<<< HEAD
+=======
 /** *Remove like from a comment
  * @param postID {String} - the post id of the target
  * @param userID {String} - the comment data
@@ -335,6 +367,7 @@ const removeCommentLike = (req, res) => {
     })
   }
 }
+>>>>>>> c780f5c71d9fab2c6ec6f0ed99ab26c1854f0f50
 /**
  * Destroys all posts within the database
  * @return {Object} - the Mongoose response
@@ -357,6 +390,7 @@ module.exports = {
   addPostLike,
   removePostLike,
   editPostComment,
+  deletePostComment,
   addCommentLike,
   removeCommentLike
 };

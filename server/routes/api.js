@@ -40,6 +40,7 @@ APIRouter.post('/users', UserController.usersNew);
 // Posts routes
 APIRouter.get('/posts', authValidation, PostController.getPosts);
 APIRouter.post('/posts', authValidation, PostController.createPost);
+APIRouter.patch('/posts', authValidation, PostController.editPost);
 APIRouter.delete('/posts', authValidation, PostController.deletePost);
 
 // Comments routes

@@ -7,11 +7,11 @@
       <b-card-text>
         {{ common.stringToLocaleDate(comment.updatedAt) }}
       </b-card-text>
-      <div v-if="editMode">
-      <b-form-textarea v-if="editMode" v-model="comment.text"></b-form-textarea>
-        <b-button variant="primary"
-        @click="editComment()">Save</b-button>
-      </div>
+        <div v-if="editMode">
+        <b-form-textarea v-if="editMode" v-model="comment.text"></b-form-textarea>
+          <b-button variant="primary"
+          @click="editComment()">Save</b-button>
+        </div>
       <b-card-text v-else>
         {{ comment.text }}
       </b-card-text>

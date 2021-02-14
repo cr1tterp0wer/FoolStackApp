@@ -34,6 +34,7 @@ import axios from 'axios';
 import Vue from 'vue';
 import Modal from '../components/modal/Modal.vue';
 import PostCard from '../components/PostCard.vue';
+import Bus from '../main';
 
 export default {
   name: 'Home',
@@ -52,6 +53,7 @@ export default {
   },
 
   created() {
+    Bus.$on('postDeleted', this.removePost);
     axios.get('/api/posts').then((res) => {
       res.data.forEach((post) => {
         Vue.set(this.posts, post._id, post);
@@ -80,6 +82,10 @@ export default {
         throw (error);
       });
       this.newPostText = '';
+    },
+
+    removePost(postID) {
+      Vue.delete(this.posts, postID);
     },
 
     /**

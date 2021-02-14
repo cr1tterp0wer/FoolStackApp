@@ -13,6 +13,13 @@ const postCreateParams = Joi.object({
   userID: Joi.objectID().required()
 });
 
+// PostCreate Param validation schema
+const postEditParams = Joi.object({
+  text: Joi.string().trim().required(),
+  userID: Joi.objectID().required(),
+  postID: Joi.objectID().required(),
+});
+
 // PostDelete Param validation schema
 const postDeleteParams = Joi.object({
   postID: Joi.objectID().required(),
@@ -83,6 +90,33 @@ const createPost = async (req, res) => {
       }).catch((error) => {
         res.status(500).json(error);
       });
+    });
+  }
+};
+
+/**
+ * Edit a post in the DB
+ * @return {Object} - the new post object
+ */
+const editPost = (req, res) => {
+  const params = postEditParams.validate(req.body);
+  const { value, error } = params,
+        valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message })
+  } else {
+    Post.findOneAndUpdate(
+      { _id: value.postID, userID: value.userID },
+      { text: value.text, updatedAt: new Date() },
+      {
+        new: true,
+        fields: {'updatedAt': 1, 'text': 1}
+      }
+    ).then(success => {
+      res.json(success);
+    }).catch(err => {
+      res.json(err);
     });
   }
 };
@@ -316,6 +350,7 @@ const deleteAllPosts = (req, res) => {
 module.exports = {
   getPosts,
   createPost,
+  editPost,
   deletePost,
   addPostComment,
   deleteAllPosts,

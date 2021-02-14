@@ -8,11 +8,22 @@
         <b-icon icon="trash"></b-icon>
       </b-link>
 
-      <b-card-text>
-        {{ common.stringToLocaleDate(post.createdAt) }}
-      </b-card-text>
+      <b-link v-if='isPostOwner' @click="editMode=!editMode" class="m-3 card-link nuEditPost" >
+        <b-icon icon="pencil"></b-icon>
+      </b-link>
 
       <b-card-text>
+        {{ common.stringToLocaleDate(post.updatedAt ? post.updatedAt : post.createdAt) }}
+      </b-card-text>
+
+      <div v-if="editMode">
+        <b-form-textarea v-if="editMode" v-model="post.text"></b-form-textarea>
+          <b-button variant="primary"
+          @click="editPost()">Save</b-button>
+          <b-button variant="danger"
+          @click="editMode=false">Cancel</b-button>
+      </div>
+      <b-card-text v-else>
         {{ post.text }}
       </b-card-text>
 
@@ -60,6 +71,7 @@ import axios from 'axios';
 import Comment from './Comment.vue';
 import common from '../helpers/common';
 import Modal from './modal/Modal.vue';
+import Bus from '../main';
 
 export default {
   name: 'PostCard',
@@ -79,10 +91,9 @@ export default {
       author: '',
       isPostOwner: false,
       post: this.postObj,
-      newPostText: '',
       newCommentText: '',
-      newEditText: {},
       showComments: false,
+      editMode: false,
       common,
     };
   },
@@ -92,15 +103,6 @@ export default {
   },
 
   methods: {
-
-    /**
-     * Removes the post
-     */
-    removeComponent() {
-      this.$destroy();
-      this.$el.parentNode.removeChild(this.$el);
-    },
-
     /**
      * Creates a new Comment on a Post
      */
@@ -153,14 +155,31 @@ export default {
     },
 
     /**
+     * Changes the post text
+     */
+    editPost() {
+      axios.patch('/api/posts', {
+        postID: this.post._id,
+        userID: this.post.userID,
+        text: this.post.text,
+      }).then((success) => {
+        this.post.updatedAt = success.data.updatedAt;
+        this.post.text = success.data.text;
+        this.editMode = false;
+      }).catch((err) => {
+        this.$refs.postModal.show([
+          { body: err.message },
+          { body: err.response.data.message },
+        ]);
+      });
+    },
+
+    /**
      * Deletes a single post
      */
     deletePost() {
       axios.delete('/api/posts', { data: { postID: this.post._id, userID: this.userID } }).then(() => {
-        this.$refs.postModal.show([
-          { body: 'Thanks for your thoughts!' },
-          { body: 'Your post has been removed.' },
-        ], false, this.removeComponent);
+        Bus.$emit('postDeleted', this.post._id);
       }).catch((error) => {
         this.$refs.postModal.show([
           { body: error.message },
@@ -180,12 +199,17 @@ export default {
 
 <style scoped>
 .liked {
-  background: #007bff;
+  background: #5471d3;
   color: #fff;
 }
 .nuDeletePost {
   position: absolute;
   top: 0;
   right: 0;
+}
+.nuEditPost{
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 </style>

@@ -30,7 +30,7 @@ axios.interceptors.response.use((res) => {
     store.dispatch('clearAuth');
     router.push('/login');
   }
-  return error;
+  return Promise.reject(error);
 });
 
 new Vue({

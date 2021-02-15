@@ -161,6 +161,8 @@ const usersUpdate = async (req, res, next) => {
       }
     }
 
+    updateParams.updatedAt = new Date();
+
     User.findOneAndUpdate({ _id: ObjectId(value.userID) }, updateParams, { new: true }).then((success) => {
       res.json(success);
     }).catch((error) => {

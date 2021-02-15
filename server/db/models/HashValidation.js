@@ -26,20 +26,14 @@ HashValidationSchema
  * @param {Mongodb.ID} userID - new user id
  * @return {*}
  */
-HashValidationSchema.methods.createHashValidation = async (userID) => {
+HashValidationSchema.methods.createHashValidation = (userID) => {
   let date = new Date();
   date.addDays(HASH_VALIDATION_TTL_DAYS);
 
-  let model = await new HashValidationModel({
+  return new HashValidationModel({
     userID: userID,
     expiry: date
-  }).save().then((query) => {
-    return query;
-  }).catch((error) => {
-    return error;
-  });
-
-  return model;
+  }).save();
 };
 
 /**
@@ -47,16 +41,9 @@ HashValidationSchema.methods.createHashValidation = async (userID) => {
  * @param {Mongodb.ID} userID - new user id
  * @return {*}
  */
-HashValidationSchema.methods.deleteHashValidation = async (userID, hash) => {
+HashValidationSchema.methods.deleteHashValidation = (userID, hash) => {
   const uuid = MUUID.from(hash);
-
-  let model = HashValidationModel.deleteOne({ userID: userID, _id: uuid }).then((query) => {
-    return query;
-  }).catch((error) => {
-    return error;
-  });
-
-  return model;
+  return HashValidationModel.deleteOne({ userID: userID, _id: uuid });
 }
 
 const HashValidationModel = mongoose.model('HashValidation', HashValidationSchema);

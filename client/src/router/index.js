@@ -7,6 +7,7 @@ Vue.use(VueRouter);
 const HOME = 'Home';
 const LOGIN = 'Login';
 const LOGOUT = 'Login';
+const NOT_FOUND = 'PageNotFound';
 const SIGNUP = 'Signup';
 const AUTH_STUBS = [LOGIN, SIGNUP];
 const UN_AUTH_STUBS = [HOME, LOGOUT];
@@ -47,6 +48,15 @@ const routes = [
     name: SIGNUP,
     beforeEnter: authGuard,
     component: () => import(/* webpackChunkName: 'Signup' */ '../views/Signup.vue'),
+  },
+  {
+    path: '/not-found',
+    name: NOT_FOUND,
+    component: () => import(/* webpackChunkName: 'PageNotFound' */ '../views/PageNotFound.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)',
+    redirect: '/not-found',
   },
 ];
 

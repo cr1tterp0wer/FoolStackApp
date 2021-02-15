@@ -8,8 +8,6 @@ import '../custom.scss';
 
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
-const bus = new Vue();
-export default bus;
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 
@@ -32,6 +30,9 @@ axios.interceptors.response.use((res) => {
   }
   return Promise.reject(error);
 });
+
+const bus = new Vue();
+export default bus;
 
 new Vue({
   router,

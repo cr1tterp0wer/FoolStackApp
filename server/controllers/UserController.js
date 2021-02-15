@@ -1,7 +1,9 @@
 require('dotenv');
 const Joi = require('@hapi/joi');
+Joi.objectID = require('joi-objectid')(Joi);
 const nodemailer = require('nodemailer');
 const mongooseErrorHandler = require('mongoose-error-handler');
+const { ObjectId } = require('mongodb');
 const HashValidation = require('../db/models/HashValidation');
 const User = require('../db/models/User');
 
@@ -19,18 +21,30 @@ const userCreateParams = Joi.object({
     .max(50),
 });
 
+// UserUpdate Param validation schema
+const userUpdateParams = Joi.object({
+  userID: Joi.objectID().required(),
+  firstname: Joi.string().trim(),
+  lastname: Joi.string().trim(),
+  password: Joi.string().trim().min(6).max(50),
+  passwordVerify: Joi.string().trim().min(6).max(50),
+});
+
 // UserRegister Param validation schema
 const userRegisterParams = Joi.object({
   userID: Joi.string().trim().required(),
   vhs: Joi.string().guid(),
 });
 
+// UserDelete Param validation schema
+const userDeleteParams = Joi.object({
+  userID: Joi.string().trim().required(),
+});
+
 // UserRevaliate Param validation schema
 const userRevalidateParams = Joi.object({
   email: Joi.string().trim().regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/).required(),
 });
-
-// REST ENDPOINTS
 
 /**
  * POST: /users/new
@@ -77,6 +91,80 @@ const usersNew = async (req, res, next) => {
     });
   }
 
+};
+
+/**
+ * DEPRECATED
+ * Destroys all users within the database
+ * @return {Object} - the Mongoose response
+ */
+async function deleteAllUsers() {
+  const retval = await User.deleteMany({});
+  return retval;
+}
+
+/**
+ * DELETE: /users
+ * Removes a user from the database given a valid id
+ * @param {Mongo.ID} userID - the user id
+ * @return {Object} response
+ */
+const usersDelete = async (req, res, next) => {
+  const params = userDeleteParams.validate(req.body);
+  const { value, error } = params,
+        valid = error == null;
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message })
+  } else {
+    User.deleteOne({ _id: ObjectId(value.userID) }).then((data) => {
+      res.json(data);
+    }).catch((error) => {
+      res.status(400).json({ success: false, message: mongooseErrorHandler.set(error, req.t) });
+    });
+  }
+};
+
+/**
+ * PATCH: /users
+ * Updates a user from the database given a valid id
+ * @param {Mongo.ID} userID - the user id
+ * @param {String} - firstname
+ * @param {String} - lastname
+ * @param {String} - password
+ * @param {String} - passwordVerification
+ * @return {Object} response
+ */
+const usersUpdate = async (req, res, next) => {
+  const params = userUpdateParams.validate(req.body);
+  const { value, error } = params,
+        valid = error == null;
+
+  let updateParams = {}
+
+  if (!valid) {
+    res.status(422).json({ success: false, message: error.details[0].message })
+  } else {
+    if (value.firstname) {
+      updateParams.firstname = value.firstname;
+    }
+    if (value.lastname) {
+      updateParams.lastname = value.lastname;
+    }
+    if (value.password && value.passwordVerify) {
+      if (value.password == value.passwordVerify) {
+        updateParams.password_digest = User.digestPassword(value.password);
+      } else {
+        res.status(400).json({ success: false, message: 'Password fields do not match!'});
+      }
+    }
+
+    User.findOneAndUpdate({ _id: ObjectId(value.userID) }, updateParams, { new: true }).then((success) => {
+      res.json(success);
+    }).catch((error) => {
+      res.json(error);
+    });
+  }
 };
 
 /**
@@ -233,16 +321,7 @@ const validatePassword = async (req, res) => {
   }
 };
 
-// SERVER ACTIONS
-
-/**
- * Destroys all users within the database
- * @return {Object} - the Mongoose response
- */
-async function deleteAllUsers() {
-  const retval = await User.deleteMany({});
-  return retval;
-}
+/* PRIVATE */
 
 /**
  * Send Mail verification from NU social gmail accnt
@@ -286,6 +365,8 @@ module.exports = {
   resetPassword,
   validatePassword,
   usersNew,
+  usersUpdate,
+  usersDelete,
   usersRegister,
   usersRevalidate,
 };

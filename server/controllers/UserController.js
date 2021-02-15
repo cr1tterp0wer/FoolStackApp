@@ -227,22 +227,20 @@ const usersRegister = async (req, res) => {
   if (!valid) {
     res.status(422).json({ success: false, message: error })
   } else {
-    const user = await User.findOne({ _id: value.userID });
-    const updateData = { updatedAt: new Date() };
+    User.findOne({ _id: value.userID }).then((user) => {
+      const updateData = { updatedAt: new Date() };
 
-    HashValidation.deleteHashValidation(value.userID, value.vhs).then((query) => {
-      // If it deleted a hashValidation: update user
-      if (query.deletedCount) {
+      HashValidation.deleteHashValidation(value.userID, value.vhs).then((query) => {
         user.updateOne(updateData).then((data) => {
           res.status(200).json({ success: true, message: data });
         }).catch((error) => {
           res.status(400).json({ success: false, message: error });
         });
-      } else { // If hashValidation not found, send error
-        res.status(400).json({ success: false, message: 'User cannot be validated' });
-      }
+      }).catch((error) => {
+        res.status(400).json({ success: false, message: error });
+      });
     }).catch((error) => {
-      res.status(400).json({ success: false, message: error });
+      res.status(400).json({ success: false, message: 'User cannot be validated' });
     });
   }
 };

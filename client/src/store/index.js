@@ -3,9 +3,9 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-const TOKEN = process.env.VUE_APP_TOKEN;
-const USER_ID = process.env.VUE_APP_UID;
-const USER = process.env.VUE_APP_USER;
+const TOKEN = process.env.VUE_APP_TOKEN || 'nu_social_t';
+const USER_ID = process.env.VUE_APP_UID || 'nu_uid';
+const USER = process.env.VUE_APP_USER || 'nu_user';
 
 export default new Vuex.Store({
 

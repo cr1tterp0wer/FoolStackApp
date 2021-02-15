@@ -10,7 +10,7 @@ const HOST = process.env.HOST || 'http://localhost';
 const PORT = process.env.PORT || 8888;
 
 const CORS_OPTS = {
-  origin: process.env.HOST,
+  origin: `${HOST}:${PORT}`,
   optionSuccessStatus: 200 // for legacy browsers, ie WINBLOWS
 };
 

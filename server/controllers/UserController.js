@@ -7,6 +7,8 @@ const User = require('../db/models/User');
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || '8888';
+const ENVIRONMENT = process.env.ENVIRONMENT || 'PROD';
+const BASE_URL = (ENVIRONMENT == 'DEV') ? `${HOST}:${PORT}` : HOST;
 
 // UserCreate Param validation schema
 const userCreateParams = Joi.object({
@@ -253,7 +255,7 @@ async function deleteAllUsers() {
  */
 const sendMailValidation = (email, stub, hash, userID, title, body) => {
   // The url must include the http protocol or the email link will not render~
-  const URL = `${HOST}:${PORT}/api/${stub}?userID=${userID}&vhs=${hash}`;
+  const URL = `${BASE_URL}/api/${stub}?userID=${userID}&vhs=${hash}`;
 
   const transport = nodemailer.createTransport({
     host: 'smtp.gmail.com',

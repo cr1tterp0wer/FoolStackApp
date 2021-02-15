@@ -82,6 +82,15 @@ export default new Vuex.Store({
       localStorage.clear();
     },
 
+    setUserData({ commit, state }, user) {
+      commit('setUser', user); // must occur first
+      commit('setUserID', user.id);
+      commit('setIsLogged', !!(state.token && state.user));
+
+      localStorage.setItem(USER, JSON.stringify(user));
+      localStorage.setItem(USER_ID, user.id);
+    },
+
   },
 
   modules: {},

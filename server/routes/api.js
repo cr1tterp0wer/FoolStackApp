@@ -36,6 +36,8 @@ APIRouter.delete('/sessions', authValidation, SessionController.sessionsDestroy)
 
 // Users routes
 APIRouter.post('/users', UserController.usersNew);
+APIRouter.patch('/users', authValidation, UserController.usersUpdate);
+APIRouter.delete('/users', authValidation, UserController.usersDelete);
 
 // Posts routes
 APIRouter.get('/posts', authValidation, PostController.getPosts);

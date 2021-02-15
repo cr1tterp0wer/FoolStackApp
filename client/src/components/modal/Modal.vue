@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref='popup' id="modal" :title="title">
+  <b-modal ref='popup' id="modal" :title="title" @hide="handleHide">
 
     <ul>
       <li v-for="(message, index) in messages" :key="index">
@@ -13,6 +13,8 @@
 
 <script>
 const HIDE_EVENT = 'bv::modal::hide';
+const OK_EVENT = 'ok';
+const CANCEL_EVENT = 'cancel';
 
 export default {
   name: 'Modal',
@@ -27,12 +29,22 @@ export default {
     title() { return this.error ? 'Error' : 'Success'; },
   },
   methods: {
-    show(messages, error = true, cb) {
+    /* eslint-disable camelcase, no-extra-boolean-cast */
+    show(messages, error = true, cb_hide) {
       this.messages = messages;
       this.error = error;
       this.$refs.popup.show();
 
-      if (cb) this.$root.$once(HIDE_EVENT, () => { cb(); });
+      if (!!cb_hide) this.$root.$once(HIDE_EVENT, () => { cb_hide(); });
+    },
+    /* eslint-enable camelcase */
+
+    handleHide(event) {
+      if (event.trigger === OK_EVENT) {
+        this.$emit(OK_EVENT);
+      } else if (event.trigger === CANCEL_EVENT) {
+        this.$emit(CANCEL_EVENT);
+      }
     },
   },
 };

@@ -45,6 +45,16 @@ UserSchema.methods.digestPassword = (password) => {
  * @param {String} password - Users plaintext password
  * @return {String} hashed password
  */
+UserSchema.statics.digestPassword = (password) => {
+  const salt = bcrypt.genSaltSync(SALT_ROUNDS);
+  return bcrypt.hashSync(password, salt);
+};
+
+/**
+ * Generates a password digest with bcrypt
+ * @param {String} password - Users plaintext password
+ * @return {String} hashed password
+ */
 UserSchema.methods.validatePassword = (password, passwordDigest) => {
   return bcrypt.compareSync(password, passwordDigest);
 };

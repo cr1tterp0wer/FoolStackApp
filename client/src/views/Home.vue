@@ -112,7 +112,7 @@ export default {
 }
 .grid-2-col {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: repeat(auto-fit, 30rem);
   justify-content: center;
   grid-gap: 2rem;
 }

@@ -4,10 +4,10 @@ $primary: #5471d3;
 $enable-rounded: false;
 $enable-shadows: true;
 
-
 // Bootstrap and its default variables
 @import 'node_modules/bootstrap/scss/bootstrap';
 @import 'node_modules/bootstrap-vue/src/index.scss';
+@import 'src/assets/css/theme.css';
 
 // Bootstrap Overrides (Theming)
 /* RULES */
@@ -31,4 +31,3 @@ ul {
 #app {
   height: 100%;
 }
-

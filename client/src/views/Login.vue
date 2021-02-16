@@ -259,17 +259,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#nuLogin {
-  background: #eee;
-}
-.nuLoginColumn {
-  background: white;
-}
-a {
-  text-decoration: none;
-  font-weight: bold;
-}
-.fsLinkCreateAccount {
-  font-size: 1.5rem;
-}
 </style>

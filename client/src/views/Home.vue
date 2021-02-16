@@ -1,30 +1,25 @@
 <template>
 <div>
   <b-container class='py-5'>
-    <b-row class='py-5 mx-auto'>
-      <b-col>
-        <b-button variant='outline-danger' @click='DeleteAllPosts'>
-          Delete All Posts
-        </b-button>
-      </b-col>
-    </b-row>
     <b-row>
-      <b-col>
-         <b-form-textarea
-          size="lg"
-          placeholder="What's on your mind?"
-          v-model="newPostText"
-         ></b-form-textarea>
-         <b-button block variant="outline-primary" @click="createNewPost">Post</b-button>
+      <b-col id='nuCreatePost'>
+         <b-form-group
+          label="Create a new post"
+          id='nuCreatePostForm'>
+
+           <b-form-textarea
+            size="lg"
+            placeholder="What's on your mind?"
+            v-model="newPostText"
+           ></b-form-textarea>
+           <b-button block variant="primary" @click="createNewPost">Post</b-button>
+           </b-form-group>
       </b-col>
     </b-row>
     <hr/>
-    <b-row>
-      <b-col>
+    <div class='grid-2-col'>
         <PostCard v-for="postObj in posts" :key="postObj._id" :postObj="postObj" :userID='userID' />
-        <br>
-      </b-col>
-    </b-row>
+    </div>
     <Modal ref='modal'/>
   </b-container>
 </div>
@@ -101,3 +96,24 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+
+#nuCreatePostForm {
+  margin-top: 50px;
+}
+#nuCreatePost {
+  margin: auto;
+  max-width: 30rem;
+
+  .btn {
+    margin-top: 1rem;
+  }
+}
+.grid-2-col {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: center;
+  grid-gap: 2rem;
+}
+</style>

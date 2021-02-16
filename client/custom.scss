@@ -1,32 +1,54 @@
-// Bootstrap Overrides (Theming)
-/* VARS */
-$primary: #5471d3;
-$enable-rounded: false;
-$enable-shadows: true;
-
 // Bootstrap and its default variables
-@import 'node_modules/bootstrap/scss/bootstrap';
+@import "~bootswatch/dist/slate/variables";
+@import "~bootstrap/scss/bootstrap";
 @import 'node_modules/bootstrap-vue/src/index.scss';
+@import "~bootswatch/dist/slate/bootswatch";
 
-// Bootstrap Overrides (Theming)
-/* RULES */
-.btn-primary {
-  font-weight: bold;
-}
-
-// HTML Overrides
-html,body {
+html,body{
   font-size: 16px;
 }
+
 ul {
   list-style: none;
-  padding:0;
 }
 
-// App Globals
-#content {
-  position: relative;
+#nuCardMetaGroup,
+.card-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  > div:first-child {
+  }
+  > div:last-child {
+    float: right;
+  }
 }
-#app {
-  height: 100%;
+
+.nuCardEditGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: right;
+  margin:0 auto;
+
+  .card-link {
+    padding:5px;
+    transition: color 500ms;
+  }
+  .nuDeleteCard {
+    :hover { color: #ec4d49; }
+  }
+  .nuEditCard {
+    margin-left: auto;
+    :hover { color: gold; }
+  }
+}
+.liked {
+  background: #5471d3;
+  color: #fff;
+}
+.nuLike {
+  cursor: pointer;
+  :hover { color: #74cae3; }
 }

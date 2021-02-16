@@ -9,7 +9,6 @@
     >
       <div class='px-3 py-2 d-flex align-items-center'>
         <section>
-          <p class='nuUserSettingsLabel'>Password Reset</p>
           <b-form @submit='submitFName'>
             <b-form-group
               id='nuInputFnameGroup'
@@ -263,18 +262,7 @@ export default {
 </script>
 
 <style lang='scss'>
-#userSettingsSidebar {
-  background-image: linear-gradient(#00d0ff, #5371d3);
-}
 .b-sidebar-header {
-  background-color: white;
-  color: black;
-  font-size: 12rem;
-}
-input.nuUserSettingsInput {
-  box-shadow: 0px 0px 11px 0px #5571d2;
-}
-.b-sidebar-body {
-  display: flex;
+  margin-top: 1rem;
 }
 </style>

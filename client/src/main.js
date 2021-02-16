@@ -5,6 +5,7 @@ import App from './App.vue';
 import store from './store';
 import router from './router';
 import '../custom.scss';
+import 'bootswatch/dist/slate/bootstrap.min.css';
 
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);

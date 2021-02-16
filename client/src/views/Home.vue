@@ -1,6 +1,5 @@
 <template>
 <div>
-  <CustomHome />
   <b-container class='py-5'>
     <b-row class='py-5 mx-auto'>
       <b-col>
@@ -35,7 +34,6 @@
 // @ is an alias to /src
 import axios from 'axios';
 import Vue from 'vue';
-import CustomHome from './CustomHome.vue';
 import Modal from '../components/modal/Modal.vue';
 import PostCard from '../components/PostCard.vue';
 import Bus from '../main';
@@ -46,7 +44,6 @@ export default {
   components: {
     PostCard,
     Modal,
-    CustomHome,
   },
 
   data() {

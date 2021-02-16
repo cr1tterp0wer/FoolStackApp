@@ -1,25 +1,38 @@
-require('dotenv');
-const Joi = require('@hapi/joi');
-Joi.objectID = require('joi-objectid')(Joi);
-const nodemailer = require('nodemailer');
-const mongooseErrorHandler = require('mongoose-error-handler');
-const { ObjectId } = require('mongodb');
-const HashValidation = require('../db/models/HashValidation');
-const User = require('../db/models/User');
+require("dotenv");
+const Joi = require("@hapi/joi");
+Joi.objectID = require("joi-objectid")(Joi);
+const nodemailer = require("nodemailer");
+const mongooseErrorHandler = require("mongoose-error-handler");
+const { ObjectId } = require("mongodb");
+const HashValidation = require("../db/models/HashValidation");
+const User = require("../db/models/User");
 
-const HOST = process.env.HOST || 'localhost';
-const PORT = process.env.PORT || '8888';
-const ENVIRONMENT = process.env.ENVIRONMENT || 'PROD';
-const BASE_URL = (ENVIRONMENT == 'DEV') ? `${HOST}:${PORT}` : HOST;
+const HOST = process.env.HOST || "localhost";
+const PORT = process.env.PORT || "8888";
+const ENVIRONMENT = process.env.ENVIRONMENT || "PROD";
+const BASE_URL = ENVIRONMENT == "DEV" ? `${HOST}:${PORT}` : HOST;
 
 // UserCreate Param validation schema
 const userCreateParams = Joi.object({
-  email: Joi.string().trim().regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/).required(),
-  firstname: Joi.string().trim().required(),
-  lastname: Joi.string().trim().required(),
-  password: Joi.string().trim().required().min(6)
+  email: Joi.string()
+    .trim()
+    .regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/)
+    .required(),
+  firstname: Joi.string()
+    .trim()
+    .required(),
+  lastname: Joi.string()
+    .trim()
+    .required(),
+  password: Joi.string()
+    .trim()
+    .required()
+    .min(6)
     .max(50),
-  username: Joi.string().trim().required().min(6)
+  username: Joi.string()
+    .trim()
+    .required()
+    .min(6)
     .max(50),
 });
 
@@ -28,24 +41,37 @@ const userUpdateParams = Joi.object({
   userID: Joi.objectID().required(),
   firstname: Joi.string().trim(),
   lastname: Joi.string().trim(),
-  password: Joi.string().trim().min(6).max(50),
-  passwordVerify: Joi.string().trim().min(6).max(50),
+  password: Joi.string()
+    .trim()
+    .min(6)
+    .max(50),
+  passwordVerify: Joi.string()
+    .trim()
+    .min(6)
+    .max(50),
 });
 
 // UserRegister Param validation schema
 const userRegisterParams = Joi.object({
-  userID: Joi.string().trim().required(),
+  userID: Joi.string()
+    .trim()
+    .required(),
   vhs: Joi.string().guid(),
 });
 
 // UserDelete Param validation schema
 const userDeleteParams = Joi.object({
-  userID: Joi.string().trim().required(),
+  userID: Joi.string()
+    .trim()
+    .required(),
 });
 
 // UserRevaliate Param validation schema
 const userRevalidateParams = Joi.object({
-  email: Joi.string().trim().regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/).required(),
+  email: Joi.string()
+    .trim()
+    .regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/)
+    .required(),
 });
 
 /**
@@ -57,10 +83,10 @@ const userRevalidateParams = Joi.object({
 const usersNew = async (req, res, next) => {
   const params = userCreateParams.validate(req.body);
   const { value, error } = params,
-        valid = error == null;
+    valid = error == null;
 
   if (!valid) {
-    res.status(422).json({ success: false, message: error.details[0].message })
+    res.status(422).json({ success: false, message: error.details[0].message });
   } else {
     const user = new User({
       createdAt: new Date(),
@@ -70,29 +96,49 @@ const usersNew = async (req, res, next) => {
       username: value.username,
     });
 
-    user.password_digest = user.digestPassword(value.password)
+    user.password_digest = user.digestPassword(value.password);
 
-    user.save().then((userStatus) => {
+    user
+      .save()
+      .then((userStatus) => {
+        HashValidation.createHashValidation(userStatus._id)
+          .then((hashStatus) => {
+            const title = "Register NU Social Account";
+            const body =
+              "Click the link to complete your NU Social Account validation";
 
-      HashValidation.createHashValidation(userStatus._id).then((hashStatus) => {
-        const title = 'Register NU Social Account';
-        const body = 'Click the link to complete your NU Social Account validation';
-
-        sendMailValidation(value.email, 'register', hashStatus._id, hashStatus.userID, title, body);
-        res.status(200).json({ success: true, message: 'Email sent' });
-      }).catch((error) => {
-        res.status(400).json({ success: false, message: error });
+            sendMailValidation(
+              value.email,
+              "register",
+              hashStatus._id,
+              hashStatus.userID,
+              title,
+              body
+            );
+            res.status(200).json({ success: true, message: "Email sent" });
+          })
+          .catch((error) => {
+            res.status(400).json({ success: false, message: error });
+          });
+      })
+      .catch((error) => {
+        if (error.code == 11000) {
+          res
+            .status(400)
+            .json({
+              success: false,
+              message: "User exists! Check your email for validation!",
+            });
+        } else {
+          res
+            .status(400)
+            .json({
+              success: false,
+              message: mongooseErrorHandler.set(error, req.t),
+            });
+        }
       });
-
-    }).catch((error) => {
-      if (error.code == 11000) {
-        res.status(400).json({ success: false, message: 'User exists! Check your email for validation!' });
-      } else {
-        res.status(400).json({ success: false, message: mongooseErrorHandler.set(error, req.t) });
-      }
-    });
   }
-
 };
 
 /**
@@ -114,16 +160,23 @@ async function deleteAllUsers() {
 const usersDelete = async (req, res, next) => {
   const params = userDeleteParams.validate(req.body);
   const { value, error } = params,
-        valid = error == null;
+    valid = error == null;
 
   if (!valid) {
-    res.status(422).json({ success: false, message: error.details[0].message })
+    res.status(422).json({ success: false, message: error.details[0].message });
   } else {
-    User.deleteOne({ _id: ObjectId(value.userID) }).then((data) => {
-      res.json(data);
-    }).catch((error) => {
-      res.status(400).json({ success: false, message: mongooseErrorHandler.set(error, req.t) });
-    });
+    User.deleteOne({ _id: ObjectId(value.userID) })
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((error) => {
+        res
+          .status(400)
+          .json({
+            success: false,
+            message: mongooseErrorHandler.set(error, req.t),
+          });
+      });
   }
 };
 
@@ -140,12 +193,12 @@ const usersDelete = async (req, res, next) => {
 const usersUpdate = async (req, res, next) => {
   const params = userUpdateParams.validate(req.body);
   const { value, error } = params,
-        valid = error == null;
+    valid = error == null;
 
-  let updateParams = {}
+  let updateParams = {};
 
   if (!valid) {
-    res.status(422).json({ success: false, message: error.details[0].message })
+    res.status(422).json({ success: false, message: error.details[0].message });
   } else {
     if (value.firstname) {
       updateParams.firstname = value.firstname;
@@ -157,17 +210,23 @@ const usersUpdate = async (req, res, next) => {
       if (value.password == value.passwordVerify) {
         updateParams.password_digest = User.digestPassword(value.password);
       } else {
-        res.status(400).json({ success: false, message: 'Password fields do not match!'});
+        res
+          .status(400)
+          .json({ success: false, message: "Password fields do not match!" });
       }
     }
 
     updateParams.updatedAt = new Date();
 
-    User.findOneAndUpdate({ _id: ObjectId(value.userID) }, updateParams, { new: true }).then((success) => {
-      res.json(success);
-    }).catch((error) => {
-      res.json(error);
-    });
+    User.findOneAndUpdate({ _id: ObjectId(value.userID) }, updateParams, {
+      new: true,
+    })
+      .then((success) => {
+        res.json(success);
+      })
+      .catch((error) => {
+        res.json(error);
+      });
   }
 };
 
@@ -181,28 +240,38 @@ const usersRevalidate = async (req, res) => {
   // Register params
   const params = userRevalidateParams.validate(req.body);
   const { value, error } = params,
-        valid = error == null;
+    valid = error == null;
 
   if (!valid) {
-    res.status(422).json({ success: false, message: error.details[0].message })
+    res.status(422).json({ success: false, message: error.details[0].message });
   } else {
     User.findOne({ email: value.email }).then((userStatus) => {
+      if (!userStatus) {
+        res.status(422).json({ success: false, message: "Email not found" });
+      } else if (userStatus.updatedAt) {
+        res.status(422).json({ success: false, message: "User already validated" });
+      } else {
+        HashValidation.createHashValidation(userStatus._id)
+          .then((hashStatus) => {
+            const title = "Register NU Social Account";
+            const body =
+              "Click the link to complete your NU Social Account validation";
 
-    if (!userStatus) {
-      res.status(422).json({ success: false, message: 'Email not found'});
-    } else {
-      HashValidation.createHashValidation(userStatus._id).then((hashStatus) => {
-        const title = 'Register NU Social Account';
-        const body = 'Click the link to complete your NU Social Account validation';
-
-        sendMailValidation(value.email,'register', hashStatus._id, hashStatus.userID, title, body);
-        res.status(200).json({ success: true, message: 'Email sent' });
-      }).catch((error) => {
-        res.status(400).json({ success: false, message: error });
-      });
-
-    }
-   });
+            sendMailValidation(
+              value.email,
+              "register",
+              hashStatus._id,
+              hashStatus.userID,
+              title,
+              body
+            );
+            res.status(200).json({ success: true, message: "Email sent" });
+          })
+          .catch((error) => {
+            res.status(400).json({ success: false, message: error });
+          });
+      }
+    });
   }
 };
 
@@ -222,26 +291,35 @@ const usersRegister = async (req, res) => {
   // Register params
   params = userRegisterParams.validate(params);
   const { value, error } = params,
-        valid = error == null;
+    valid = error == null;
 
   if (!valid) {
-    res.status(422).json({ success: false, message: error })
+    res.status(422).json({ success: false, message: error });
   } else {
-    User.findOne({ _id: value.userID }).then((user) => {
-      const updateData = { updatedAt: new Date() };
+    User.findOne({ _id: value.userID })
+      .then((user) => {
+        const updateData = { updatedAt: new Date() };
 
-      HashValidation.deleteHashValidation(value.userID, value.vhs).then((query) => {
-        user.updateOne(updateData).then((data) => {
-          res.status(200).json({ success: true, message: data });
-        }).catch((error) => {
-          res.status(400).json({ success: false, message: error });
-        });
-      }).catch((error) => {
-        res.status(400).json({ success: false, message: error });
+        HashValidation.deleteHashValidation(value.userID, value.vhs)
+          .then((query) => {
+            user
+              .updateOne(updateData)
+              .then((data) => {
+                res.status(200).json({ success: true, message: data });
+              })
+              .catch((error) => {
+                res.status(400).json({ success: false, message: error });
+              });
+          })
+          .catch((error) => {
+            res.status(400).json({ success: false, message: error });
+          });
+      })
+      .catch((error) => {
+        res
+          .status(400)
+          .json({ success: false, message: "User cannot be validated" });
       });
-    }).catch((error) => {
-      res.status(400).json({ success: false, message: 'User cannot be validated' });
-    });
   }
 };
 
@@ -257,24 +335,42 @@ const resetPassword = (req, res) => {
   // Register params
   const params = userRevalidateParams.validate(req.body);
   const { value, error } = params,
-        valid = error == null;
+    valid = error == null;
 
   if (!valid) {
-    res.status(422).json({ success: false, message: error })
+    res.status(422).json({ success: false, message: error });
   } else {
     User.findOne({ email: value.email }).then((userStatus) => {
       if (!userStatus) {
-        res.status(422).json({ success: false, message: 'Email not found' });
+        res.status(422).json({ success: false, message: "Email not found" });
+      } else if (!userStatus.updatedAt) {
+        res
+          .status(403)
+          .json({
+            success: false,
+            message: "User not registered, please register your account.",
+          });
       } else {
-        HashValidation.createHashValidation(userStatus._id).then((hashStatus) => {
-          const title = 'NU Social Account Password Reset Request';
-          const body = 'Click the link to temporarily reset your password to: ' + hashStatus._id;
+        HashValidation.createHashValidation(userStatus._id)
+          .then((hashStatus) => {
+            const title = "NU Social Account Password Reset Request";
+            const body =
+              "Click the link to temporarily reset your password to: " +
+              hashStatus._id;
 
-          sendMailValidation(value.email, 'validate-password', hashStatus._id, hashStatus.userID, title, body);
-          res.status(200).json({ success: true, message: 'Email sent' });
-        }).catch((error) => {
-          res.status(400).json({ success: false, message: error });
-        });
+            sendMailValidation(
+              value.email,
+              "validate-password",
+              hashStatus._id,
+              hashStatus.userID,
+              title,
+              body
+            );
+            res.status(200).json({ success: true, message: "Email sent" });
+          })
+          .catch((error) => {
+            res.status(400).json({ success: false, message: error });
+          });
       }
     });
   }
@@ -295,31 +391,37 @@ const validatePassword = async (req, res) => {
   // Register params
   params = userRegisterParams.validate(params);
   const { value, error } = params,
-        valid = error == null;
+    valid = error == null;
 
   if (!valid) {
-    res.status(422).json({ success: false, message: error })
+    res.status(422).json({ success: false, message: error });
   } else {
     const user = await User.findOne({ _id: value.userID });
     const updateData = {
       updatedAt: new Date(),
-      password_digest: user.digestPassword(value.vhs)
+      password_digest: user.digestPassword(value.vhs),
     };
 
-    HashValidation.deleteHashValidation(value.userID, value.vhs).then((query) => {
-      // If it deleted a hashValidation: update user
-      if (query.deletedCount) {
-        user.updateOne(updateData).then((data) => {
-          res.status(200).json({ success: true, message: data });
-        }).catch((error) => {
-          res.status(400).json({ success: false, message: error });
-        });
-      } else { // If hashValidation not found, send error
-        res.status(400).json({ success: false, message: 'Cannot be reset' });
-      }
-    }).catch((error) => {
-      res.status(400).json({ success: false, message: error });
-    });
+    HashValidation.deleteHashValidation(value.userID, value.vhs)
+      .then((query) => {
+        // If it deleted a hashValidation: update user
+        if (query.deletedCount) {
+          user
+            .updateOne(updateData)
+            .then((data) => {
+              res.status(200).json({ success: true, message: data });
+            })
+            .catch((error) => {
+              res.status(400).json({ success: false, message: error });
+            });
+        } else {
+          // If hashValidation not found, send error
+          res.status(400).json({ success: false, message: "Cannot be reset" });
+        }
+      })
+      .catch((error) => {
+        res.status(400).json({ success: false, message: error });
+      });
   }
 };
 
@@ -337,7 +439,7 @@ const sendMailValidation = (email, stub, hash, userID, title, body) => {
   const URL = `${BASE_URL}/api/${stub}?userID=${userID}&vhs=${hash}`;
 
   const transport = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: "smtp.gmail.com",
     port: 587,
     auth: {
       user: process.env.EMAIL,
@@ -346,16 +448,18 @@ const sendMailValidation = (email, stub, hash, userID, title, body) => {
   });
 
   const message = {
-    from: 'nusocial.contact@gmail.com',
+    from: "nusocial.contact@gmail.com",
     to: email,
     subject: title,
-    html: `${'<html><body>'
-        + '<h3>'+ body +'</h3>'
-        + '<a href="'}${URL}">${URL}</a>`
-        + '</body></html>',
+    html:
+      `${"<html><body>" +
+        "<h3>" +
+        body +
+        "</h3>" +
+        '<a href="'}${URL}">${URL}</a>` + "</body></html>",
   };
 
-  transport.sendMail(message, (err/* , info */) => {
+  transport.sendMail(message, (err /* , info */) => {
     if (err) {
       /* eslint-disable no-console */
       console.log("this is the spot", err);

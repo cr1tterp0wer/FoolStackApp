@@ -17,8 +17,12 @@
       </b-col>
     </b-row>
     <hr/>
-    <div class='grid-2-col'>
-        <PostCard v-for="postObj in posts" :key="postObj._id" :postObj="postObj" :userID='userID' />
+    <div class='card-columns'>
+      <PostCard v-for="postObj in posts"
+      :key="postObj._id"
+      :postObj="postObj"
+      :userID='userID'
+      />
     </div>
     <Modal ref='modal'/>
   </b-container>

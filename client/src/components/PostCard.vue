@@ -1,6 +1,5 @@
 <template>
-  <div class='mb-4'>
-    <div class='card border-dark'>
+    <div class='nuPostCard   card border-dark'>
       <div class='card-header'>
         <div>{{ post.author }}</div>
         <div>{{ common.stringToLocaleDate(post.updatedAt ? post.updatedAt : post.createdAt) }}</div>
@@ -65,10 +64,9 @@
           Comment
         </b-button>
       </b-card-body>
+    <Modal ref='postModal' />
     </div>
 
-    <Modal ref='postModal' />
-  </div>
 </template>
 
 <script>

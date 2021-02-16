@@ -1,33 +1,46 @@
 <template>
-  <div>
-    <b-card
-      id="CommentCard"
-      :title="comment.author"
-    >
-      <b-link v-if='isCommentOwner' @click="deleteComment" class="m-3 card-link nuDeleteComment" >
-        <b-icon icon="trash"></b-icon>
-      </b-link>
-      <b-card-text>
-        {{ common.stringToLocaleDate(comment.updatedAt) }}
-      </b-card-text>
+  <div class='my-3'>
+    <div class='card border-info'>
+      <div class='card-header'>
+        <div>{{ comment.author }}</div>
+        <div>{{ common.stringToLocaleDate(comment.updatedAt) }}</div>
+      </div>
+
+      <b-card-body>
         <div v-if="editMode">
-        <b-form-textarea v-if="editMode" v-model="comment.text"></b-form-textarea>
-          <b-button variant="primary"
-          @click="editComment()">Save</b-button>
+          <b-form-textarea v-if="editMode" v-model="comment.text"></b-form-textarea>
+            <b-button class='' variant="primary"
+            @click="editComment()">Save</b-button>
         </div>
-      <b-card-text v-else>
-        {{ comment.text }}
-      </b-card-text>
-      <a href="#" class="card-link"
-        :class="{ liked: userLiked }"
-        @click="toggleCommentLike">Like
-        ({{comment.likes.length}})</a>
-      <b-link
-        v-if="this.userID === this.comment.userID"
-        href="#" class="card-link" @click="editMode=true"
-        >Edit</b-link
-      >
-    </b-card>
+        <b-card-text v-else>
+          {{ comment.text }}
+        </b-card-text>
+
+        <hr>
+
+        <div class='nuCardEditGroup justify-content-between'>
+          <div class='nuLike'>
+            <p class="card-link px-2 py1"
+              :class="{ liked: userLiked }"
+              @click="toggleCommentLike">
+                <b-icon icon='hand-thumbs-up'></b-icon> {{comment.likes.length}}
+            </p>
+          </div>
+
+          <div v-if='isCommentOwner' >
+            <b-link href="#" class="card-link nuEditCard" @click="editMode=true">
+              <b-icon icon='pencil'></b-icon>
+            </b-link>
+
+            <b-link @click="deleteComment" class="card-link nuDeleteCard m-1" >
+              <b-icon icon="trash"></b-icon>
+            </b-link>
+          </div>
+
+        </div>
+
+      </b-card-body>
+    </div>
     <Modal ref='modal'/>
   </div>
 </template>
@@ -167,26 +180,8 @@ export default {
 };
 </script>
 
-<style scoped>
-  #CommentCard{
-      background: #eaeaea;;
-      color: #333;
-   }
-
-  .liked {
-  background: #007bff;
-  color: #fff;
-  }
-
-  .card-link{
-    padding: 7px;
-    border-radius: 7px;
-  }
-
-  .nuDeleteComment {
-    position: absolute;
-    top: 0;
-    right: 0;
+<style scoped lang="scss">
+.btn {
+  margin-top: 1rem;
 }
-
 </style>

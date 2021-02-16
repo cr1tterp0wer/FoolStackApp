@@ -37,13 +37,32 @@ HashValidationSchema.methods.createHashValidation = (userID) => {
 };
 
 /**
- * Deletes an email validation hash given a new userID
+ * Deletes a hash validation given a userID
  * @param {Mongodb.ID} userID - new user id
  * @return {*}
  */
-HashValidationSchema.methods.deleteHashValidation = (userID, hash) => {
+HashValidationSchema.methods.deleteHashValidation = async (userID, hash) => {
   const uuid = MUUID.from(hash);
   return HashValidationModel.deleteOne({ userID: userID, _id: uuid });
+}
+
+/**
+ * Deletes all hashes matching a given userID
+ * @param {Mongodb.ID} userID - new user id
+ * @return {*}
+ */
+HashValidationSchema.methods.deleteAllUserHashes = async (userID) => {
+  return HashValidationModel.deleteMany({ userID: userID  });
+}
+
+/**
+ * Retrieves one hash by index {User.id|HashValidation.id}
+ * @param {Mongodb.ID} userID - new user id
+ * @return {*}
+ */
+HashValidationSchema.methods.getHash = async (userID, hash) => {
+  const uuid = MUUID.from(hash);
+  return HashValidationModel.findOne({ userID: userID, _id: uuid  });
 }
 
 const HashValidationModel = mongoose.model('HashValidation', HashValidationSchema);

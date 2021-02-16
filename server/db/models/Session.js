@@ -63,9 +63,9 @@ SessionSchema.statics.validateToken = async (sessionID) => {
 
     if (session) {
       const userSession = await SessionSchema.statics.getUserBySession(sessionID);
+      const now = new Date();
 
-      if (userSession.user) {
-        const now = new Date();
+      if (userSession.user && userSession.expiry > now) {
         let ttl = new Date();
         ttl.addDays(TTL);
 
@@ -104,6 +104,15 @@ SessionSchema.statics.getUserBySession = async (sessionID) => {
 SessionSchema.statics.getSessionByToken = async (sessionID) => {
   const uuid = MUUID.from(sessionID);
   return Session.findOne({ _id: uuid });
+};
+
+/**
+ * Deletes all sessions for a given user
+ * @param {Mongodb.ID} userID - user id
+ * @return {Mongodb.Model} session
+ */
+SessionSchema.statics.deleteAllUserSessions = async (userID) => {
+  return Session.deleteMany({ user: ObjectId(userID) });
 };
 
 const Session = mongoose.model('Session', SessionSchema);

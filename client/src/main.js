@@ -16,7 +16,7 @@ if (serverURL) axios.defaults.baseURL = serverURL;
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.interceptors.request.use((req) => {
-  req.headers.authorization = store.state.token; // eslint-disable-line no-param-reassign
+  req.headers.authorization = store.state.token || ''; // eslint-disable-line no-param-reassign
   return req;
 });
 

@@ -108,6 +108,12 @@ export default {
   },
 
   methods: {
+
+    /**
+     * Form onSubmit First Name
+     * Resets the First Name of the user
+     * @param {Object} event - event listener
+     */
     submitFName(event) {
       event.preventDefault();
 
@@ -135,6 +141,11 @@ export default {
       }
     },
 
+    /**
+     * Form onSubmit Last Name
+     * Resets the Last Name of the user
+     * @param {Object} event - event listener
+     */
     submitLName(event) {
       event.preventDefault();
 
@@ -162,6 +173,11 @@ export default {
       }
     },
 
+    /**
+     * Form onSubmit Password
+     * Resets the Password of the user
+     * @param {Object} event - event listener
+     */
     submitPassword(event) {
       event.preventDefault();
       let errors = []; // eslint-disable-line prefer-const
@@ -211,6 +227,10 @@ export default {
       }
     },
 
+    /**
+     * Prevalidation Popup Modal for
+     * Deleting the User Account
+     */
     deleteAccount(event) {
       event.preventDefault();
 
@@ -222,6 +242,11 @@ export default {
       );
     },
 
+    /**
+     * Form onSubmit Delete Account
+     * Deletes the User Account
+     * @param {Object} event - event listener
+     */
     destroyUser() {
       axios.delete('/api/users', { data: { userID: this.userID } }).then(() => {
         this.$store.dispatch('clearAuth');

@@ -5,7 +5,9 @@ const PostController = require('../controllers/PostController');
 const UserController = require('../controllers/UserController');
 const SessionController = require('../controllers/SessionController');
 const Session = require('../db/models/Session');
+const HashValidation = require('../db/models/HashValidation');
 const PROTECTED = 'PROTECTED';
+const NonceParams = UserController.userUpdateParams; // @DEPENDENCY - userUpdate parameters
 
 /**
  * Route guard, validates a given token corresponds
@@ -30,13 +32,44 @@ const authValidation = (req, res, next) => {
   });
 };
 
+/**
+ * Route guard, validates a given nonce in body,
+ * IF AUTH HEADER FOUND USE AUTH VALIDATION INSTEAD
+ * @expected {body} {userID|hashValidationID}
+ * @param {Object} req - HTTP request object
+ * @param {Object} res - HTTP response object
+ * @param {Function} next - Express middleware callback
+ */
+const nonceAuthenticate = (req, res, next) => {
+  const token = req.get("authorization");
+
+  if (token.length) {
+    return authValidation(req, res, next);
+  } else {
+    const params = NonceParams.validate(req.body);
+    const { value, error } = params,
+          valid = error == null;
+
+    if (!valid) {
+      res.status(403).json({ success: false, message: PROTECTED });
+    } else {
+      HashValidation.getHash(value.userID, value.vhs).then((hash) => {
+        if (!hash) res.status(403).json({ success: false, message: PROTECTED });
+        else next();
+      }).catch((error) => {
+        res.status(403).json({ success: false, message: PROTECTED });
+      });
+    }
+  }
+};
+
 // Sessions routes
 APIRouter.post('/sessions', SessionController.sessionsNew);
 APIRouter.delete('/sessions', authValidation, SessionController.sessionsDestroy);
 
 // Users routes
 APIRouter.post('/users', UserController.usersNew);
-APIRouter.patch('/users', authValidation, UserController.usersUpdate);
+APIRouter.patch('/users', nonceAuthenticate, UserController.usersUpdate);
 APIRouter.delete('/users', authValidation, UserController.usersDelete);
 
 // Posts routes
@@ -57,11 +90,7 @@ APIRouter.post('/posts/likes', authValidation, PostController.addPostLike);
 APIRouter.delete('/posts/likes', authValidation, PostController.removePostLike);
 
 // Custom Actions routes
-APIRouter.get('/', UserController.usersRegister);
-APIRouter.post('/revalidate', UserController.usersRevalidate);
-APIRouter.get('/register', UserController.usersRegister);
-APIRouter.delete('/drop-posts', authValidation, PostController.deleteAllPosts);
-APIRouter.post('/reset-password', UserController.resetPassword);
-APIRouter.get('/validate-password', UserController.validatePassword);
+APIRouter.post('/users/validate', UserController.usersValidate);
+APIRouter.post('/users/reset-password', UserController.resetPassword);
 
 module.exports = APIRouter;

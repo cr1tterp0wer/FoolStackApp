@@ -8,6 +8,8 @@ const HOME = 'Home';
 const LOGIN = 'Login';
 const LOGOUT = 'Login';
 const NOT_FOUND = 'PageNotFound';
+const PASS_RESET = 'PasswordReset';
+const USER_VALIDATE = 'UserValidate';
 const SIGNUP = 'Signup';
 const AUTH_STUBS = [LOGIN, SIGNUP];
 const UN_AUTH_STUBS = [HOME, LOGOUT];
@@ -48,6 +50,18 @@ const routes = [
     name: SIGNUP,
     beforeEnter: authGuard,
     component: () => import(/* webpackChunkName: 'Signup' */ '../views/Signup.vue'),
+  },
+  {
+    path: '/reset-password',
+    name: PASS_RESET,
+    beforeEnter: authGuard,
+    component: () => import(/* webpackChunkName: 'PasswordReset' */ '../views/PasswordReset.vue'),
+  },
+  {
+    path: '/validate-user',
+    name: USER_VALIDATE,
+    beforeEnter: authGuard,
+    component: () => import(/* webpackChunkName: 'UserValidate' */ '../views/UserValidate.vue'),
   },
   {
     path: '/not-found',

@@ -106,7 +106,11 @@ export default {
         this.$refs.modal.show([
           { body: 'Sucessfully created account' },
           { body: 'Please check your email for verification!' },
-        ], false);
+        ], false,
+        () => {
+          this.$store.dispatch('clearAuth');
+          this.$router.push('/login');
+        });
         this.resetForm();
       }).catch((error) => {
         this.$refs.modal.show([

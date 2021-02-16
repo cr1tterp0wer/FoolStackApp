@@ -156,7 +156,7 @@ export default {
      * Generates a validation email
      */
     sendEmailValidation() {
-      axios.post('/api/revalidate', {
+      axios.post('/api/users/validate', {
         email: this.form.emailValidation,
       }).then(() => {
         this.$refs.modal.show([
@@ -175,7 +175,7 @@ export default {
      * Generates a password reset email
      */
     sendPasswordReset() {
-      axios.post('/api/reset-password', {
+      axios.post('/api/users/reset-password', {
         email: this.form.emailValidationForgotPassword,
       }).then(() => {
         this.$refs.modal.show([

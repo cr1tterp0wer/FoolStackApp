@@ -29,7 +29,7 @@
               <b-form-input id="nuInputEmail" required
                 v-model="form.email"
                 type="email"
-                placeholder="National Univeristy Email"
+                placeholder="National University Email"
               ></b-form-input>
             </b-form-group>
 
@@ -147,7 +147,7 @@ export default {
         validation.errors.push({ body: 'Email: is not set!' });
       } else if (!RegExp(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu$/).test(inputs.email)) {
         validation.errors.push({ body: 'Email: is not valid!' });
-        validation.errors.push({ body: 'Email: Must be a valid National Univsity Email (@student.nu.edu)' });
+        validation.errors.push({ body: 'Email: Must be a valid National University Email (@student.nu.edu)' });
       }
 
       if (!inputs.password) {

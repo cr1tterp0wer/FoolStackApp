@@ -8,9 +8,6 @@ html,body{
   font-size: 16px;
 }
 
-ul {
-  list-style: none;
-}
 
 #nuCardMetaGroup,
 .card-header {
@@ -26,14 +23,8 @@ ul {
 }
 
 .nuCardEditGroup {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: right;
-  margin:0 auto;
 
   .card-link {
-    padding:5px;
     transition: color 500ms;
   }
   .nuDeleteCard {
@@ -47,8 +38,71 @@ ul {
 .liked {
   background: #5471d3;
   color: #fff;
+  border-radius: 7px;
 }
 .nuLike {
   cursor: pointer;
+  display: flex;
   :hover { color: #74cae3; }
 }
+.richTextEditor {
+  background: #fff;
+  margin-top: 20px;
+  color: #333;
+  height: 250px;
+
+  .ql-toolbar {
+      height: 20%;
+      display: flex;
+      align-items: center;
+  }
+
+  #quill-container {
+    overflow: hidden;
+    height: 80%;
+  }
+}
+.richTextComment {
+  background: #fff;
+  margin-top: 20px;
+  color: #333;
+  height: 135px;
+  .ql-toolbar {
+    height: 30%;
+    display: flex;
+    align-items: center;
+  }
+  #quill-container {
+    overflow: hidden;
+    height: 70%;
+  }
+}
+
+.author{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.profilePic{
+  width: 40px;
+  height: 40px;
+  background: #333;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  margin-right: 10px;
+}
+
+@include media-breakpoint-down(md) { 
+ .richTextEditor, .richTextComment{
+   .ql-toolbar{
+     display: none;
+   }
+   #quill-container{
+     height: 100%;
+   }
+ }
+ }

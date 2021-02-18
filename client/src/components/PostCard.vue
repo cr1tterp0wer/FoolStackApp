@@ -1,31 +1,39 @@
 <template>
-    <div class='nuPostCard   card border-dark'>
+    <div class='nuPostCard mb-3 card'>
       <div class='card-header'>
-        <div>{{ post.author }}</div>
-        <div>{{ common.stringToLocaleDate(post.updatedAt ? post.updatedAt : post.createdAt) }}</div>
+        <div class="author">
+          <div class="profilePic">{{post.author[0]}}</div>
+          <div class="lead">{{ post.author }}</div>
+        </div>
+          <div class='nuCardEditGroup'>
+            <b-link v-if='isPostOwner' @click='editMode = !editMode' class='card-link nuEditCard'>
+              <b-icon icon='pencil'></b-icon>
+            </b-link>
+
+            <b-link v-if='isPostOwner' @click='deletePost()' class='m-1 card-link nuDeleteCard'>
+              <b-icon icon='trash'></b-icon>
+            </b-link>
+        </div>
       </div>
 
       <b-card-body>
-        <b-card-text class='text-left'>
-          {{ post.text }}
-        </b-card-text>
-
-        <div class='nuCardEditGroup'>
-          <b-link v-if='isPostOwner' @click='editMode = !editMode' class='card-link nuEditCard'>
-            <b-icon icon='pencil'></b-icon>
-          </b-link>
-
-          <b-link v-if='isPostOwner' @click='deletePost()' class='m-1 card-link nuDeleteCard'>
-            <b-icon icon='trash'></b-icon>
-          </b-link>
-        </div>
-
         <div v-if='editMode'>
-          <b-form-textarea v-if='editMode' v-model='post.text'></b-form-textarea>
+          <!-- <b-form-textarea v-if='editMode' v-model='post.text'></b-form-textarea> -->
+           <VueEditor
+            class="richTextEditor"
+            v-model='post.text'
+            :placeholder="editorOptions.placeholder"
+           />
           <b-button variant='primary' @click='editPost()'>Save</b-button>
           <b-button variant='danger' @click='editMode = false'>Cancel</b-button>
         </div>
 
+        <b-card-text v-else v-html="post.text" class='postBody text-left'>
+        </b-card-text>
+
+        <div class="lead timeStamps">
+          <p>{{ common.stringToLocaleDate(post.updatedAt ? post.updatedAt : post.createdAt) }}</p>
+        </div>
         <hr />
 
         <div id='nuCardMetaGroup' class='w-100 m-auto'>
@@ -52,13 +60,11 @@
           />
         </div>
 
-        <b-form-textarea
-          size='sm'
-          placeholder="What's on your mind?"
-          rows='4'
-          v-model='newCommentText'
-        >
-        </b-form-textarea>
+         <VueEditor
+            class="richTextComment"
+            v-model='newCommentText'
+            :placeholder="editorOptions.placeholder"
+           />
 
         <b-button variant='primary' @click='createNewComment()'>
           Comment
@@ -71,6 +77,7 @@
 
 <script>
 import axios from 'axios';
+import { VueEditor } from 'vue2-editor';
 import Comment from './Comment.vue';
 import common from '../helpers/common';
 import Modal from './modal/Modal.vue';
@@ -82,6 +89,7 @@ export default {
   components: {
     Comment,
     Modal,
+    VueEditor,
   },
 
   props: {
@@ -97,6 +105,13 @@ export default {
       newCommentText: '',
       showComments: false,
       editMode: false,
+      editorOptions: {
+        placeholder: 'Add a comment!',
+      },
+      customToolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+      ],
       common,
     };
   },
@@ -229,9 +244,23 @@ export default {
   margin-top: 1rem;
 }
 .card {
-  width: 100%;
-  max-width: 30rem;
   min-width: 350px;
   color: white;
+  font-size: 1.3rem;
 }
+
+.timeStamps{
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  p{
+    margin: 0;
+  }
+  font-size: .8rem;
+}
+.postBody{
+  max-height: 250px;
+  overflow-y: auto;
+}
+
 </style>

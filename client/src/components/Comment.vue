@@ -1,21 +1,40 @@
 <template>
-  <div class='my-3'>
-    <div class='card border-info'>
+  <div class='mb-3'>
+    <div class='card'>
       <div class='card-header'>
-        <div>{{ comment.author }}</div>
-        <div>{{ common.stringToLocaleDate(comment.updatedAt) }}</div>
+        <div class="author">
+         <div class="profilePic">{{comment.author[0]}}</div>
+         <div class="lead">{{ comment.author }}</div>
+        </div>
+        <div v-if='isCommentOwner' class="nuCardEditGroup" >
+            <b-link href="#" class="card-link nuEditCard" @click="editMode=true">
+              <b-icon icon='pencil'></b-icon>
+            </b-link>
+
+            <b-link @click="deleteComment" class="card-link nuDeleteCard m-1" >
+              <b-icon icon="trash"></b-icon>
+            </b-link>
+          </div>
       </div>
 
       <b-card-body>
         <div v-if="editMode">
-          <b-form-textarea v-if="editMode" v-model="comment.text"></b-form-textarea>
+          <!-- <b-form-textarea v-if="editMode" v-model="comment.text"></b-form-textarea> -->
+            <VueEditor
+              class="richTextComment"
+              v-model='comment.text'
+              :placeholder="editorOptions.placeholder"
+             />
             <b-button class='' variant="primary"
             @click="editComment()">Save</b-button>
         </div>
-        <b-card-text v-else>
-          {{ comment.text }}
+        <b-card-text v-html="comment.text" v-else>
         </b-card-text>
 
+        <div class="lead timeStamps">
+          <p>{{ common.stringToLocaleDate(
+            comment.updatedAt ? comment.updatedAt : comment.createdAt) }}</p>
+        </div>
         <hr>
 
         <div class='nuCardEditGroup justify-content-between'>
@@ -25,16 +44,6 @@
               @click="toggleCommentLike">
                 <b-icon icon='hand-thumbs-up'></b-icon> {{comment.likes.length}}
             </p>
-          </div>
-
-          <div v-if='isCommentOwner' >
-            <b-link href="#" class="card-link nuEditCard" @click="editMode=true">
-              <b-icon icon='pencil'></b-icon>
-            </b-link>
-
-            <b-link @click="deleteComment" class="card-link nuDeleteCard m-1" >
-              <b-icon icon="trash"></b-icon>
-            </b-link>
           </div>
 
         </div>
@@ -47,6 +56,7 @@
 
 <script>
 import axios from 'axios';
+import { VueEditor } from 'vue2-editor';
 import common from '../helpers/common';
 import Modal from './modal/Modal.vue';
 import Bus from '../main';
@@ -62,6 +72,7 @@ export default {
 
   components: {
     Modal,
+    VueEditor,
   },
 
   data() {
@@ -69,6 +80,13 @@ export default {
       comment: this.Comment,
       editMode: false,
       isCommentOwner: false,
+      editorOptions: {
+        placeholder: 'Add a comment!',
+      },
+      customToolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+      ],
       common,
     };
   },
@@ -183,5 +201,15 @@ export default {
 <style scoped lang="scss">
 .btn {
   margin-top: 1rem;
+}
+
+.timeStamps{
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  p{
+    margin: 0;
+  }
+  font-size: .8rem;
 }
 </style>

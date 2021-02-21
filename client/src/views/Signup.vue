@@ -145,9 +145,9 @@ export default {
 
       if (!inputs.email) {
         validation.errors.push({ body: 'Email: is not set!' });
-      } else if (!RegExp(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu$/).test(inputs.email)) {
+      } else if (!RegExp(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*((.nu.edu)|(natuniv.edu))$/).test(inputs.email)) {
         validation.errors.push({ body: 'Email: is not valid!' });
-        validation.errors.push({ body: 'Email: Must be a valid National University Email (@student.nu.edu)' });
+        validation.errors.push({ body: 'Email: Must be a valid National Univsity Email (@nu.edu, @natuniv.edu)' });
       }
 
       if (!inputs.password) {
@@ -171,12 +171,12 @@ export default {
 
 <style lang="scss" scoped>
 #nuLogin {
-  background: #eee;
+  background: #3a3f44;
 }
 .nuLoginColumn {
   display: flex;
   align-items: center;
-  background: white;
+  background: #3a3f44;
 }
 a {
   text-decoration: none;

@@ -208,9 +208,9 @@ export default {
 
       if (!email) {
         errors.push({ body: 'Email: is not set!' });
-      } else if (!RegExp(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/).test(email)) {
+      } else if (!RegExp(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*((.nu.edu)|(natuniv.edu))$/).test(email)) {
         errors.push({ body: 'Email: is not valid!' });
-        errors.push({ body: 'Email: Must be a valid National Univsity Email (@student.nu.edu)' });
+        errors.push({ body: 'Email: Must be a valid National Univsity Email (@nu.edu, @natuniv.edu)' });
       }
 
       return errors;

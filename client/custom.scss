@@ -78,3 +78,21 @@ body {
     }
   }
 }
+.ql-align-center {
+  text-align: center;
+}
+
+#footer-section{
+	width: 100%;
+	min-height: 80px;
+}
+#footer-section p{
+	margin: 0;
+	padding: 25px 15px; 
+	text-align: center;
+	line-height: 30px;
+	color: #1a1a1a;
+}
+#footer-section p a{
+	color: #3498db;
+}

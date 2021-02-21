@@ -65,6 +65,5 @@ body {
 }
 .quillWrapper {
   background-color: white;
-}
-@include media-breakpoint-down(md) {
+  color: black;
 }

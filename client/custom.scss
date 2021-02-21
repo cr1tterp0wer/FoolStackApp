@@ -1,14 +1,13 @@
 // Bootstrap and its default variables
 @import "~bootswatch/dist/slate/variables";
 @import "~bootstrap/scss/bootstrap";
-@import 'node_modules/bootstrap-vue/src/index.scss';
+@import "node_modules/bootstrap-vue/src/index.scss";
 @import "~bootswatch/dist/slate/bootswatch";
 
-html,body{
+html,
+body {
   font-size: 16px;
 }
-
-
 #nuCardMetaGroup,
 .card-header {
   display: flex;
@@ -21,18 +20,20 @@ html,body{
     float: right;
   }
 }
-
 .nuCardEditGroup {
-
   .card-link {
     transition: color 500ms;
   }
   .nuDeleteCard {
-    :hover { color: #ec4d49; }
+    :hover {
+      color: #ec4d49;
+    }
   }
   .nuEditCard {
     margin-left: auto;
-    :hover { color: gold; }
+    :hover {
+      color: gold;
+    }
   }
 }
 .liked {
@@ -43,66 +44,27 @@ html,body{
 .nuLike {
   cursor: pointer;
   display: flex;
-  :hover { color: #74cae3; }
-}
-.richTextEditor {
-  background: #fff;
-  margin-top: 20px;
-  color: #333;
-  height: 250px;
-
-  .ql-toolbar {
-      height: 20%;
-      display: flex;
-      align-items: center;
-  }
-
-  #quill-container {
-    overflow: hidden;
-    height: 80%;
+  :hover {
+    color: #74cae3;
   }
 }
-.richTextComment {
-  background: #fff;
-  margin-top: 20px;
-  color: #333;
-  height: 135px;
-  .ql-toolbar {
-    height: 30%;
-    display: flex;
-    align-items: center;
-  }
-  #quill-container {
-    overflow: hidden;
-    height: 70%;
-  }
-}
-
-.author{
+.author {
   display: flex;
   justify-content: space-around;
   align-items: center;
 }
 
-.profilePic{
+.profilePic {
   width: 40px;
   height: 40px;
+  text-align: center;
   background: #333;
   color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 100%;
+  border-radius: 50%;
   margin-right: 10px;
 }
-
-@include media-breakpoint-down(md) { 
- .richTextEditor, .richTextComment{
-   .ql-toolbar{
-     display: none;
-   }
-   #quill-container{
-     height: 100%;
-   }
- }
- }
+.quillWrapper {
+  background-color: white;
+}
+@include media-breakpoint-down(md) {
+}

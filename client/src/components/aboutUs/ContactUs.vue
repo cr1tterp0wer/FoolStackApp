@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import Footer from './Footer.vue';
+import Footer from '../Footer.vue';
 
 export default {
   name: 'ContactUs',
@@ -55,8 +55,6 @@ export default {
 };
 </script>
 <style>
-@import '../assets/kite/assets/css/style.css';
-@import '../assets/kite/assets/css/font-awesome.min.css';
 
 #footer-section {
   background-color: white;

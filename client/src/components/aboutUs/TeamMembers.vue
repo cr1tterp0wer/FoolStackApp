@@ -184,8 +184,6 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-@import "../assets/kite/assets/css/style.css";
-@import "../assets/kite/assets/css/font-awesome.min.css";
 
 .time-name,
 .time-number,

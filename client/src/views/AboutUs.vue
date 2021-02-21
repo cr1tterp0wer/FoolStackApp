@@ -104,8 +104,8 @@
   </div>
 </template>
 <script>
-import TeamMembers from './TeamMembers.vue';
-import ContactUs from '../components/ContactUs.vue';
+import TeamMembers from '../components/aboutUs/TeamMembers.vue';
+import ContactUs from '../components/aboutUs/ContactUs.vue';
 
 export default {
   name: 'LandingPage',

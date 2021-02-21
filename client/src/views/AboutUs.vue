@@ -100,18 +100,18 @@
     </section>
     <!-- /#page-top -->
     <TeamMembers />
-    <Footer />
+    <ContactUs />
   </div>
 </template>
 <script>
 import TeamMembers from './TeamMembers.vue';
-import Footer from '../components/Footer.vue';
+import ContactUs from '../components/ContactUs.vue';
 
 export default {
   name: 'LandingPage',
   components: {
     TeamMembers,
-    Footer,
+    ContactUs,
   },
   data() {
     return {

@@ -486,6 +486,9 @@ a:focus{
 #about{
   background-image: url('~@/assets/kite/images/background/about-us.jpg');
 }
+#contact {
+  background-image: url('~@/assets/kite/images/background/contact.jpg');
+}
 #page-top .section-name span:before,
 #page-top .section-name span:after{
 	content:none;

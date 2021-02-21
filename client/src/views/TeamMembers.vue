@@ -167,7 +167,7 @@
         <!-- /.team-container -->
 
         <div class="next-section">
-          <a class="go-to-subscribe"><span></span></a>
+          <a href="#contact" class="go-to-subscribe"><span></span></a>
         </div>
         <!-- /.next-section -->
       </div>

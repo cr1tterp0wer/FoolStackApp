@@ -22,6 +22,7 @@
     </b-row>
     <Modal ref='modal'/>
   </b-container>
+  <Footer />
 </div>
 </template>
 
@@ -33,6 +34,7 @@ import { VueEditor } from 'vue2-editor';
 import Modal from '../components/modal/Modal.vue';
 import PostCard from '../components/PostCard.vue';
 import Bus from '../main';
+import Footer from '../components/Footer.vue';
 
 export default {
   name: 'Home',
@@ -41,6 +43,7 @@ export default {
     PostCard,
     Modal,
     VueEditor,
+    Footer,
   },
 
   data() {

@@ -3,7 +3,7 @@
     <div class='card'>
       <div class='card-header'>
         <div class="author">
-         <div class="profilePic">{{comment.author[0]}}</div>
+         <div class="profilePic">{{comment.author[0].toUpperCase()}}</div>
          <div class="lead">{{ comment.author }}</div>
         </div>
         <div v-if='isCommentOwner' class="nuCardEditGroup" >

@@ -3,7 +3,7 @@
       <div class='card-header'>
         <div class="author">
           <div class="profilePic">
-            <div class='letter'>{{post.author[0]}}</div>
+            <div class='letter'>{{post.author[0].toUpperCase()}}</div>
           </div>
           <div class="lead">{{ post.author }}</div>
         </div>

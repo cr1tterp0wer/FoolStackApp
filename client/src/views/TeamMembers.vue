@@ -186,7 +186,6 @@ export default {
 <style scoped lang="scss">
 @import "../assets/kite/assets/css/style.css";
 @import "../assets/kite/assets/css/font-awesome.min.css";
-@import "../assets/kite/assets/css/bootstrap.min.css";
 
 .time-name,
 .time-number,

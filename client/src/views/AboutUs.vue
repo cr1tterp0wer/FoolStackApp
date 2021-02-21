@@ -180,6 +180,10 @@ body {
   color: white !important;
 }
 .navbar {
+  .navbar-toggler,
+  #nav-collapse {
+    display: none !important;
+  }
   margin-bottom: 0 !important;
   border-radius: 0;
 }

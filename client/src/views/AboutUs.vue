@@ -170,7 +170,6 @@ export default {
 @import '../assets/kite/assets/css/style.css';
 @import '../assets/kite/assets/css/font-awesome.min.css';
 @import '../assets/kite/assets/css/bootstrap.min.css';
-@import url(http://fonts.googleapis.com/css?family=Pacifico);
 
 body {
   font-family: 'Roboto', sans-serif !important;

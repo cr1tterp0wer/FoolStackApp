@@ -16,7 +16,7 @@ const BASE_URL = ENVIRONMENT == "DEV" ? `${HOST}:${PORT}` : HOST;
 const userCreateParams = Joi.object({
   email: Joi.string()
     .trim()
-    .regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*.nu.edu/)
+    .regex(/^([a-zA-Z0-9]|-|.|_|)*@([a-zA-Z0-9])*((.nu.edu)|(natuniv.edu))$/)
     .required(),
   firstname: Joi.string()
     .trim()

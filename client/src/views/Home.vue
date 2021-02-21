@@ -3,21 +3,11 @@
   <b-container class='py-5'>
     <b-row>
       <b-col sm="12" md="10" id='nuCreatePost'>
-         <!-- <b-form-group
-          label="Create a new post"
-          id='nuCreatePostForm'> -->
           <VueEditor
             class="richTextEditor"
             v-model='newPostText'
             :placeholder="editorOptions.placeholder"/>
-           <!-- <b-form-textarea
-            class="postText"
-            size="lg"
-            placeholder="What's on your mind?"
-            v-model="newPostText"
-           ></b-form-textarea> -->
            <b-button block variant="primary" @click="createNewPost">Post</b-button>
-           <!-- </b-form-group> -->
       </b-col>
     </b-row>
     <hr/>
@@ -128,11 +118,6 @@ export default {
     margin-top: 1rem;
   }
 }
-// .richTextEditor{
-//   background: #fff;
-//   margin-top: 20px;
-//   color: #333;
-// }
 .postColumn{
  display: flex;
  justify-content: center;

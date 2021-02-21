@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-navbar fixed="top" toggleable="lg" type="dark" variant="primary">
+    <b-navbar toggleable="lg" type="dark" variant="primary">
       <b-navbar-brand href="#">NuSocial</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 

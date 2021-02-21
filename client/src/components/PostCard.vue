@@ -2,7 +2,9 @@
     <div class='nuPostCard mb-3 card'>
       <div class='card-header'>
         <div class="author">
-          <div class="profilePic">{{post.author[0]}}</div>
+          <div class="profilePic">
+            <div class='letter'>{{post.author[0]}}</div>
+          </div>
           <div class="lead">{{ post.author }}</div>
         </div>
           <div class='nuCardEditGroup'>
@@ -18,7 +20,6 @@
 
       <b-card-body>
         <div v-if='editMode'>
-          <!-- <b-form-textarea v-if='editMode' v-model='post.text'></b-form-textarea> -->
            <VueEditor
             class="richTextEditor"
             v-model='post.text'

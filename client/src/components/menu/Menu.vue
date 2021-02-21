@@ -10,6 +10,7 @@
           <b-nav-item v-if='!this.$store.state.isLogged' href="/login">Login</b-nav-item>
           <b-nav-item v-if='this.$store.state.isLogged' v-on:click='logout()'>Logout</b-nav-item>
           <b-nav-item v-if='!this.$store.state.isLogged' href="/signup">Signup</b-nav-item>
+          <b-nav-item  href="/about-us">About us</b-nav-item>
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto" v-if='this.$store.state.isLogged'>

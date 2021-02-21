@@ -61,6 +61,11 @@ body {
   border-radius: 50%;
   margin-right: 10px;
 }
+.modal-body {
+  ul {
+    list-style: none;
+  }
+}
 .quillWrapper {
   background-color: white;
   color: black;
@@ -78,10 +83,22 @@ body {
     }
   }
 }
+.ql-align-left {
+  text-align: left;
+}
 .ql-align-center {
   text-align: center;
 }
-
+.ql-align-right {
+  text-align: right;
+}
+.ql-syntax {
+  background-color: black;
+  word-wrap: break-word;
+  box-decoration-break: clone;
+  padding: 0.1rem 0.3rem 0.2rem;
+  border-radius: 0.2rem;
+}
 #footer-section{
 	width: 100%;
 	min-height: 80px;

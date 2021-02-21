@@ -260,7 +260,7 @@ export default {
   font-size: .8rem;
 }
 .postBody{
-  max-height: 250px;
+  max-height: 400px;
   overflow-y: auto;
 }
 

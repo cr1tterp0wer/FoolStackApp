@@ -28,7 +28,7 @@
             <b-button class='' variant="primary"
             @click="editComment()">Save</b-button>
         </div>
-        <b-card-text v-html="comment.text" v-else>
+        <b-card-text v-html="comment.text" class="commentBody" v-else>
         </b-card-text>
 
         <div class="lead timeStamps">
@@ -211,5 +211,9 @@ export default {
     margin: 0;
   }
   font-size: .8rem;
+}
+.commentBody{
+  max-height: 350px;
+  overflow-y: auto;
 }
 </style>

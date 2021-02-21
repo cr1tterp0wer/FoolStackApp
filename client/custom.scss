@@ -64,6 +64,11 @@ body {
 .quillWrapper {
   background-color: white;
   color: black;
+  .ql-container{
+    .ql-editor{
+      max-height: 400px;
+    }
+  }
 }
 .richTextComment{
   .ql-container{

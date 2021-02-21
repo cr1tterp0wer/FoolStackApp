@@ -108,7 +108,7 @@
             <div class="col-sm-4">
               <div class="team-member">
                 <figure>
-                  <img src="@/assets/kite/images/team/unkown.gif" alt="Team Member" />
+                  <img src="@/assets/kite/images/team/Dylan_kinzer.jpeg" alt="Team Member" />
                   <figcaption>
                     <p class="member-name" style="color:white !important;">
                       Dylan Kinzer
@@ -122,6 +122,11 @@
                 </figure>
                 <div class="social-btn-container">
                   <div class="team-socail-btn">
+                    <span class="social-btn-box linkedin-btn-container">
+                      <a href="https://www.linkedin.com/in/dylan-kinzer/" class="linkedin-btn">
+                        <i class="fa fa-linkedin"></i> </a
+                      ><!-- /.linkedin-btn --> </span
+                    ><!-- /.social-btn-box -->
                   </div>
                   <!-- /.team-socail-btn -->
                 </div>

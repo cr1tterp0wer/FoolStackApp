@@ -16,6 +16,7 @@ const history = require('connect-history-api-fallback');
 const HOST = process.env.HOST || 'http://localhost';
 const PORT = process.env.PORT || 8888;
 const CLIENT_PORT = process.env.VUE_PORT || 8080;
+const SOCKET_PORT = process.env.SOCKET_PORT || 8999;
 
 const CORS_OPTS = {
   credentials: true,
@@ -50,7 +51,7 @@ app.listen(PORT, () => {
   console.log(`Server started on ${HOST}:${PORT}`);
 });
 
-server.listen(8999, () => {
+server.listen(SOCKET_PORT, () => {
   console.log('server started on 8999');
 });
 

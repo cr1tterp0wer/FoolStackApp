@@ -55,7 +55,7 @@ export default {
 
   data() {
     return {
-      chatID: this.selectedPartner._chatID,
+      chatID: this.selectedPartner.chatID,
       user: this.$store.state.user,
       userID: this.$store.state.userID,
       partner: this.selectedPartner,
@@ -63,41 +63,37 @@ export default {
       chatLog: {},
     };
   },
-  created() {
+  mounted() {
+    this.partner = this.selectedPartner;
+    this.chatID = this.partner.chatID; // eslint-disable-line prefer-destructuring
+
     axios
       .get('/api/messages', {
         params: { userID: this.userID, friendID: this.partner._id, channel: 0 },
       })
       .then((res) => {
-        console.log(res.data);
         res.data.forEach((msg) => {
           Vue.set(this.chatLog, msg._id, msg);
         });
       })
       .catch((error) => {
-        console.log(error);
+        this.$refs.modal.show(
+          [
+            { body: error.message },
+            { body: error.response.data.message },
+          ],
+        );
       });
-
-    this.partner = this.selectedPartner;
-    this.chatID = this.partner._chatID;
-    console.log(this.selectedPartner);
 
     this.sockets.subscribe(`chat-update:${this.chatID}`, (messages) => {
-      console.log(messages);
-      messages.forEach((msg) => {
-        Vue.set(this.chatLog, msg._id, msg);
-      });
+      this.chatLog = messages;
     });
-  },
-  mounted() {
   },
   methods: {
     isMine(id) {
       return this.userID === id;
     },
-
     sendMessage() {
-      this.$socket.emit('sendChat', this.currentText);
       if (!this.currentText.length) {
         this.$refs.modal.show([{ body: 'You must input a message body before submitting' }], true);
       } else {
@@ -124,6 +120,9 @@ export default {
 </script>
 <style lang='scss'>
 #nuChatArea {
+  max-height: 600px;
+  overflow-y: auto;
+
   #nuChatText {
     resize: vertical;
     border-radius: 10px;

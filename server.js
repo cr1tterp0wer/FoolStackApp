@@ -55,5 +55,5 @@ server.listen(8999, () => {
 });
 
 io.on('connection', (socket) => {
-  console.log('------------CONNECTTEDDD--------');
+  console.log('client connected');
 });

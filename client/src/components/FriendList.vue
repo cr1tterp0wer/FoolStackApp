@@ -89,6 +89,7 @@
 </template>
 
 <script>
+/* eslint-disable no-param-reassign */
 import axios from 'axios';
 import Vue from 'vue';
 import Modal from './modal/Modal.vue';
@@ -117,6 +118,13 @@ export default {
   methods: {
     displayChat(friend) {
       this.chatPartner = friend;
+
+      if (!friend._chatID) {
+        this.chatPartner.chatID = Array.isArray(friend.chatID) ? friend.chatID[0] : friend.chatID;
+      } else {
+        this.chatPartner.chatID = friend._chatID;
+      }
+
       this.showChat = true;
     },
 
@@ -129,8 +137,18 @@ export default {
       axios.patch('/api/friends', data).then(() => {
         Vue.delete(this.friends, friend._id);
         Vue.set(this.nonFriends, friend._id, friend);
+
+        if (friend._id === this.chatPartner._id) {
+          this.chatPartner = null;
+          this.showChat = false;
+        }
       }).catch((error) => {
-        console.log(error);
+        this.$refs.modal.show(
+          [
+            { body: error.message },
+            { body: error.response.data.message },
+          ],
+        );
       });
     },
 
@@ -162,37 +180,73 @@ export default {
           }
         });
       }).catch((error) => {
-        console.log(error);
+        this.$refs.modal.show(
+          [
+            { body: error.message },
+            { body: error.response.data.message },
+          ],
+        );
       });
     },
+
     addFriend(nonFriend) {
       const data = {
         userID: this.userID,
         friendID: nonFriend._id,
       };
       axios.post('/api/friends', data).then((res) => {
-        res.data.forEach((user) => {
-          if (user.friendsStatus > 0) {
-            Vue.set(this.friends, user._id, user);
-            Vue.delete(this.nonFriends, user._id);
+        res.data.forEach((friend) => {
+          if (friend.friendsStatus > 0) {
+            Vue.set(this.friends, friend._id, friend);
+            Vue.delete(this.nonFriends, friend._id);
           }
         });
       }).catch((error) => {
-        console.log(error);
+        this.$refs.modal.show(
+          [
+            { body: error.message },
+            { body: error.response.data.message },
+          ],
+        );
       });
     },
   },
 
   created() {
+    this.sockets.subscribe(`friend-request-received:${this.userID}`, (friend) => {
+      Vue.delete(this.nonFriends, friend._id);
+      Vue.set(this.friends, friend._id, friend);
+    });
+
+    this.sockets.subscribe(`friend-request-accepted:${this.userID}`, (friend) => {
+      Vue.delete(this.nonFriends, friend._id);
+      Vue.set(this.friends, friend._id, friend);
+    });
+
+    this.sockets.subscribe(`friend-request-denied:${this.userID}`, (friend) => {
+      Vue.delete(this.friends, friend._id);
+      Vue.set(this.nonFriends, friend._id, friend);
+      if (friend._id === this.chatPartner._id) {
+        this.chatPartner = null;
+        this.showChat = false;
+      }
+    });
+
     axios.get('/api/friends', { params: { userID: this.userID } }).then((res) => {
       res.data.forEach((user) => {
         if (user.friendsStatus > 0) Vue.set(this.friends, user._id, user);
         else Vue.set(this.nonFriends, user._id, user);
       });
     }).catch((error) => {
-      console.log(error);
+      this.$refs.modal.show(
+        [
+          { body: error.message },
+          { body: error.response.data.message },
+        ],
+      );
     });
   },
+
   filters: {
     friendVariant: (value) => {
       let variant = 'light';

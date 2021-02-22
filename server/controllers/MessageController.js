@@ -4,6 +4,7 @@ const { ObjectId } = require("mongodb");
 const User = require("../db/models/User");
 const Friend = require("../db/models/Friend");
 const ChatMessage = require("../db/models/ChatMessage");
+const ACCEPTED = 3;
 
 const messageGetParams = Joi.object({
   userID: Joi.objectID().required(),
@@ -43,7 +44,7 @@ const messages = async (req, res, next) => {
     Friend.find({
       recipient: ObjectId(value.userID),
       requester: ObjectId(value.friendID),
-      status: 3,
+      status: ACCEPTED,
     })
       .then((friendship) => {
         if (!friendship.length) {
@@ -56,7 +57,6 @@ const messages = async (req, res, next) => {
           ChatMessage.find({ chatID: friendship.chatID })
             .sort({ createdAt: 1 })
             .then((chatMessages) => {
-              console.log(chatMessages);
               res.status(200).json(chatMessages);
             })
             .catch((error) => {
@@ -84,7 +84,7 @@ const messagesNew = async (req, res, next) => {
     Friend.findOne({
       recipient: ObjectId(value.userID),
       requester: ObjectId(value.friendID),
-      status: 3,
+      status: ACCEPTED,
     })
       .then((friendship) => {
         if (!friendship) {
@@ -101,7 +101,9 @@ const messagesNew = async (req, res, next) => {
               ChatMessage.find({ _chatID: friendship._chatID })
                 .sort({ createdAt: 1 })
                 .then((chatMessages) => {
-                  res.io.emit(`chat-update:${friendship._chatID}`, chatMessages);
+                  const uuid = JSON.stringify(friendship._chatID).replace(/['"]+/g, '');
+
+                  res.io.emit(`chat-update:${uuid}`, chatMessages);
                   res.status(200).json(chatMessages);
                 })
                 .catch((error) => {

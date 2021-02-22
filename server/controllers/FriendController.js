@@ -3,6 +3,12 @@ Joi.objectID = require("joi-objectid")(Joi);
 const { ObjectId } = require("mongodb");
 const User = require("../db/models/User");
 const Friend = require("../db/models/Friend");
+const ChatMessage = require("../db/models/ChatMessage");
+
+const NOT_FRIEND = 0;
+const REQUESTED = 1;
+const PENDING = 2;
+const ACCEPTED = 3;
 
 const friendGetParams = Joi.object({
   userID: Joi.objectID().required(),
@@ -55,37 +61,59 @@ const friendsNew = async (req, res, next) => {
     try {
       const friendOne = await Friend.findOneAndUpdate(
         { requester: value.userID, recipient: value.friendID },
-        { $set: { status: 2 } },
+        { $set: { status: PENDING } },
         { upsert: true, setDefaultsOnInsert: true, new: true }
       );
 
       const friendTwo = await Friend.findOneAndUpdate(
         { requester: value.friendID, recipient: value.userID },
-        { $set: { status: 1, _chatID: friendOne._chatID } },
+        { $set: { status: REQUESTED, _chatID: friendOne._chatID } },
         { upsert: true, setDefaultsOnInsert: true, new: true }
       );
 
-      const updateFriendOne = await User.findOneAndUpdate(
+      let updateFriendOne = await User.findOneAndUpdate(
         { _id: value.userID },
-        { $push: { friends: friendOne._id } }
+        { $push: { friends: friendOne._id } },
+        {
+          $projection: {
+            createdAt: 0,
+            updatedAt: 0,
+            friends: 0,
+            password_digest: 0,
+          },
+        }
       );
 
-      const updateFriendTwo = await User.findOneAndUpdate(
+      let updateFriendTwo = await User.findOneAndUpdate(
         { _id: value.friendID },
-        { $push: { friends: friendTwo._id } }
+        { $push: { friends: friendTwo._id } },
+        {
+          $projection: {
+            createdAt: 0,
+            updatedAt: 0,
+            friends: 0,
+            password_digest: 0,
+          },
+        }
       );
+
+      User.getUserFriendsList(value.userID)
+        .then((friends) => {
+          res.io.emit(`friend-request-received:${value.friendID}`, {
+            ...updateFriendOne.toJSON(),
+            friendsStatus: friendOne.status,
+            _id: updateFriendOne._id,
+            chatID: friendOne._chatID,
+          });
+          res.status(200).json(friends);
+        })
+        .catch((error) => {
+          res.status(422).json(error);
+        });
     } catch (error) {
       res.status(500).json(error);
       return;
     }
-
-    User.getUserFriendsList(value.userID)
-      .then((friends) => {
-        res.status(200).json(friends);
-      })
-      .catch((error) => {
-        res.status(422).json(error);
-      });
   }
 };
 
@@ -100,18 +128,37 @@ const friendsUpdate = async (req, res, next) => {
   if (!valid) {
     res.status(422).json({ success: false, message: error.details[0].message });
   } else {
-
     if (value.accepted) {
       try {
-        await Friend.findOneAndUpdate(
+        const friendOne = await Friend.findOneAndUpdate(
           { requester: value.userID, recipient: value.friendID },
-          { $set: { status: 3 } }
+          { $set: { status: ACCEPTED } },
+          { upsert: true, setDefaultsOnInsert: true, new: true }
         );
-        await Friend.findOneAndUpdate(
+
+        const friendTwo = await Friend.findOneAndUpdate(
           { requester: value.friendID, recipient: value.userID },
-          { $set: { status: 3 } }
+          { $set: { status: ACCEPTED } },
+          { upsert: true, setDefaultsOnInsert: true, new: true }
         );
-      } catch(error) {
+
+        const updateFriendOne = await User.findOne({ _id: value.userID });
+
+        User.getUserFriendsList(value.userID)
+          .then((friends) => {
+            res.io.emit(`friend-request-accepted:${value.friendID}`, {
+              ...updateFriendOne.toJSON(),
+              friendsStatus: friendOne.status,
+              _id: updateFriendOne._id,
+              chatID: friendOne._chatID,
+            });
+
+            res.status(200).json(friends);
+          })
+          .catch((error) => {
+            res.status(422).json(error);
+          });
+      } catch (error) {
         res.status(500).json(error);
         return;
       }
@@ -121,6 +168,7 @@ const friendsUpdate = async (req, res, next) => {
           requester: value.userID,
           recipient: value.friendID,
         });
+
         const friendTwo = await Friend.findOneAndRemove({
           requester: value.friendID,
           recipient: value.userID,
@@ -128,25 +176,38 @@ const friendsUpdate = async (req, res, next) => {
 
         const updateFriendOne = await User.findOneAndUpdate(
           { _id: value.userID },
-          { $pull: { friends: friendOne._id } }
+          { $pull: { friends: friendOne._id } },
+          { upsert: true, setDefaultsOnInsert: true, new: true }
         );
         const updateFriendTwo = await User.findOneAndUpdate(
           { _id: value.friendID },
-          { $pull: { friends: friendTwo._id } }
+          { $pull: { friends: friendTwo._id } },
+          { upsert: true, setDefaultsOnInsert: true, new: true }
         );
-      } catch(error) {
+
+        const deleledMessages = await ChatMessage.deleteMany({
+          _chatID: friendOne._chatID,
+        });
+
+        User.getUserFriendsList(value.userID)
+          .then((friends) => {
+            res.io.emit(`friend-request-denied:${value.friendID}`, {
+              ...updateFriendOne.toJSON(),
+              friendsStatus: 0,
+              _id: updateFriendOne._id,
+              chatID: friendOne._chatID
+            });
+
+            res.status(200).json(friends);
+          })
+          .catch((error) => {
+            res.status(422).json(error);
+          });
+      } catch (error) {
         res.status(500).json(error);
         return;
       }
     }
-
-    User.getUserFriendsList(value.userID)
-      .then((friends) => {
-        res.status(200).json(friends);
-      })
-      .catch((error) => {
-        res.status(422).json(error);
-      });
   }
 };
 

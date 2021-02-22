@@ -19,8 +19,8 @@ const friendUpdateParams = Joi.object({
   accepted: Joi.boolean().required(),
 });
 
-/* Gets all users with friend status
- *
+/**
+ * Gets all users with friend status
  */
 const friends = async (req, res, next) => {
   const params = friendGetParams.validate(req.query);
@@ -40,6 +40,10 @@ const friends = async (req, res, next) => {
   }
 };
 
+/**
+ * POST: /api/friends
+ * Creates a friend request
+ */
 const friendsNew = async (req, res, next) => {
   const params = friendCreateParams.validate(req.body);
   const { value, error } = params,
@@ -52,13 +56,13 @@ const friendsNew = async (req, res, next) => {
       const friendOne = await Friend.findOneAndUpdate(
         { requester: value.userID, recipient: value.friendID },
         { $set: { status: 2 } },
-        { upsert: true, new: true }
+        { upsert: true, setDefaultsOnInsert: true, new: true }
       );
 
       const friendTwo = await Friend.findOneAndUpdate(
         { requester: value.friendID, recipient: value.userID },
-        { $set: { status: 1 } },
-        { upsert: true, new: true }
+        { $set: { status: 1, _chatID: friendOne._chatID } },
+        { upsert: true, setDefaultsOnInsert: true, new: true }
       );
 
       const updateFriendOne = await User.findOneAndUpdate(
@@ -85,6 +89,9 @@ const friendsNew = async (req, res, next) => {
   }
 };
 
+/**
+ * Resolves a friend request OR removes a friend
+ */
 const friendsUpdate = async (req, res, next) => {
   const params = friendUpdateParams.validate(req.body);
   const { value, error } = params,

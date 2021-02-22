@@ -115,7 +115,7 @@ UserSchema.statics.getUserFriendsList = (userID) => {
           password_digest: 0,
         }
       }
-    ]);
+    ]).sort({ friendsStatus: -1 });
 };
 
 const User = mongoose.model('User', UserSchema);

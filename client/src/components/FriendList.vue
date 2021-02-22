@@ -119,6 +119,7 @@ export default {
       this.chatPartner = friend;
       this.showChat = true;
     },
+
     destroyFriend(friend) {
       const data = {
         userID: this.userID,
@@ -132,6 +133,7 @@ export default {
         console.log(error);
       });
     },
+
     removeFriend(friend) {
       this.$refs.modal.$once('ok', () => {
         this.destroyFriend(friend);
@@ -154,7 +156,10 @@ export default {
       };
       axios.patch('/api/friends', data).then((res) => {
         res.data.forEach((user) => {
-          Vue.set(this.friends, user._id, user);
+          if (user.friendsStatus === ACCEPTED) {
+            Vue.set(this.friends, user._id, user);
+            Vue.delete(this.nonFriends, user._id);
+          }
         });
       }).catch((error) => {
         console.log(error);
@@ -177,9 +182,9 @@ export default {
       });
     },
   },
+
   created() {
     axios.get('/api/friends', { params: { userID: this.userID } }).then((res) => {
-      console.log(res);
       res.data.forEach((user) => {
         if (user.friendsStatus > 0) Vue.set(this.friends, user._id, user);
         else Vue.set(this.nonFriends, user._id, user);

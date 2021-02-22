@@ -5,6 +5,7 @@ const PostController = require('../controllers/PostController');
 const UserController = require('../controllers/UserController');
 const SessionController = require('../controllers/SessionController');
 const FriendController = require('../controllers/FriendController');
+const MessageController = require('../controllers/MessageController');
 const Session = require('../db/models/Session');
 const HashValidation = require('../db/models/HashValidation');
 const PROTECTED = 'PROTECTED';
@@ -94,6 +95,10 @@ APIRouter.delete('/posts/likes', authValidation, PostController.removePostLike);
 APIRouter.get('/friends', authValidation, FriendController.friends);
 APIRouter.post('/friends', authValidation, FriendController.friendsNew);
 APIRouter.patch('/friends', authValidation, FriendController.friendsUpdate);
+
+//Messages routes
+APIRouter.get('/messages', MessageController.messages);
+APIRouter.post('/messages', MessageController.messagesNew);
 
 // Custom Actions routes
 APIRouter.post('/users/validate', UserController.usersValidate);

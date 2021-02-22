@@ -32,7 +32,7 @@
         </b-card-text>
 
         <div class="lead timeStamps">
-          <p>{{ common.stringToLocaleDate(
+          <p>{{ this.$root.stringToLocaleDate(
             comment.updatedAt ? comment.updatedAt : comment.createdAt) }}</p>
         </div>
         <hr>
@@ -57,7 +57,6 @@
 <script>
 import axios from 'axios';
 import { VueEditor } from 'vue2-editor';
-import common from '../helpers/common';
 import Modal from './modal/Modal.vue';
 import Bus from '../main';
 
@@ -87,7 +86,6 @@ export default {
         ['bold', 'italic', 'underline'],
         [{ list: 'ordered' }, { list: 'bullet' }],
       ],
-      common,
     };
   },
 

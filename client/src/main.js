@@ -6,6 +6,7 @@ import store from './store';
 import router from './router';
 import '../custom.scss';
 import 'bootswatch/dist/slate/bootstrap.min.css';
+import mixins from './helpers/common';
 
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
@@ -36,6 +37,7 @@ const bus = new Vue();
 export default bus;
 
 new Vue({
+  mixins: [mixins],
   router,
   store,
   render: (h) => h(App),

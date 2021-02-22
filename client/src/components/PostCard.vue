@@ -33,13 +33,13 @@
         </b-card-text>
 
         <div class="lead timeStamps">
-          <p>{{ common.stringToLocaleDate(post.updatedAt ? post.updatedAt : post.createdAt) }}</p>
+        <p>{{ this.$root.stringToLocaleDate(post.updatedAt ? post.updatedAt : post.createdAt) }}</p>
         </div>
         <hr />
 
         <div id='nuCardMetaGroup' class='w-100 m-auto'>
           <div class='nuLike '>
-            <p :class='{ liked: userLiked }' class='px-2 py1' @click='TogglePostLike()'>
+            <p :class='{ liked: userLiked }' class='px-2 py1' @click='togglePostLike()'>
               <b-icon icon='hand-thumbs-up'></b-icon> {{ post.likes.length }}
             </p>
           </div>
@@ -80,7 +80,6 @@
 import axios from 'axios';
 import { VueEditor } from 'vue2-editor';
 import Comment from './Comment.vue';
-import common from '../helpers/common';
 import Modal from './modal/Modal.vue';
 import Bus from '../main';
 
@@ -113,7 +112,6 @@ export default {
         ['bold', 'italic', 'underline'],
         [{ list: 'ordered' }, { list: 'bullet' }],
       ],
-      common,
     };
   },
 
@@ -157,7 +155,7 @@ export default {
     /**
      * Toggles a single like on a post object
      */
-    TogglePostLike() {
+    togglePostLike() {
       const likeData = { data: { userID: this.userID, postID: this.post._id } };
       if (this.userLiked) {
         axios

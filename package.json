@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "npm install && npm install --prefix client && node server.js",
-    "dev": "concurrently --kill-others-on-fail \"nodemon server.js --delay 1500ms\" \"npm run serve --prefix client\""
+    "dev": "concurrently -k \"nodemon --signal SIGTERM server.js\" \"npm run serve --prefix client\""
   },
   "author": "Dylan Kinzer",
   "license": "MIT",
@@ -37,6 +37,7 @@
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
+    "kill-port": "^1.6.1",
     "nodemon": "^2.0.6"
   }
 }

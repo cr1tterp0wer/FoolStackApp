@@ -1,7 +1,9 @@
 require('dotenv');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS);
+const Friend = require("./Friend");
 
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -11,6 +13,7 @@ const UserSchema = new mongoose.Schema({
   createdAt: { type: Date, required: true },
   updatedAt: { type: Date }, // use this as the boolean for whether or not they validated email
   username: { type: String, required: true, unique: true },
+  friends: [{ type: ObjectId, ref: 'Friend' }],
 });
 
 /**
@@ -24,7 +27,8 @@ UserSchema.set('toJSON', {
       email: ret.email,
       firstname: ret.firstname,
       lastname: ret.lastname,
-      username: ret.username
+      username: ret.username,
+      friends: ret.friends
     };
     return retJson;
   }
@@ -57,6 +61,61 @@ UserSchema.statics.digestPassword = (password) => {
  */
 UserSchema.methods.validatePassword = (password, passwordDigest) => {
   return bcrypt.compareSync(password, passwordDigest);
+};
+
+/**
+ * Generates a list of all users with their current friend status
+ * given a userID
+ * @param {String} userID - userID
+ * @return {Array} users + respective_friendStatus
+ */
+UserSchema.statics.getUserFriendsList = (userID) => {
+
+    return User.aggregate([
+      {
+        $match: {
+          $and: [
+            { updatedAt: { $exists: true } },
+            { _id: { $ne: ObjectId(userID) } },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: Friend.collection.name,
+          let: { friends: "$friends" },
+          as: "friends",
+          pipeline: [
+            {
+              $match: {
+                recipient: ObjectId(userID),
+                $expr: { $in: ["$_id", "$$friends"] },
+              },
+            },
+            {
+              $project: {
+                status: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          friendsStatus: {
+            $ifNull: [{ $min: "$friends.status" }, 0],
+          },
+        },
+      },
+      {
+        $project: {
+          createdAt: 0,
+          updatedAt: 0,
+          friends: 0,
+          password_digest: 0,
+        }
+      }
+    ]);
 };
 
 const User = mongoose.model('User', UserSchema);

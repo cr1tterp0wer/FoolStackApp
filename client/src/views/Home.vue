@@ -2,25 +2,37 @@
 <div>
   <b-container class='py-5'>
     <b-row>
-      <b-col sm="12" md="10" id='nuCreatePost'>
-          <VueEditor
-            class="richTextEditor"
-            v-model='newPostText'
-            :placeholder="editorOptions.placeholder"/>
-           <b-button block variant="primary" @click="createNewPost">Post</b-button>
+
+      <b-col sm='8' md='8'>
+        <b-row>
+          <b-col sm="12" id='nuCreatePost'>
+              <VueEditor
+                class="richTextEditor"
+                v-model='newPostText'
+                :placeholder="editorOptions.placeholder"/>
+               <b-button block variant="primary" @click="createNewPost">Post</b-button>
+          </b-col>
+        </b-row>
+        <hr/>
+        <b-row class="postColumn">
+          <b-col sm="12" >
+            <PostCard v-for="postObj in posts"
+              :key="postObj._id"
+              :postObj="postObj"
+              :userID='userID'
+            />
+          </b-col>
+        </b-row>
       </b-col>
-    </b-row>
-    <hr/>
-    <b-row class="postColumn">
-      <b-col sm="12" md="10">
-        <PostCard v-for="postObj in posts"
-          :key="postObj._id"
-          :postObj="postObj"
-          :userID='userID'
-        />
+
+      <b-col sm='4' md='4'>
+        <FriendList />
       </b-col>
+
     </b-row>
+
     <Modal ref='modal'/>
+
   </b-container>
   <Footer />
 </div>
@@ -33,6 +45,7 @@ import Vue from 'vue';
 import { VueEditor } from 'vue2-editor';
 import Modal from '../components/modal/Modal.vue';
 import PostCard from '../components/PostCard.vue';
+import FriendList from '../components/FriendList.vue';
 import Bus from '../main';
 import Footer from '../components/Footer.vue';
 
@@ -41,6 +54,7 @@ export default {
 
   components: {
     PostCard,
+    FriendList,
     Modal,
     VueEditor,
     Footer,

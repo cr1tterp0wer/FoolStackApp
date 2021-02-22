@@ -97,8 +97,8 @@ APIRouter.post('/friends', authValidation, FriendController.friendsNew);
 APIRouter.patch('/friends', authValidation, FriendController.friendsUpdate);
 
 //Messages routes
-APIRouter.get('/messages', MessageController.messages);
-APIRouter.post('/messages', MessageController.messagesNew);
+APIRouter.get('/messages', authValidation, MessageController.messages);
+APIRouter.post('/messages', authValidation, MessageController.messagesNew);
 
 // Custom Actions routes
 APIRouter.post('/users/validate', UserController.usersValidate);

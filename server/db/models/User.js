@@ -95,6 +95,7 @@ UserSchema.statics.getUserFriendsList = (userID) => {
             {
               $project: {
                 status: 1,
+                _chatID: 1,
               },
             },
           ],
@@ -102,6 +103,7 @@ UserSchema.statics.getUserFriendsList = (userID) => {
       },
       {
         $addFields: {
+          chatID: '$friends._chatID',
           friendsStatus: {
             $ifNull: [{ $min: "$friends.status" }, 0],
           },

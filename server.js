@@ -1,6 +1,13 @@
 /* eslint-disable no-console */
 require('dotenv').config();
 const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: '*',
+  }
+});
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -11,12 +18,12 @@ const PORT = process.env.PORT || 8888;
 const CLIENT_PORT = process.env.VUE_PORT || 8080;
 
 const CORS_OPTS = {
-  origin: `${HOST}:${CLIENT_PORT}`,
+  credentials: true,
+  origin: [`${HOST}:${CLIENT_PORT}`, 'http://localhost:8080'],
   optionSuccessStatus: 200 // for legacy browsers, ie WINBLOWS
 };
 
 morgan('tiny');
-const app = express();
 
 // Middleware
 app.use(bodyParser.json());
@@ -24,6 +31,12 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const APIRouter = require('./server/routes/api');
+
+
+app.use((req, res, next) => {
+  res.io = io;
+  next();
+});
 
 app.use('/api', APIRouter);
 app.use(history());
@@ -35,4 +48,12 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server started on ${HOST}:${PORT}`);
+});
+
+server.listen(8999, () => {
+  console.log('server started on 8999');
+});
+
+io.on('connection', (socket) => {
+  console.log('------------CONNECTTEDDD--------');
 });

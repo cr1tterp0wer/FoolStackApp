@@ -1,4 +1,6 @@
 import Vue from 'vue';
+import VueSocketIO from 'vue-socket.io';
+import SocketIO from 'socket.io-client';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import axios from 'axios';
 import App from './App.vue';
@@ -7,6 +9,18 @@ import router from './router';
 import '../custom.scss';
 import 'bootswatch/dist/slate/bootstrap.min.css';
 import mixins from './helpers/common';
+
+const socketConnection = SocketIO('http://localhost:8999');
+
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: socketConnection,
+  vuex: {
+    store,
+    actionPrefix: 'SOCKET_',
+    mutationPrefix: 'SOCKET_',
+  },
+}));
 
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
@@ -37,6 +51,11 @@ const bus = new Vue();
 export default bus;
 
 new Vue({
+  sockets: {
+    connect() {
+      console.log('connected');
+    },
+  },
   mixins: [mixins],
   router,
   store,

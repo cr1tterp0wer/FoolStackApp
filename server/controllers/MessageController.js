@@ -56,6 +56,7 @@ const messages = async (req, res, next) => {
           ChatMessage.find({ chatID: friendship.chatID })
             .sort({ createdAt: 1 })
             .then((chatMessages) => {
+              console.log(chatMessages);
               res.status(200).json(chatMessages);
             })
             .catch((error) => {
@@ -97,7 +98,15 @@ const messagesNew = async (req, res, next) => {
             userID: value.userID,
             channel: value.channel,
           }).then((chatMessage) => {
-              res.status(200).json(chatMessage);
+              ChatMessage.find({ _chatID: friendship._chatID })
+                .sort({ createdAt: 1 })
+                .then((chatMessages) => {
+                  res.io.emit(`chat-update:${friendship._chatID}`, chatMessages);
+                  res.status(200).json(chatMessages);
+                })
+                .catch((error) => {
+                  res.status(500).json(error);
+                });
             })
             .catch((error) => {
               res.status(500).json(error);
@@ -105,6 +114,7 @@ const messagesNew = async (req, res, next) => {
         }
       })
       .catch((error) => {
+              console.log(error);
         res.status(500).json(error);
       });
   }

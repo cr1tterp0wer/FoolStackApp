@@ -83,7 +83,7 @@
       </b-card-group>
     </b-row>
 
-  <ChatBox v-bind:selectedPartner='this.chatPartner' v-if='this.showChat' />
+  <ChatBox v-bind:selectedPartner='chatPartner' v-if='this.showChat' />
   <Modal ref='modal' />
   </b-container>
 </template>

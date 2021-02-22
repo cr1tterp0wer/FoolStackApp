@@ -52,8 +52,10 @@ export default {
   components: {
     Modal,
   },
+
   data() {
     return {
+      chatID: this.selectedPartner._chatID,
       user: this.$store.state.user,
       userID: this.$store.state.userID,
       partner: this.selectedPartner,
@@ -62,15 +64,12 @@ export default {
     };
   },
   created() {
-    this.partner = this.selectedPartner;
-  },
-  mounted() {
     axios
       .get('/api/messages', {
         params: { userID: this.userID, friendID: this.partner._id, channel: 0 },
       })
       .then((res) => {
-        console.log(res);
+        console.log(res.data);
         res.data.forEach((msg) => {
           Vue.set(this.chatLog, msg._id, msg);
         });
@@ -78,13 +77,27 @@ export default {
       .catch((error) => {
         console.log(error);
       });
+
+    this.partner = this.selectedPartner;
+    this.chatID = this.partner._chatID;
+    console.log(this.selectedPartner);
+
+    this.sockets.subscribe(`chat-update:${this.chatID}`, (messages) => {
+      console.log(messages);
+      messages.forEach((msg) => {
+        Vue.set(this.chatLog, msg._id, msg);
+      });
+    });
+  },
+  mounted() {
   },
   methods: {
     isMine(id) {
       return this.userID === id;
     },
+
     sendMessage() {
-      console.log(this.currentText);
+      this.$socket.emit('sendChat', this.currentText);
       if (!this.currentText.length) {
         this.$refs.modal.show([{ body: 'You must input a message body before submitting' }], true);
       } else {

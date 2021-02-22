@@ -51,11 +51,6 @@ const bus = new Vue();
 export default bus;
 
 new Vue({
-  sockets: {
-    connect() {
-      console.log('connected');
-    },
-  },
   mixins: [mixins],
   router,
   store,

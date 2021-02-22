@@ -10,7 +10,7 @@ import '../custom.scss';
 import 'bootswatch/dist/slate/bootstrap.min.css';
 import mixins from './helpers/common';
 
-const SOCKET_URL = VUE_APP_SOCKET_URL || 'http://localhost:8999';
+const SOCKET_URL = process.env.VUE_APP_SOCKET_URL || 'http://localhost:8999';
 
 const socketConnection = SocketIO();
 

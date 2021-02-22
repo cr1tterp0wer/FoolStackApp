@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "npm install && npm install --prefix client && node server.js",
-    "dev": "concurrently -k \"nodemon --signal SIGTERM server.js\" \"npm run serve --prefix client\""
+    "dev": "concurrently -k \"nodemon --signal SIGTERM server.js\" \"npm run serve --prefix client\"",
+    "heroku-install": "npm install && npm install --prefix client",
+    "heroku-postbuild": "npm run heroku-install && npm run build --prefix client && node server.js"
   },
   "author": "Dylan Kinzer",
   "license": "MIT",

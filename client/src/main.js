@@ -12,7 +12,7 @@ import mixins from './helpers/common';
 
 const SOCKET_URL = process.env.VUE_APP_SOCKET_URL || 'http://localhost:8999';
 
-const socketConnection = SocketIO();
+const socketConnection = SocketIO(SOCKET_URL);
 
 Vue.use(new VueSocketIO({
   debug: true,

@@ -8,7 +8,22 @@
             :key="friend._id"
             v-bind:variant="friend.friendsStatus | friendVariant"
             class="d-flex justify-content-between align-items-center">
-              {{ friend.username }}
+              <div>
+                <b-badge pill variant='primary' class='mr-1'>{{ friend.username }}</b-badge>
+                <b-link
+                  id='nuChat'
+                  v-if='friend.friendsStatus == 3'
+                  @click='displayChat(friend)'
+                  size='sm'
+                  class='ml-auto'>
+                  <b-icon
+                    class='nuChatIcon'
+                    variant='info'
+                    icon='chat-dots-fill'
+                    scale='1.2'>
+                  </b-icon>
+                </b-link>
+              </div>
 
               <b-link
                 id='removeFriend'
@@ -68,6 +83,7 @@
       </b-card-group>
     </b-row>
 
+  <ChatBox v-bind:selectedPartner='this.chatPartner' v-if='this.showChat' />
   <Modal ref='modal' />
   </b-container>
 </template>
@@ -76,6 +92,7 @@
 import axios from 'axios';
 import Vue from 'vue';
 import Modal from './modal/Modal.vue';
+import ChatBox from './ChatBox.vue';
 
 const NOT_FRIEND = 0;
 const REQUESTED = 1;
@@ -86,15 +103,22 @@ export default {
   name: 'FriendList',
   components: {
     Modal,
+    ChatBox,
   },
   data() {
     return {
       userID: this.$store.state.userID,
       friends: {},
       nonFriends: {},
+      chatPartner: null,
+      showChat: false,
     };
   },
   methods: {
+    displayChat(friend) {
+      this.chatPartner = friend;
+      this.showChat = true;
+    },
     destroyFriend(friend) {
       const data = {
         userID: this.userID,
@@ -135,7 +159,6 @@ export default {
       }).catch((error) => {
         console.log(error);
       });
-      console.log(this.friends);
     },
     addFriend(nonFriend) {
       const data = {
@@ -191,8 +214,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+#nuChat {
+  justify-self: left;
+  justify-content: left;
+}
 #removeFriend {
-
   > svg.nuRemoveFriendIcon.bi-x-circle {
     border-radius: 50%;
     transition: 400ms;

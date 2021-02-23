@@ -1,61 +1,61 @@
 <template>
   <div class='w-100'>
     <b-row>
-          <b-list-group flush class='w-100'>
-            <h4>Friends</h4>
+      <b-list-group flush class='w-100'>
+        <h4>Friends</h4>
 
-            <b-list-group-item
-              v-for="friend in this.friends"
-              :key="friend._id"
-              @click='friend.friendsStatus === 3 ? toggleChat(friend) : null'
-              class="nuFriendItem
-                d-flex
-                justify-content-between
-                align-items-center
-                bg-dark border-0">
+        <b-list-group-item
+          v-for="friend in this.friends"
+          :key="friend._id"
+          @click='friend.friendsStatus === 3 ? toggleChat(friend) : null'
+          class="nuFriendItem
+            d-flex
+            justify-content-between
+            align-items-center
+            bg-dark border-0">
 
-                <div class='d-flex align-items-center justify-content-between'>
-                  <div class='profilePicLight'>{{friend.username[0].toUpperCase()}}</div>
-                  <div class='mr-2'>
-                    {{ friend.username }}
-                  </div>
-                  <b-badge
-                    class='text-primary nuPendingFriend'
-                    v-if='friend.friendsStatus == 1'
-                    sm
-                    variant='warning'>
-                      pending
-                  </b-badge>
-                </div>
+            <div class='d-flex align-items-center justify-content-between'>
+              <div class='profilePicLight'>{{friend.username[0].toUpperCase()}}</div>
+              <div class='mr-2'>
+                {{ friend.username }}
+              </div>
+              <b-badge
+                class='text-primary nuPendingFriend'
+                v-if='friend.friendsStatus == 1'
+                sm
+                variant='warning'>
+                  pending
+              </b-badge>
+            </div>
 
-                <b-link
-                  id='removeFriend'
-                  variant='danger'
-                  v-if='friend.friendsStatus != 2'
-                  @click='removeFriend(friend)'
-                  size='sm'
-                  class='ml-auto'>
-                  <b-icon
-                    class='nuRemoveFriendIcon'
-                    variant='danger'
-                    icon='x-circle'
-                    scale='1.2'>
-                  </b-icon>
-                </b-link>
+            <b-link
+              id='removeFriend'
+              variant='danger'
+              v-if='friend.friendsStatus != 2'
+              @click='removeFriend(friend)'
+              size='sm'
+              class='ml-auto'>
+              <b-icon
+                class='nuRemoveFriendIcon'
+                variant='danger'
+                icon='x-circle'
+                scale='1.2'>
+              </b-icon>
+            </b-link>
 
-                <b-button-group v-else>
-                  <b-button
-                    @click='confirmFriend(friend)'
-                    size="sm"
-                    variant='success'>Accept</b-button>
-                  <b-button
-                    @click='removeFriend(friend)'
-                    size="sm"
-                    variant='outline-danger'>Decline</b-button>
-                </b-button-group>
-            </b-list-group-item>
+            <b-button-group v-else>
+              <b-button
+                @click='confirmFriend(friend)'
+                size="sm"
+                variant='success'>Accept</b-button>
+              <b-button
+                @click='removeFriend(friend)'
+                size="sm"
+                variant='outline-danger'>Decline</b-button>
+            </b-button-group>
+        </b-list-group-item>
 
-          </b-list-group>
+      </b-list-group>
 
     </b-row>
 
@@ -94,8 +94,6 @@
         </b-list-group-item>
       </b-list-group>
     </b-row>
-
-    <ChatBox v-bind:selectedPartner='chatPartner' v-if='this.showChat' />
     <Modal ref='modal' />
   </div>
 </template>
@@ -105,7 +103,6 @@
 import axios from 'axios';
 import Vue from 'vue';
 import Modal from './modal/Modal.vue';
-import ChatBox from './ChatBox.vue';
 import Bus from '../main';
 
 const NOT_FRIEND = 0;
@@ -117,7 +114,6 @@ export default {
   name: 'FriendList',
   components: {
     Modal,
-    ChatBox,
   },
   data() {
     return {
@@ -130,18 +126,8 @@ export default {
   },
   methods: {
     toggleChat(friend) {
-      if (this.chatPartner && this.chatPartner._id === friend._id && this.showChat) {
-        this.chatPartner = null;
-        this.showChat = false;
-      } else {
-        const chatID = Array.isArray(friend.chatID) ? friend.chatID[0]
-          : friend.chatID || friend._chatID;
-        this.chatPartner = friend;
-        this.chatPartner.chatID = chatID;
-        this.showChat = true;
-      }
+      Bus.$emit('toggleChat', friend);
     },
-
     destroyFriend(friend) {
       const data = {
         userID: this.userID,
@@ -227,8 +213,6 @@ export default {
   },
 
   created() {
-    Bus.$on('closeChat', this.toggleChat);
-
     this.sockets.subscribe(`friend-request-received:${this.userID}`, (friend) => {
       Vue.delete(this.nonFriends, friend._id);
       Vue.set(this.friends, friend._id, friend);

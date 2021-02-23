@@ -34,6 +34,7 @@
     <Modal ref='modal'/>
 
   </b-container>
+  <ChatBoxList />
   <Footer />
 </div>
 </template>
@@ -46,6 +47,7 @@ import { VueEditor } from 'vue2-editor';
 import Modal from '../components/modal/Modal.vue';
 import PostCard from '../components/PostCard.vue';
 import FriendList from '../components/FriendList.vue';
+import ChatBoxList from '../components/ChatBoxList.vue';
 import Bus from '../main';
 import Footer from '../components/Footer.vue';
 
@@ -58,6 +60,7 @@ export default {
     Modal,
     VueEditor,
     Footer,
+    ChatBoxList,
   },
 
   data() {

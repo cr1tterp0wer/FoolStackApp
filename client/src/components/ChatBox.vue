@@ -1,73 +1,67 @@
 <template>
-  <b-row id="nuChatArea" class='mr-3'>
-    <b-card-group deck class="w-100">
+  <b-card no-body no-header>
+    <b-card-header flush>
+      Live Chat: {{ this.partner.username }}
+      <b-link
+        id='closeChat'
+        variant='danger'
+        @click='closeChat()'
+        size='md'
+        class='ml-auto'>
+        <b-icon
+          class='nuRemoveFriendIcon'
+          variant='danger'
+          icon='x-circle'
+          scale='1.2'>
+        </b-icon>
+      </b-link>
+    </b-card-header>
 
-      <b-card no-body no-header>
+    <b-card-body>
+      <b-list-group>
 
-        <b-card-header flush>
-          Live Chat: {{ this.partner.username }}
-          <b-link
-            id='closeChat'
-            variant='danger'
-            @click='closeChat()'
-            size='md'
-            class='ml-auto'>
-            <b-icon
-              class='nuRemoveFriendIcon'
-              variant='danger'
-              icon='x-circle'
-              scale='1.2'>
-            </b-icon>
-          </b-link>
-        </b-card-header>
+        <div
+          :class="isMine(msg.userID) ? 'nuTextBubble nuMine offset-sm-4 col-sm-8'
+          : 'nuTextBubble nuNotMine col-sm-12'"
+          v-for="msg in this.chatLog"
+          :key="msg._id"
+          >
 
-        <b-card-body>
-          <b-list-group>
+          <p
+            class='card-text py-2 px-3 mr-2'
+            :class="isMine(msg.userID) ? 'bg-light text-primary' : 'bg-dark text-light'"
+          >
+            {{ msg.message }}
+          </p>
 
-            <div
-              :class="isMine(msg.userID) ? 'nuTextBubble nuMine offset-sm-4 col-sm-8'
-              : 'nuTextBubble nuNotMine col-sm-12'"
-              v-for="msg in this.chatLog"
-              :key="msg._id"
-              >
+          <div class='nuBadgeWrap'>
+            <b-badge
+              pill
+              :variant="isMine(msg.userID) ? 'secondary' : 'info'"
+              class="mr-1 userBadge">
+              {{ isMine(msg.userID) ? "You" : partner.username }}
+            </b-badge>
+          </div>
+          <span class="text-secondary postDate">
+            {{ $root.stringToLocaleDate(msg.createdAt) }}
+          </span>
+        </div>
 
-              <p
-                class='card-text py-2 px-3 mr-2'
-                :class="isMine(msg.userID) ? 'bg-light text-primary' : 'bg-dark text-light'"
-              >
-                {{ msg.message }}
-              </p>
+      </b-list-group>
+    </b-card-body>
 
-              <div class='nuBadgeWrap'>
-                <b-badge
-                  pill
-                  :variant="isMine(msg.userID) ? 'secondary' : 'light'"
-                  class="mr-1 userBadge">
-                  {{ isMine(msg.userID) ? "You" : partner.username }}
-                </b-badge>
-              </div>
-              <span class="text-secondary postDate">
-                {{ $root.stringToLocaleDate(msg.createdAt) }}
-              </span>
-            </div>
-
-          </b-list-group>
-        </b-card-body>
-
-        <b-card-footer flush>
-          <b-form class="container-fluid">
-            <b-row>
-              <textarea class="col-sm-8" v-model="currentText" id="nuChatText" rows="1"></textarea>
-              <b-button @click="sendMessage()" class="col-sm-4" size="sm" variant="primary">
-                Send
-              </b-button>
-            </b-row>
-          </b-form>
-        </b-card-footer>
-      </b-card>
-    </b-card-group>
+    <b-card-footer flush>
+      <b-form class="container-fluid">
+        <b-row>
+          <textarea class="col-sm-8" v-model="currentText" id="nuChatText" rows="1"></textarea>
+          <b-button @click="sendMessage()" class="col-sm-4" size="sm" variant="primary">
+            Send
+          </b-button>
+        </b-row>
+      </b-form>
+    </b-card-footer>
     <Modal ref="modal" />
-  </b-row>
+  </b-card>
 </template>
 
 <script>
@@ -126,7 +120,7 @@ export default {
       return this.userID === id;
     },
     closeChat() {
-      Bus.$emit('closeChat', this.partner);
+      Bus.$emit('toggleChat', this.partner);
     },
     sendMessage() {
       if (!this.currentText.length) {
@@ -153,16 +147,13 @@ export default {
   },
 };
 </script>
+
 <style lang='scss'>
 #nuChatArea {
   position: fixed;
   bottom: 0;
   right: 0;
   z-index: 200;
-
-  .card {
-    min-width: 350px;
-  }
 
   .postDate {
     position: absolute;
@@ -189,8 +180,13 @@ export default {
     display: inline-flex;
     align-self: flex-end;
     align-items: center;
+    flex: 0 1 auto;
+    justify-content: right;
 
     &.nuNotMine {
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+
       .postDate {
         right: auto;
         left: 0;

@@ -181,11 +181,10 @@ export default {
     align-self: flex-end;
     align-items: center;
     flex: 0 1 auto;
-    justify-content: right;
+    justify-content: flex-end;
 
     &.nuNotMine {
       flex-direction: row-reverse;
-      justify-content: flex-end;
 
       .postDate {
         right: auto;

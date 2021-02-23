@@ -41,20 +41,18 @@ const messages = async (req, res, next) => {
     res.status(422).json({ success: false, message: error.details[0].message });
   } else {
     //check if they are friends. if not error;
-    Friend.find({
-      recipient: ObjectId(value.userID),
-      requester: ObjectId(value.friendID),
+    Friend.findOne({
+      recipient: value.userID,
+      requester: value.friendID,
       status: ACCEPTED,
     })
       .then((friendship) => {
-        if (!friendship.length) {
+        if (!friendship) {
           res
             .status(422)
             .json({ success: false, message: "The users are not friends" });
         } else {
-          // works, now get the messages with the userID
-          //res.status(200).json(friendship);
-          ChatMessage.find({ chatID: friendship.chatID })
+          ChatMessage.find({ _chatID: friendship._chatID })
             .sort({ createdAt: 1 })
             .then((chatMessages) => {
               res.status(200).json(chatMessages);
@@ -82,8 +80,8 @@ const messagesNew = async (req, res, next) => {
     res.status(422).json({ success: false, message: error.details[0].message });
   } else {
     Friend.findOne({
-      recipient: ObjectId(value.userID),
-      requester: ObjectId(value.friendID),
+      recipient: value.userID,
+      requester: value.friendID,
       status: ACCEPTED,
     })
       .then((friendship) => {

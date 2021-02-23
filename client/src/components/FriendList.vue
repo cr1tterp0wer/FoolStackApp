@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container-fluid>
     <b-row>
       <b-card-group deck class='w-100'>
         <b-card header="Friends List">
@@ -85,7 +85,7 @@
 
   <ChatBox v-bind:selectedPartner='chatPartner' v-if='this.showChat' />
   <Modal ref='modal' />
-  </b-container>
+  </b-container-fluid>
 </template>
 
 <script>

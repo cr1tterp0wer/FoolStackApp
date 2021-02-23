@@ -22,6 +22,9 @@ const io = socketIO(SOCKET_PORT, {
   }
 });
 
+console.log(io);
+console.log(`${HOST}:${CLIENT_PORT}`);
+
 const CORS_OPTS = {
   credentials: true,
   origin: [`${HOST}:${CLIENT_PORT}`, 'http://localhost:8080'],

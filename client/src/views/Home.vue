@@ -3,7 +3,7 @@
   <b-container class='py-5'>
     <b-row>
 
-      <b-col sm='8' md='8'>
+      <b-col md='8' lg='8' >
         <b-row>
           <b-col sm="12" id='nuCreatePost'>
               <VueEditor
@@ -25,7 +25,7 @@
         </b-row>
       </b-col>
 
-      <b-col sm='4' md='4'>
+      <b-col md='4' lg='4'>
         <FriendList />
       </b-col>
 

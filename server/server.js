@@ -28,10 +28,10 @@ app.use((req, res, next) => {
 
 app.use('/api', APIRouter);
 app.use(history());
-app.use(express.static('./client/dist/'));
+app.use(express.static('../client/dist/'));
 
 app.get('/', (req, res) => {
-  res.sendFile('/client/dist/index.html');
+  res.sendFile('../client/dist/index.html');
 });
 
 const server = app.listen(PORT, () => {

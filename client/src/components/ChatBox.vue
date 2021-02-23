@@ -23,26 +23,34 @@
 
         <b-card-body>
           <b-list-group>
-            <b-list-group-item
-              :class="isMine(msg.userID) ? 'nuTextBubble offset-sm-4 col-sm-8'
-              : 'nuTextBubble col-sm-8'"
+
+            <div
+              :class="isMine(msg.userID) ? 'nuTextBubble nuMine offset-sm-4 col-sm-8'
+              : 'nuTextBubble nuNotMine col-sm-12'"
               v-for="msg in this.chatLog"
               :key="msg._id"
-              :variant="isMine(msg.userID) ? 'light' : 'info'">
-              <b-card-text :class="isMine(msg.userID) ? 'text-right' : ''">
+              >
+
+              <p
+                class='card-text py-2 px-3 mr-2'
+                :class="isMine(msg.userID) ? 'bg-light text-primary' : 'bg-dark text-light'"
+              >
                 {{ msg.message }}
-              </b-card-text>
-              <div
-                :class="isMine(msg.userID) ? 'row justify-content-end'
-                  : 'row justify-content-begin'">
-                <b-badge pill :variant="isMine(msg.userID) ? 'secondary' : 'light'" class="mr-1">
+              </p>
+
+              <div class='nuBadgeWrap'>
+                <b-badge
+                  pill
+                  :variant="isMine(msg.userID) ? 'secondary' : 'light'"
+                  class="mr-1 userBadge">
                   {{ isMine(msg.userID) ? "You" : partner.username }}
                 </b-badge>
               </div>
               <span class="text-secondary postDate">
                 {{ $root.stringToLocaleDate(msg.createdAt) }}
               </span>
-            </b-list-group-item>
+            </div>
+
           </b-list-group>
         </b-card-body>
 
@@ -158,8 +166,11 @@ export default {
 
   .postDate {
     position: absolute;
-    top: -18px;
-    left: 0;
+    top: auto;
+    bottom: -20px;
+    left: auto;
+    right: 0;
+    width: max-content;
     font-weight: bold;
     font-size: 12px;
   }
@@ -171,11 +182,24 @@ export default {
   .list-group {
     width: 100%;
   }
-  .list-group-item.nuTextBubble {
-    margin-bottom: 1rem;
-    margin-top: 1rem;
-    border-radius: 10px;
-    border: none;
+  .nuTextBubble {
+    position: relative;
+    padding:0;
+    margin: 1rem 0;
+    display: inline-flex;
+    align-self: flex-end;
+    align-items: center;
+
+    &.nuNotMine {
+      .postDate {
+        right: auto;
+        left: 0;
+      }
+    }
+  }
+  .card-text {
+    border-radius: 30px;
+    margin:0;
   }
   .card-body {
     display: flex;

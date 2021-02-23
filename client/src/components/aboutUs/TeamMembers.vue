@@ -139,7 +139,7 @@
             <div class="col-sm-4">
               <div class="team-member">
                 <figure>
-                  <img src="@/assets/kite/images/team/unkown.gif" alt="Team Member" />
+                  <img src="@/assets/kite/images/team/Wilbur-Agullana.jpg" alt="Team Member" />
                   <figcaption>
                     <p class="member-name" style="color:white !important;">
                       Wilbur Agullana

@@ -8,28 +8,24 @@ const cors = require('cors');
 const morgan = require('morgan');
 const history = require('connect-history-api-fallback');
 
-const HOST = process.env.HOST || 'http://localhost';
-const PORT = process.env.PORT || 8888;
-const CLIENT_PORT = process.env.VUE_PORT || 8080;
-const SOCKET_PORT = process.env.SOCKET_PORT || 8999;
+const HOST = process.env.HOST;
+const PORT = process.env.PORT;
+const SOCKET_PORT = process.env.SOCKET_PORT;
 
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: '*'
+    credentials: true,
+    origin: 'http://localhost:8080'
   }
 });
-io.on('connection', socket => {
-  console.log(socket);
-});
-server.listen(SOCKET_PORT);
 
 morgan('tiny');
-app.options('*', cors());
+
 // Middleware
 app.use(secure);
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const APIRouter = require('./server/routes/api');
@@ -49,4 +45,12 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server started on ${HOST}:${PORT}`);
+});
+
+io.on('connection', (socket) => { 
+  console.log('Client connected');
+  socket.on('disconnect', () => console.log('Client disconnected'));
+});
+server.listen(SOCKET_PORT, () => {
+  console.log(`socket.io server listening on: ${SOCKET_PORT}`);
 });

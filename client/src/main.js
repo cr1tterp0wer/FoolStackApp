@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import VueSocketIO from 'vue-socket.io';
-import SocketIO from 'socket.io-client';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import axios from 'axios';
 import App from './App.vue';
@@ -10,16 +9,9 @@ import '../custom.scss';
 import 'bootswatch/dist/slate/bootstrap.min.css';
 import mixins from './helpers/common';
 
-const SOCKET_URL = process.env.VUE_APP_SOCKET_URL || 'http://localhost:8999';
-
-const socketConnection = SocketIO(SOCKET_URL);
-
-console.log(socketConnection);
-console.log(SOCKET_URL);
-
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: socketConnection,
+  connection: 'http://localhost:3000',
   vuex: {
     store,
     actionPrefix: 'SOCKET_',

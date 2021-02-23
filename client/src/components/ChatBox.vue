@@ -21,7 +21,7 @@
       <b-list-group>
 
         <div
-          :class="isMine(msg.userID) ? 'nuTextBubble nuMine offset-sm-4 col-sm-8'
+          :class="isMine(msg.userID) ? 'nuTextBubble nuMine'
           : 'nuTextBubble nuNotMine col-sm-12'"
           v-for="msg in this.chatLog"
           :key="msg._id"
@@ -203,6 +203,11 @@ export default {
     min-height: 300px;
     max-height: 450px;
     overflow-y: auto;
+  }
+  .card-deck {
+    .card {
+      max-width:400px;
+    }
   }
 }
 </style>

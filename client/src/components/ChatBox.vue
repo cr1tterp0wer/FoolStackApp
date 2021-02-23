@@ -1,38 +1,61 @@
 <template>
-  <b-row id="nuChatArea">
+  <b-row id="nuChatArea" class='mr-3'>
     <b-card-group deck class="w-100">
-      <b-card :header="'Live Chat: ' + this.partner.username">
-        <b-list-group-item
-          class="nuTextBubble"
-          v-for="msg in this.chatLog"
-          :key="msg._id"
-          :variant="isMine(msg.userID) ? 'light' : 'info'"
-        >
-          <b-card-text :class="isMine(msg.userID) ? 'text-right' : ''">
-            {{ msg.message }}
-          </b-card-text>
-          <div
-            :class="
-              isMine(msg.userID) ? 'd-flex justify-content-end' : 'd-flex justify-content-begin'
-            "
-          >
-            <b-badge pill :variant="isMine(msg.userID) ? 'secondary' : 'light'" class="mr-1">
-              {{ isMine(msg.userID) ? "You" : partner.username }}
-            </b-badge>
-            <b-badge pill :variant="isMine(msg.userID) ? 'secondary' : 'light'" class="mr-1">
-              {{ $root.stringToLocaleDate(msg.createdAt) }}
-            </b-badge>
-          </div>
-        </b-list-group-item>
 
-        <b-form class="container-fluid">
-          <b-row>
-            <textarea class="col-sm-8" v-model="currentText" id="nuChatText" rows="1"></textarea>
-            <b-button @click="sendMessage()" class="col-sm-4" size="sm" variant="primary">
-              Send
-            </b-button>
-          </b-row>
-        </b-form>
+      <b-card no-body no-header>
+
+        <b-card-header flush>
+          Live Chat: {{ this.partner.username }}
+          <b-link
+            id='closeChat'
+            variant='danger'
+            @click='closeChat()'
+            size='md'
+            class='ml-auto'>
+            <b-icon
+              class='nuRemoveFriendIcon'
+              variant='danger'
+              icon='x-circle'
+              scale='1.2'>
+            </b-icon>
+          </b-link>
+        </b-card-header>
+
+        <b-card-body>
+          <b-list-group>
+            <b-list-group-item
+              :class="isMine(msg.userID) ? 'nuTextBubble offset-sm-4 col-sm-8'
+              : 'nuTextBubble col-sm-8'"
+              v-for="msg in this.chatLog"
+              :key="msg._id"
+              :variant="isMine(msg.userID) ? 'light' : 'info'">
+              <b-card-text :class="isMine(msg.userID) ? 'text-right' : ''">
+                {{ msg.message }}
+              </b-card-text>
+              <div
+                :class="isMine(msg.userID) ? 'row justify-content-end'
+                  : 'row justify-content-begin'">
+                <b-badge pill :variant="isMine(msg.userID) ? 'secondary' : 'light'" class="mr-1">
+                  {{ isMine(msg.userID) ? "You" : partner.username }}
+                </b-badge>
+              </div>
+              <span class="text-secondary postDate">
+                {{ $root.stringToLocaleDate(msg.createdAt) }}
+              </span>
+            </b-list-group-item>
+          </b-list-group>
+        </b-card-body>
+
+        <b-card-footer flush>
+          <b-form class="container-fluid">
+            <b-row>
+              <textarea class="col-sm-8" v-model="currentText" id="nuChatText" rows="1"></textarea>
+              <b-button @click="sendMessage()" class="col-sm-4" size="sm" variant="primary">
+                Send
+              </b-button>
+            </b-row>
+          </b-form>
+        </b-card-footer>
       </b-card>
     </b-card-group>
     <Modal ref="modal" />
@@ -43,6 +66,7 @@
 import axios from 'axios';
 import Vue from 'vue';
 import Modal from './modal/Modal.vue';
+import Bus from '../main';
 
 export default {
   name: 'ChatBox',
@@ -93,6 +117,9 @@ export default {
     isMine(id) {
       return this.userID === id;
     },
+    closeChat() {
+      Bus.$emit('closeChat', this.partner);
+    },
     sendMessage() {
       if (!this.currentText.length) {
         this.$refs.modal.show([{ body: 'You must input a message body before submitting' }], true);
@@ -120,20 +147,41 @@ export default {
 </script>
 <style lang='scss'>
 #nuChatArea {
-  max-height: 600px;
-  overflow-y: auto;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 200;
+
+  .card {
+    min-width: 350px;
+  }
+
+  .postDate {
+    position: absolute;
+    top: -18px;
+    left: 0;
+    font-weight: bold;
+    font-size: 12px;
+  }
 
   #nuChatText {
     resize: vertical;
-    border-radius: 10px;
+    border-radius: 3px;
+  }
+  .list-group {
+    width: 100%;
   }
   .list-group-item.nuTextBubble {
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
     border-radius: 10px;
     border: none;
   }
   .card-body {
-    background-color: #eee;
+    align-items: flex-end;
+    min-height: 300px;
+    max-height: 600px;
+    overflow-y: auto;
   }
 }
 </style>

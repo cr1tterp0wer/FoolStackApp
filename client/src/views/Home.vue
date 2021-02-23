@@ -1,9 +1,9 @@
 <template>
 <div>
-  <b-container class='py-5'>
+  <b-container class='py-5' fluid>
     <b-row>
 
-      <b-col md='8' lg='8' >
+      <b-col offset-md='3' md='5' lg='5' >
         <b-row>
           <b-col sm="12" id='nuCreatePost'>
               <VueEditor
@@ -25,7 +25,7 @@
         </b-row>
       </b-col>
 
-      <b-col md='4' lg='4'>
+      <b-col offset-md='1' md='3' lg='3'>
         <FriendList />
       </b-col>
 

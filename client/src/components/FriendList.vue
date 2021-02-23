@@ -1,91 +1,103 @@
 <template>
-  <b-container fluid='lg'>
+  <div class='w-100'>
     <b-row>
-      <b-card-group deck class='w-100'>
-        <b-card header="Friends List">
-          <b-list-group-item
-            v-for="friend in this.friends"
-            :key="friend._id"
-            v-bind:variant="friend.friendsStatus | friendVariant"
-            class="d-flex justify-content-between align-items-center">
-              <div>
-                <b-badge pill variant='primary' class='mr-1'>{{ friend.username }}</b-badge>
+          <b-list-group flush class='w-100'>
+            <h4>Friends</h4>
+
+            <b-list-group-item
+              v-for="friend in this.friends"
+              :key="friend._id"
+              @click='friend.friendsStatus === 3 ? toggleChat(friend) : null'
+              class="nuFriendItem
+                d-flex
+                justify-content-between
+                align-items-center
+                bg-dark border-0">
+
+                <div class='d-flex align-items-center justify-content-between'>
+                  <div class='profilePicLight'>{{friend.username[0].toUpperCase()}}</div>
+                  <div class='mr-2'>
+                    {{ friend.username }}
+                  </div>
+                  <b-badge
+                    class='text-primary nuPendingFriend'
+                    v-if='friend.friendsStatus == 1'
+                    sm
+                    variant='warning'>
+                      pending
+                  </b-badge>
+                </div>
+
                 <b-link
-                  id='nuChat'
-                  v-if='friend.friendsStatus == 3'
-                  @click='displayChat(friend)'
+                  id='removeFriend'
+                  variant='danger'
+                  v-if='friend.friendsStatus != 2'
+                  @click='removeFriend(friend)'
                   size='sm'
                   class='ml-auto'>
                   <b-icon
-                    class='nuChatIcon'
-                    variant='info'
-                    icon='chat-dots-fill'
+                    class='nuRemoveFriendIcon'
+                    variant='danger'
+                    icon='x-circle'
                     scale='1.2'>
                   </b-icon>
                 </b-link>
-              </div>
 
-              <b-link
-                id='removeFriend'
-                variant='danger'
-                v-if='friend.friendsStatus != 2'
-                @click='removeFriend(friend)'
-                size='sm'
-                class='ml-auto'>
-                <b-icon
-                  class='nuRemoveFriendIcon'
-                  variant='danger'
-                  icon='x-circle'
-                  scale='1.2'>
-                </b-icon>
-              </b-link>
+                <b-button-group v-else>
+                  <b-button
+                    @click='confirmFriend(friend)'
+                    size="sm"
+                    variant='success'>Accept</b-button>
+                  <b-button
+                    @click='removeFriend(friend)'
+                    size="sm"
+                    variant='outline-danger'>Decline</b-button>
+                </b-button-group>
+            </b-list-group-item>
 
-              <b-button-group v-else>
-                <b-button
-                  @click='confirmFriend(friend)'
-                  size="sm"
-                  variant='success'>Accept</b-button>
-                <b-button
-                  @click='removeFriend(friend)'
-                  size="sm"
-                  variant='outline-danger'>Decline</b-button>
-              </b-button-group>
-          </b-list-group-item>
-        </b-card>
-      </b-card-group>
+          </b-list-group>
+
     </b-row>
 
-    <b-row>
-      <b-card-group deck class='w-100' v-if='!this.$root.isEmpty(this.nonFriends)'>
-        <b-card header="User List">
-          <b-list-group-item
-            v-for="nonFriend in this.nonFriends"
-            :key="nonFriend._id"
-            variant='light'
-            class="d-flex justify-content-between align-items-center"
-            >
+    <b-row class='mt-5'>
+      <b-list-group flush class='w-100' v-if='!this.$root.isEmpty(this.nonFriends)'>
+        <h4>Other Students</h4>
+        <b-list-group-item
+          v-for="nonFriend in this.nonFriends"
+          :key="nonFriend._id"
+          class="
+            nuFriendItem
+            d-flex
+            justify-content-between
+            align-items-center
+            bg-dark">
+
+          <div class='d-flex align-items-center justify-content-between'>
+            <div class='profilePicLight'>{{nonFriend.username[0].toUpperCase()}}</div>
+            <div class='mr-2'>
               {{ nonFriend.username }}
-              <b-link
-                id='addFriend'
-                variant='success'
-                @click='addFriend(nonFriend)'
-                size='sm'
-                class='ml-auto'>
-                <b-icon
-                  class='nuAddFriendIcon'
-                  variant='success'
-                  icon='plus'
-                  scale='1.2'>
-                </b-icon>
-              </b-link>
-          </b-list-group-item>
-        </b-card>
-      </b-card-group>
+            </div>
+          </div>
+          <b-link
+            id='addFriend'
+            variant='success'
+            @click='addFriend(nonFriend)'
+            size='lg'
+            class='ml-auto'>
+            <b-icon
+              class='nuAddFriendIcon'
+              variant='light'
+              icon='plus'
+              scale='1.2'>
+            </b-icon>
+          </b-link>
+        </b-list-group-item>
+      </b-list-group>
     </b-row>
 
-  <ChatBox v-bind:selectedPartner='chatPartner' v-if='this.showChat' />
-  <Modal ref='modal' />
-  </b-container>
+    <ChatBox v-bind:selectedPartner='chatPartner' v-if='this.showChat' />
+    <Modal ref='modal' />
+  </div>
 </template>
 
 <script>
@@ -94,6 +106,7 @@ import axios from 'axios';
 import Vue from 'vue';
 import Modal from './modal/Modal.vue';
 import ChatBox from './ChatBox.vue';
+import Bus from '../main';
 
 const NOT_FRIEND = 0;
 const REQUESTED = 1;
@@ -116,16 +129,17 @@ export default {
     };
   },
   methods: {
-    displayChat(friend) {
-      this.chatPartner = friend;
-
-      if (!friend._chatID) {
-        this.chatPartner.chatID = Array.isArray(friend.chatID) ? friend.chatID[0] : friend.chatID;
+    toggleChat(friend) {
+      if (this.chatPartner && this.chatPartner._id === friend._id && this.showChat) {
+        this.chatPartner = null;
+        this.showChat = false;
       } else {
-        this.chatPartner.chatID = friend._chatID;
+        const chatID = Array.isArray(friend.chatID) ? friend.chatID[0]
+          : friend.chatID || friend._chatID;
+        this.chatPartner = friend;
+        this.chatPartner.chatID = chatID;
+        this.showChat = true;
       }
-
-      this.showChat = true;
     },
 
     destroyFriend(friend) {
@@ -213,6 +227,8 @@ export default {
   },
 
   created() {
+    Bus.$on('closeChat', this.toggleChat);
+
     this.sockets.subscribe(`friend-request-received:${this.userID}`, (friend) => {
       Vue.delete(this.nonFriends, friend._id);
       Vue.set(this.friends, friend._id, friend);
@@ -273,11 +289,22 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.nuFriendItem {
+  transition: 300ms;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0,0,0,0.4) !important;
+  }
+}
+
 #nuChat {
   justify-self: left;
   justify-content: left;
+
 }
 #removeFriend {
+    z-index: 100;
   > svg.nuRemoveFriendIcon.bi-x-circle {
     border-radius: 50%;
     transition: 400ms;

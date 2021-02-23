@@ -12,14 +12,6 @@ const HOST = process.env.HOST;
 const PORT = process.env.PORT;
 const SOCKET_PORT = process.env.SOCKET_PORT;
 
-const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-  cors: {
-    credentials: true,
-    origin: 'http://localhost:8080'
-  }
-});
-
 morgan('tiny');
 
 // Middleware
@@ -43,14 +35,23 @@ app.get('/', (req, res) => {
   res.sendFile('/client/dist/index.html');
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server started on ${HOST}:${PORT}`);
+});
+const socketIO = require('socket.io');
+const io = socketIO(server, {
+  cors: {
+    allowedHeaders: ['authorization', 'content-type'],
+    credentials: true,
+    origin: HOST,
+    methods: ["GET", "POST"],
+    credentials: true,
+    transports: ['websocket', 'polling'],
+  },
+  allowEIO3: true
 });
 
 io.on('connection', (socket) => { 
   console.log('Client connected');
   socket.on('disconnect', () => console.log('Client disconnected'));
-});
-server.listen(SOCKET_PORT, () => {
-  console.log(`socket.io server listening on: ${SOCKET_PORT}`);
 });

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueSocketIO from 'vue-socket.io';
+import SocketIO from 'socket.io-client';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import axios from 'axios';
 import App from './App.vue';
@@ -11,12 +12,13 @@ import mixins from './helpers/common';
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'http://localhost:3000',
+  connection: SocketIO(process.env.VUE_APP_SERVER_URL),
   vuex: {
     store,
     actionPrefix: 'SOCKET_',
     mutationPrefix: 'SOCKET_',
   },
+  options: { path: '/' },
 }));
 
 Vue.use(BootstrapVue);

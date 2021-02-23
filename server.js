@@ -13,10 +13,11 @@ const HOST = process.env.HOST || 'http://localhost';
 const PORT = process.env.PORT || 8888;
 const CLIENT_PORT = process.env.VUE_PORT || 8080;
 const SOCKET_PORT = process.env.SOCKET_PORT || 8999;
+
 const socketIO = require("socket.io");
 const io = socketIO(SOCKET_PORT, {
   cors: {
-    origin: `${HOST}:${CLIENT_PORT}`,
+    origin: "*:*",
     methods: ['GET', 'POST'],
     allowedHeaders: ['content-type'],
   }
@@ -32,7 +33,7 @@ const CORS_OPTS = {
 };
 
 morgan('tiny');
-
+app.options('*', cors());
 // Middleware
 app.use(secure);
 app.use(bodyParser.json());

@@ -178,9 +178,11 @@ export default {
     border: none;
   }
   .card-body {
+    display: flex;
+    flex-direction: column-reverse;
     align-items: flex-end;
     min-height: 300px;
-    max-height: 600px;
+    max-height: 450px;
     overflow-y: auto;
   }
 }

@@ -14,6 +14,9 @@ const SOCKET_URL = process.env.VUE_APP_SOCKET_URL || 'http://localhost:8999';
 
 const socketConnection = SocketIO(SOCKET_URL);
 
+console.log(socketConnection);
+console.log(SOCKET_URL);
+
 Vue.use(new VueSocketIO({
   debug: true,
   connection: socketConnection,

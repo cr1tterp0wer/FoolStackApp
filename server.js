@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 const history = require('connect-history-api-fallback');
-
+const secure = require('ssl-express-www');
 const HOST = process.env.HOST || 'http://localhost';
 const PORT = process.env.PORT || 8888;
 const CLIENT_PORT = process.env.VUE_PORT || 8080;
@@ -19,6 +19,7 @@ morgan('tiny');
 const app = express();
 
 // Middleware
+app.use(secure);
 app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));

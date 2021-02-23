@@ -16,7 +16,7 @@ const SOCKET_PORT = process.env.SOCKET_PORT || 8999;
 const socketIO = require("socket.io");
 const io = socketIO(SOCKET_PORT, {
   cors: {
-    origin: HOST,
+    origin: `${HOST}:${CLIENT_PORT}`,
     methods: ['GET', 'POST'],
     allowedHeaders: ['content-type'],
   }

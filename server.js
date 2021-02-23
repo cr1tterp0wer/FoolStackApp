@@ -33,7 +33,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const APIRouter = require('./server/routes/api');
 
-
 app.use((req, res, next) => {
   res.io = io;
   next();
@@ -52,7 +51,7 @@ app.listen(PORT, () => {
 });
 
 server.listen(SOCKET_PORT, () => {
-  console.log('server started on 8999');
+  console.log(`server started on ${SOCKET_PORT}`);
 });
 
 io.on('connection', (socket) => {

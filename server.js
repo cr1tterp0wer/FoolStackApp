@@ -10,7 +10,6 @@ const history = require('connect-history-api-fallback');
 
 const HOST = process.env.HOST;
 const PORT = process.env.PORT;
-const SOCKET_PORT = process.env.SOCKET_PORT;
 
 morgan('tiny');
 

@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 require('dotenv').config();
+const secure = require('ssl-express-www');
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
@@ -27,6 +28,7 @@ const CORS_OPTS = {
 morgan('tiny');
 
 // Middleware
+app.use(secure);
 app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));

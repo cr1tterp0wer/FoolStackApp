@@ -66,7 +66,8 @@ const commentLikeParams = Joi.object({
  * @return {Array} - a list of post objects
  */
 const getPosts = async (req, res, next) => {
-  Post.find({}).sort({ 'createdAt': -1 })
+  Post.find({})
+    .sort({ createdAt: -1 })
     .then((posts) => {
       res.status(200).json(posts);
     })

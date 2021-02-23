@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const APIRouter = require('./server/routes/api');
+const APIRouter = require('./routes/api');
 
 app.use((req, res, next) => {
   res.io = io;
@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 });
 
 const server = app.listen(PORT, () => {
-  console.log(`Server started on ${HOST}:${PORT}`);
+  console.log(`Server started on ${HOST}`);
 });
 const socketIO = require('socket.io');
 const io = socketIO(server, {

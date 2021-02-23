@@ -23,17 +23,22 @@
       "email": "j.agullana517@student.nu.edu"
     }
   ],
-  "main": "server.js",
+  "main": "./server/server.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/cr1tterp0wer/FoolStackApp"
   },
   "scripts": {
-    "start": "node server.js",
-    "dev": "concurrently -k \"nodemon --signal SIGTERM server.js\" \"npm run serve --prefix client\"",
-    "heroku-prebuild": "export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=; NPM_CONFIG_PRODUCTION=false NODE_ENV=development;YARN_PRODUCTION=false;",
-    "heroku-install": "npm install && npm install --prefix client --dev",
-    "heroku-postbuild": "npm run heroku-install && npm run build --prefix client"
+    "server-install": "cd server && npm install",
+    "client-install": "cd client && npm install --dev",
+
+    "dev": "concurrently -k \"nodemon --signal SIGTERM ./server/server.js\" \"npm run serve --prefix client\"",
+    "start": "cd server && node server.js",
+    "build": "cd client && npm run build",
+
+    "heroku-prebuild": "export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=; export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=development; export YARN_PRODUCTION=false;",
+    "heroku-install": "npm run server-install && npm run client-install",
+    "heroku-postbuild": "npm run heroku-install && npm run build"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",

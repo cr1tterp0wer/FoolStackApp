@@ -12,7 +12,7 @@ import mixins from './helpers/common';
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: SocketIO(process.env.VUE_APP_SERVER_URL),
+  connection: SocketIO(process.env.VUE_APP_SOCKET_URL),
   vuex: {
     store,
     actionPrefix: 'SOCKET_',

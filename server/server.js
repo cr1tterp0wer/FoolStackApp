@@ -22,10 +22,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const APIRouter = require("./routes/api");
 
+app.use((req, res, next) => {
+	res.io = io; // eslint-disable-line no-use-before-define
+	next();
+});
+
 app.use("/api",
 	APIRouter);
 app.use(history());
 app.use(express.static("../client/dist/"));
+
+app.get("/",
+	(req, res) => {
+		res.sendFile("../client/dist/index.html");
+	});
 
 const server = app.listen(PORT,
 	() => {
@@ -53,19 +63,9 @@ const io = socketIO(server,
 		allowEIO3: true
 	});
 
-app.use((req, res, next) => {
-	res.io = io;
-	next();
-});
-
 io.on("connection",
 	(socket) => {
 		console.log("Client connected");
 		socket.on("disconnect",
 			() => console.log("Client disconnected"));
-	});
-
-app.get("/",
-	(req, res) => {
-		res.sendFile("../client/dist/index.html");
 	});

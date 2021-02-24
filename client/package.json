@@ -1,43 +1,42 @@
 {
-  "name": "client",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "@vue/cli": "^4.5.11",
-    "axios": "^0.21.1",
-    "bootstrap": "^4.5.3",
-    "bootstrap-vue": "^2.21.2",
-    "bootswatch": "^4.6.0",
-    "core-js": "^3.6.5",
-    "jquery": "^3.5.1",
-    "request": "^2.88.2",
-    "sass": "^1.32.4",
-    "socket.io-client": "^3.1.1",
-    "vue": "^2.6.12",
-    "vue-router": "^3.2.0",
-    "vue-socket.io": "^3.0.10",
-    "vue2-editor": "^2.10.2",
-    "vuex": "^3.4.0"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-plugin-router": "~4.5.0",
-    "@vue/cli-plugin-vuex": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "@vue/eslint-config-airbnb": "^5.0.2",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-vue": "^6.2.2",
-    "hard-source-webpack-plugin": "^0.13.1",
-    "node-sass": "^4.14.1",
-    "sass-loader": "^8.0.2",
-    "vue-template-compiler": "^2.6.11"
-  }
+	"name": "client",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"serve": "vue-cli-service serve",
+		"build": "vue-cli-service build"
+	},
+	"dependencies": {
+		"@vue/cli": "^4.5.11",
+		"axios": "^0.21.1",
+		"bootstrap": "^4.5.3",
+		"bootstrap-vue": "^2.21.2",
+		"bootswatch": "^4.6.0",
+		"core-js": "^3.6.5",
+		"jquery": "^3.5.1",
+		"request": "^2.88.2",
+		"sass": "^1.32.4",
+		"socket.io-client": "^3.1.1",
+		"vue": "^2.6.12",
+		"vue-router": "^3.2.0",
+		"vue-socket.io": "^3.0.10",
+		"vue2-editor": "^2.10.2",
+		"vuex": "^3.4.0"
+	},
+	"devDependencies": {
+		"@vue/cli-plugin-babel": "~4.5.0",
+		"@vue/cli-plugin-eslint": "~4.5.0",
+		"@vue/cli-plugin-router": "~4.5.0",
+		"@vue/cli-plugin-vuex": "~4.5.0",
+		"@vue/cli-service": "~4.5.0",
+		"@vue/eslint-config-airbnb": "^5.0.2",
+		"babel-eslint": "^10.1.0",
+		"eslint": "^6.7.2",
+		"eslint-plugin-import": "^2.20.2",
+		"eslint-plugin-vue": "^6.2.2",
+		"hard-source-webpack-plugin": "^0.13.1",
+		"node-sass": "^4.14.1",
+		"sass-loader": "^8.0.2",
+		"vue-template-compiler": "^2.6.11"
+	}
 }

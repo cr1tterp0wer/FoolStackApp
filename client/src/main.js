@@ -1,14 +1,14 @@
 import "../custom.scss";
 import "bootswatch/dist/slate/bootstrap.min.css";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
-import App from "App.vue";
+import App from "./App.vue";
 import SocketIO from "socket.io-client";
 import Vue from "vue";
 import VueSocketIO from "vue-socket.io";
 import axios from "axios";
-import mixins from "helpers/common";
-import router from "router";
-import store from "store";
+import mixins from "./helpers/common";
+import router from "./router";
+import store from "./store";
 
 const bus = new Vue(),
 	serverURL = process.env.VUE_APP_SERVER_URL;

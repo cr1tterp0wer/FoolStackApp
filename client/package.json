@@ -37,6 +37,7 @@
 		"hard-source-webpack-plugin": "^0.13.1",
 		"node-sass": "^4.14.1",
 		"sass-loader": "^8.0.2",
+		"vue-eslint-parser": "^7.5.0",
 		"vue-template-compiler": "^2.6.11"
 	}
 }

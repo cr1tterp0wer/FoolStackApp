@@ -1,5 +1,6 @@
 module.exports = {
     "env": {
+				"node": true,
         "browser": true,
         "es6": true
     },
@@ -8,11 +9,11 @@ module.exports = {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
+		"parser":"vue-eslint-parser",
     "parserOptions": {
         "ecmaVersion": 2018,
         "sourceType": "module"
     },
-    "plugins": ["vue"],
     "rules": {
         "accessor-pairs": "error",
         "array-bracket-newline": "error",
@@ -82,6 +83,7 @@ module.exports = {
         "func-name-matching": "error",
         "func-names": "error",
         "func-style": "error",
+        "function-call-argument-newline": "off",
         "function-paren-newline": "error",
         "generator-star-spacing": "error",
         "global-require": "error",
@@ -254,7 +256,7 @@ module.exports = {
         "quote-props": "off",
         "quotes": [
             "error",
-            "double"
+            "single"
         ],
         "radix": "error",
         "require-await": "error",

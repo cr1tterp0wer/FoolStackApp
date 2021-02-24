@@ -1,13 +1,13 @@
 {
   "name": "nu-social",
   "description": "National Univeristy's best social media platform",
-  "homepage":"https://nu-social.com",
+  "homepage": "https://nu-social.com",
   "version": "1.0.0",
   "license": "MIT",
   "author": {
     "name": "Christopher Apodaca",
     "email": "capodacac@gmail.com",
-    "url":"https://christopher-apodaca.com"
+    "url": "https://christopher-apodaca.com"
   },
   "contributors": [
     {
@@ -29,15 +29,11 @@
     "url": "https://github.com/cr1tterp0wer/FoolStackApp"
   },
   "scripts": {
-    "lint": "eslint",
-
     "server-install": "cd server && npm install",
     "client-install": "cd client && npm install --dev",
-
     "dev": "concurrently -k \"nodemon --signal SIGTERM ./server/server.js\" \"npm run serve --prefix client\"",
     "start": "cd server && node server.js",
     "build": "cd client && npm run build",
-
     "heroku-prebuild": "export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=; export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=development; export YARN_PRODUCTION=false;",
     "heroku-install": "npm run server-install && npm run client-install",
     "heroku-postbuild": "npm run heroku-install && npm run build"

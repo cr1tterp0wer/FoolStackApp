@@ -1,7 +1,6 @@
 // vue.config.js
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const path = require('path');
-
 /**
  * @type {import('@vue/cli-service').ProjectOptions}
  */

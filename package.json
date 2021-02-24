@@ -29,6 +29,8 @@
     "url": "https://github.com/cr1tterp0wer/FoolStackApp"
   },
   "scripts": {
+    "lint": "eslint",
+
     "server-install": "cd server && npm install",
     "client-install": "cd client && npm install --dev",
 

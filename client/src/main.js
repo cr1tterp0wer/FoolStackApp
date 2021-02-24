@@ -10,7 +10,6 @@ import '../custom.scss';
 import 'bootswatch/dist/slate/bootstrap.min.css';
 import mixins from './helpers/common';
 
-
 Vue.use(new VueSocketIO({
   debug: true,
   connection: SocketIO(process.env.VUE_APP_SOCKET_URL),

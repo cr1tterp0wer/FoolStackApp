@@ -104,8 +104,8 @@
   </div>
 </template>
 <script>
-import TeamMembers from '../components/aboutUs/TeamMembers.vue';
 import ContactUs from '../components/aboutUs/ContactUs.vue';
+import TeamMembers from '../components/aboutUs/TeamMembers.vue';
 
 export default {
   name: 'LandingPage',
@@ -125,7 +125,7 @@ export default {
   },
   mounted() {
     this.start = new Date().getTime();
-    this.end = new Date('Feb 27, 2021 16:00:00').getTime();
+    this.end = new Date('Dec 25, 2021 16:00:00').getTime();
     // Update the count down every 1 second
     this.timerCount(this.start, this.end);
     this.interval = setInterval(() => {
@@ -134,13 +134,10 @@ export default {
   },
   methods: {
     timerCount(start, end) {
-      // Get todays date and time
-      const now = new Date().getTime();
-
-      // Find the distance between now an the count down date
-      const distance = start - now;
-      const passTime = end - now;
-
+      // Get todays date and time, Find the distance between now an the count down date
+      const current = new Date().getTime(),
+            distance = start - current,
+            passTime = end - current;
       if (distance < 0 && passTime < 0) {
         this.statusType = 'expired';
         clearInterval(this.interval);
@@ -155,9 +152,9 @@ export default {
     calcTime(dist) {
       // Time calculations for days, hours, minutes and seconds
       this.days = Math.floor(dist / (1000 * 60 * 60 * 24));
-      this.hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      this.minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-      this.seconds = Math.floor((dist % (1000 * 60)) / 1000);
+      this.hours = Math.floor(dist % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
+      this.minutes = Math.floor(dist % (1000 * 60 * 60) / (1000 * 60));
+      this.seconds = Math.floor(dist % (1000 * 60) / 1000);
     },
   },
 };

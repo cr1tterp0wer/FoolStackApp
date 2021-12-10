@@ -1,17 +1,17 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "server package.json",
+  "description": "National University Final project: Social Media Application",
   "main": "server.js",
   "repository": {
     "type": "git",
-    "url": "https://TheFoolStacks@dev.azure.com/TheFoolStacks/FoolStackApp/_git/FoolStackApp"
+    "url": "https://github.com/cr1tterp0wer/FoolStackApp.git"
   },
   "scripts": {
     "start": "npm install && npm install --prefix client && node server.js",
     "dev": "concurrently -k \"nodemon --signal SIGTERM server.js\" \"npm run serve --prefix client\""
   },
-  "author": "Dylan Kinzer",
+  "author": "Christopher Apodaca",
   "license": "MIT",
   "dependencies": {
     "@hapi/joi": "^17.1.1",

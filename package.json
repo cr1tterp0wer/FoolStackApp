@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "npm install && npm install --prefix client && node server.js",
+		"build": "npm run build --prefix client",
     "dev": "concurrently -k \"nodemon --signal SIGTERM server.js\" \"npm run serve --prefix client\""
   },
   "author": "Christopher Apodaca",

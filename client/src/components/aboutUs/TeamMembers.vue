@@ -1,24 +1,22 @@
 <template>
-  <section id="about" class="section-style"
-  data-background-image="@/assets/kite/images/background/about-us.jpg">
+  <section
+    id="about"
+    class="section-style"
+    data-background-image="@/assets/kite/images/background/about-us.jpg"
+  >
     <div class="pattern height-resize">
       <div class="container">
         <h3 class="section-name">
-          <span>
-            About Us
-          </span>
+          <span> About Us </span>
         </h3>
         <!-- /.section-name -->
-        <h2 class="section-title" style="color:white !important;">
-          We Are dedicated
-        </h2>
+        <h2 class="section-title" style="color: white !important">We Are dedicated</h2>
         <!-- /.Section-title  -->
-        <p class="section-description" style="color:white !important;">
-        Our experienced team of top level problem solvers have put their passion for
-        creativity to the test.
-        We truly believe in the power of communication and design and their ability
-        to simplify complex communicative problems, elevate experiences, as well as
-        engage and inspire students everywhere.
+        <p class="section-description" style="color: white !important">
+          Our experienced team of top level problem solvers have put their passion for creativity to
+          the test. We truly believe in the power of communication and design and their ability to
+          simplify complex communicative problems, elevate experiences, as well as engage and
+          inspire students everywhere.
         </p>
         <!-- /.section-description -->
 
@@ -28,34 +26,38 @@
               <div class="team-member">
                 <figure>
                   <img
-                    id='nuSocialChristopher'
+                    id="nuSocialChristopher"
                     src="@/assets/kite/images/team/christopher-apodaca.jpg"
                     alt="Christopher Apodaca"
                   />
                   <figcaption>
-                    <p class="member-name" style="color:white !important;">Christopher Apodaca</p>
-                    <p class="designation" style="color:white !important;">
-                      Software Engineer
-                    </p>
+                    <p class="member-name" style="color: white !important">Christopher Apodaca</p>
+                    <p class="designation" style="color: white !important">Software Engineer</p>
                     <!-- /.designation -->
                   </figcaption>
                 </figure>
                 <div class="social-btn-container">
                   <div class="team-socail-btn">
                     <span class="social-btn-box facebook-btn-container">
-                      <a href="https://christopher-apodaca.com" class="facebook-btn">
+                      <a
+                        href="https://www.facebook.com/profile.php?id=100061801484836"
+                        class="facebook-btn"
+                      >
                         <i class="fa fa-facebook"></i> </a
                       ><!-- /.facebook-btn --> </span
                     ><!-- /.social-btn-box -->
 
-                    <span class="social-btn-box twitter-btn-container">
-                      <a href="https://christopher-apodaca.com" class="twitter-btn">
-                        <i class="fa fa-twitter"></i> </a
-                      ><!-- /.twitter-btn --> </span
+                    <span class="social-btn-box youtube-btn-container">
+                      <a href="https://youtube.com/cr1tterp0wer" class="youtube-btn">
+                        <i class="fa fa-youtube"></i> </a
+                      ><!-- /.youtube-btn --> </span
                     ><!-- /.social-btn-box -->
 
                     <span class="social-btn-box linkedin-btn-container">
-                      <a href="https://www.linkedin.com/in/christopher-apodaca/" class="linkedin-btn">
+                      <a
+                        href="https://www.linkedin.com/in/christopher-apodaca/"
+                        class="linkedin-btn"
+                      >
                         <i class="fa fa-linkedin"></i> </a
                       ><!-- /.linkedin-btn --> </span
                     ><!-- /.social-btn-box -->
@@ -79,20 +81,19 @@
                 <figure>
                   <img src="@/assets/kite/images/team/Elliot-Brown.jpg" alt="Team Member" />
                   <figcaption>
-                    <p class="member-name" style="color:white !important;" >
-                     Elliot Brown
-                    </p>
+                    <p class="member-name" style="color: white !important">Elliot Brown</p>
                     <!-- /.member-name -->
-                    <p class="designation" style="color:white !important;">
-                      Designer
-                    </p>
+                    <p class="designation" style="color: white !important">Designer</p>
                     <!-- /.designation -->
                   </figcaption>
                 </figure>
                 <div class="social-btn-container">
                   <div class="team-socail-btn">
                     <span class="social-btn-box linkedin-btn-container">
-                      <a href="https://www.linkedin.com/in/elliot-brown-163098167/" class="linkedin-btn">
+                      <a
+                        href="https://www.linkedin.com/in/elliot-brown-163098167/"
+                        class="linkedin-btn"
+                      >
                         <i class="fa fa-linkedin"></i> </a
                       ><!-- /.linkedin-btn --> </span
                     ><!-- /.social-btn-box -->
@@ -110,13 +111,9 @@
                 <figure>
                   <img src="@/assets/kite/images/team/Dylan_kinzer.jpeg" alt="Team Member" />
                   <figcaption>
-                    <p class="member-name" style="color:white !important;">
-                      Dylan Kinzer
-                    </p>
+                    <p class="member-name" style="color: white !important">Dylan Kinzer</p>
                     <!-- /.member-name -->
-                    <p class="designation" style="color:white !important;">
-                      Project Manager
-                    </p>
+                    <p class="designation" style="color: white !important">Project Manager</p>
                     <!-- /.designation -->
                   </figcaption>
                 </figure>
@@ -141,19 +138,14 @@
                 <figure>
                   <img src="@/assets/kite/images/team/Wilbur-Agullana.jpg" alt="Team Member" />
                   <figcaption>
-                    <p class="member-name" style="color:white !important;">
-                      Wilbur Agullana
-                    </p>
+                    <p class="member-name" style="color: white !important">Wilbur Agullana</p>
                     <!-- /.member-name -->
-                    <p class="designation" style="color:white !important;">
-                      Developer
-                    </p>
+                    <p class="designation" style="color: white !important">Developer</p>
                     <!-- /.designation -->
                   </figcaption>
                 </figure>
                 <div class="social-btn-container">
-                  <div class="team-socail-btn">
-                  </div>
+                  <div class="team-socail-btn"></div>
                   <!-- /.team-socail-btn -->
                 </div>
                 <!-- /.social-btn-container -->
@@ -180,11 +172,10 @@
 </template>
 <script>
 export default {
-  name: 'TeamMembers',
+  name: "TeamMembers",
 };
 </script>
 <style scoped lang="scss">
-
 .time-name,
 .time-number,
 .section-title span,
@@ -192,5 +183,4 @@ export default {
 .site-title {
   color: white !important;
 }
-
 </style>

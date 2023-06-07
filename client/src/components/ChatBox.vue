@@ -2,43 +2,31 @@
   <b-card no-body no-header>
     <b-card-header flush>
       Live Chat: {{ this.partner.username }}
-      <b-link
-        id='closeChat'
-        variant='danger'
-        @click='closeChat()'
-        size='md'
-        class='ml-auto'>
-        <b-icon
-          class='nuRemoveFriendIcon'
-          variant='danger'
-          icon='x-circle'
-          scale='1.2'>
-        </b-icon>
+      <b-link id="closeChat" variant="danger" @click="closeChat()" size="md" class="ml-auto">
+        <b-icon class="nuRemoveFriendIcon" variant="danger" icon="x-circle" scale="1.2"> </b-icon>
       </b-link>
     </b-card-header>
 
     <b-card-body>
       <b-list-group>
-
         <div
-          :class="isMine(msg.userID) ? 'nuTextBubble nuMine'
-          : 'nuTextBubble nuNotMine col-sm-12'"
+          :class="isMine(msg.userID) ? 'nuTextBubble nuMine' : 'nuTextBubble nuNotMine col-sm-12'"
           v-for="msg in this.chatLog"
           :key="msg._id"
-          >
-
+        >
           <p
-            class='card-text py-2 px-3 mr-2'
+            class="card-text mr-2"
             :class="isMine(msg.userID) ? 'bg-light text-primary' : 'bg-dark text-light'"
           >
             {{ msg.message }}
           </p>
 
-          <div class='nuBadgeWrap'>
+          <div class="nuBadgeWrap">
             <b-badge
               pill
               :variant="isMine(msg.userID) ? 'secondary' : 'info'"
-              class="mr-1 userBadge">
+              class="mr-1 userBadge"
+            >
               {{ isMine(msg.userID) ? "You" : partner.username }}
             </b-badge>
           </div>
@@ -46,15 +34,28 @@
             {{ $root.stringToLocaleDate(msg.createdAt) }}
           </span>
         </div>
-
       </b-list-group>
     </b-card-body>
 
     <b-card-footer flush>
       <b-form class="container-fluid">
-        <b-row>
-          <textarea class="col-sm-8" v-model="currentText" id="nuChatText" rows="1"></textarea>
-          <b-button @click="sendMessage()" class="col-sm-4" size="sm" variant="primary">
+        <b-row class="d-flex flex-column">
+          <textarea
+            class="mb-2"
+            ref="chatTextArea"
+            v-model="currentText"
+            id="nuChatText"
+            rows="2"
+            max-rows="8"
+            @keydown.enter.exact.prevent="sendMessage()"
+            @input="resizeTextArea()"
+          ></textarea>
+          <b-button
+            @click="sendMessage()"
+            class="col-sm-4 align-self-end"
+            size="sm"
+            variant="primary"
+          >
             Send
           </b-button>
         </b-row>
@@ -65,13 +66,13 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Vue from 'vue';
-import Modal from './modal/Modal.vue';
-import Bus from '../main';
+import axios from "axios";
+import Vue from "vue";
+import Modal from "./modal/Modal.vue";
+import Bus from "../main";
 
 export default {
-  name: 'ChatBox',
+  name: "ChatBox",
   props: {
     selectedPartner: Object,
   },
@@ -85,16 +86,18 @@ export default {
       user: this.$store.state.user,
       userID: this.$store.state.userID,
       partner: this.selectedPartner,
-      currentText: '',
+      currentText: "",
       chatLog: {},
     };
   },
   mounted() {
     this.partner = this.selectedPartner;
     this.chatID = this.partner.chatID; // eslint-disable-line prefer-destructuring
+    this.resizeTextArea();
+    this.$refs.chatTextArea.focus();
 
     axios
-      .get('/api/messages', {
+      .get("/api/messages", {
         params: { userID: this.userID, friendID: this.partner._id, channel: 0 },
       })
       .then((res) => {
@@ -103,12 +106,7 @@ export default {
         });
       })
       .catch((error) => {
-        this.$refs.modal.show(
-          [
-            { body: error.message },
-            { body: error.response.data.message },
-          ],
-        );
+        this.$refs.modal.show([{ body: error.message }, { body: error.response.data.message }]);
       });
 
     this.sockets.subscribe(`chat-update:${this.chatID}`, (messages) => {
@@ -116,15 +114,28 @@ export default {
     });
   },
   methods: {
+    resizeTextArea(reset = false) {
+      let areaHeight = this.$refs.chatTextArea.scrollHeight,
+        currentHeight = this.$refs.chatTextArea.style.height;
+
+      console.log(areaHeight);
+      console.log(currentHeight);
+
+      if (reset) {
+        this.$refs.chatTextArea.style.height = "52px";
+      } else if (areaHeight < 125 && areaHeight > currentHeight.split("px")[0]) {
+        this.$refs.chatTextArea.style.height = `${areaHeight}px`;
+      }
+    },
     isMine(id) {
       return this.userID === id;
     },
     closeChat() {
-      Bus.$emit('toggleChat', this.partner);
+      Bus.$emit("toggleChat", this.partner);
     },
     sendMessage() {
       if (!this.currentText.length) {
-        this.$refs.modal.show([{ body: 'You must input a message body before submitting' }], true);
+        this.$refs.modal.show([{ body: "You must input a message body before submitting" }], true);
       } else {
         const data = {
           userID: this.userID,
@@ -133,7 +144,7 @@ export default {
           message: this.currentText,
         };
         axios
-          .post('/api/messages', data)
+          .post("/api/messages", data)
           .then((res) => {
             const msg = res.data;
             Vue.set(this.chatLog, msg._id, msg);
@@ -142,72 +153,9 @@ export default {
             this.$refs.modal.show([{ body: error.message }, { body: error.response.data.message }]);
           });
       }
-      this.currentText = '';
+      this.currentText = "";
+      this.resizeTextArea(true);
     },
   },
 };
 </script>
-
-<style lang='scss'>
-#nuChatArea {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  z-index: 200;
-
-  .postDate {
-    position: absolute;
-    top: auto;
-    bottom: -20px;
-    left: auto;
-    right: 0;
-    width: max-content;
-    font-weight: bold;
-    font-size: 12px;
-  }
-
-  #nuChatText {
-    resize: vertical;
-    border-radius: 3px;
-  }
-  .list-group {
-    width: 100%;
-  }
-  .nuTextBubble {
-    position: relative;
-    padding:0;
-    margin: 1rem 0;
-    display: inline-flex;
-    align-self: flex-end;
-    align-items: center;
-    flex: 0 1 auto;
-    justify-content: flex-end;
-
-    &.nuNotMine {
-      flex-direction: row-reverse;
-
-      .postDate {
-        right: auto;
-        left: 0;
-      }
-    }
-  }
-  .card-text {
-    border-radius: 30px;
-    margin:0;
-  }
-  .card-body {
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: flex-end;
-    min-height: 300px;
-    max-height: 450px;
-    overflow-y: auto;
-  }
-  .card-deck {
-    .card {
-      max-width:400px;
-    }
-  }
-}
-</style>

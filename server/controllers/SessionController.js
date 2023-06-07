@@ -8,11 +8,9 @@ const TTL = parseInt(process.env.SESSION_TTL_DAYS,
 
 // SessionLogin Param validation schema
 const sessionLoginParams = Joi.object({
-	email: Joi.string()
-		.trim()
+	email: Joi.string().trim()
 		.required(),
-	password: Joi.string()
-		.trim()
+	password: Joi.string().trim()
 		.required()
 		.min(6)
 		.max(50),
@@ -20,8 +18,7 @@ const sessionLoginParams = Joi.object({
 
 // SessionLogout Param validation schema
 const sessionLogoutParams = Joi.object({
-	token: Joi.string()
-		.trim()
+	token: Joi.string().trim()
 		.required(),
 });
 
@@ -41,7 +38,10 @@ const sessionsNew = async (req, res) => {
 	} else {
 		const userModel = new User();
 
-		User.findOne({ email: value.email })
+		User.findOne({ $or: [
+			{ email: value.email },
+			{ username: value.email }
+		] })
 			.then((userStatus) => {
 				if (!userStatus) {
 					res

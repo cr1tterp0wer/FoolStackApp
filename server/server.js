@@ -60,7 +60,7 @@ const io = socketIO(server,
 				"polling"
 			],
 		},
-		allowEIO3: true
+		allowEIO3: true,
 	});
 
 io.on("connection",

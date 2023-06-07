@@ -16,7 +16,9 @@ const { VUE_PORT } = process.env;
 const { PORT } = process.env;
 
 const SERVER_URL = `${HOST}:${PORT}`;
-const CLIENT_URL = process.env.CLIENT_URL ?? `${CLIENT_HOST}:${VUE_PORT}`;
+const CLIENT_URL = process.env.CLIENT_URL
+	? process.env.CLIENT_URL
+	: `${CLIENT_HOST}:${VUE_PORT}`;
 
 morgan("tiny");
 
@@ -35,6 +37,12 @@ app.use((req, res, next) => {
 
 app.use("/api", APIRouter);
 app.use(history());
+
+app.use(express.static("../client/dist/"));
+
+app.get("/", (req, res) => {
+	res.sendFile("../client/dist/index.html");
+});
 
 const server = app.listen(PORT, () => {
 	console.log(`Server started on ${SERVER_URL}`);

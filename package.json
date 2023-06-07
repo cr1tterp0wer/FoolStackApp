@@ -1,71 +1,73 @@
 {
-  "name": "nu-social",
-  "description": "National Univeristy's best social media platform",
-  "homepage": "https://nu-social.com",
-  "version": "1.0.0",
-  "license": "MIT",
-  "author": {
-    "name": "Christopher Apodaca",
-    "email": "capodacac@gmail.com",
-    "url": "https://christopher-apodaca.com"
-  },
-  "contributors": [
-    {
-      "name": "Dylan Kinzer",
-      "email": "D.Kinzer998@student.nu.edu"
-    },
-    {
-      "name": "Elliot Brown",
-      "email": "E.Brown999@student.nu.edu"
-    },
-    {
-      "name": "Wilbur Agullana",
-      "email": "j.agullana517@student.nu.edu"
-    }
-  ],
-  "main": "./server/server.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/cr1tterp0wer/FoolStackApp"
-  },
-  "scripts": {
-    "server-install": "cd server && npm install",
-    "client-install": "cd client && npm install --dev",
-    "dev": "concurrently -k \"nodemon --signal SIGTERM ./server/server.js\" \"npm run serve --prefix client\"",
-    "start": "cd server && node server.js",
-    "build": "cd client && npm run build",
-    "heroku-prebuild": "export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=; export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=development; export YARN_PRODUCTION=false;",
-    "heroku-install": "npm run server-install && npm run client-install",
-    "heroku-postbuild": "npm run heroku-install && npm run build"
-  },
-  "dependencies": {
-    "@hapi/joi": "^17.1.1",
-    "bcrypt": "^5.0.0",
-    "body-parser": "^1.19.0",
-    "bootstrap": "^5.3.0",
-    "connect-history-api-fallback": "^1.6.0",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "heroku-ssl-redirect": "^0.1.1",
-    "history": "^5.0.0",
-    "joi": "^17.3.0",
-    "joi-objectid": "^3.0.1",
-    "mongodb": "^3.6.3",
-    "mongoose": "^5.11.2",
-    "mongoose-error-handler": "^1.1.0",
-    "morgan": "^1.10.0",
-    "nodemailer": "^6.4.17",
-    "socket.io": "^3.1.1",
-    "ssl-express-www": "^3.0.7",
-    "uuid-mongodb": "^2.4.1"
-  },
-  "devDependencies": {
-    "concurrently": "^5.3.0",
-    "eslint": "^7.18.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1",
-    "kill-port": "^1.6.1",
-    "nodemon": "^2.0.6"
-  }
+	"name": "nu-social",
+	"description": "National Univeristy's best social media platform",
+	"homepage": "https://nu-social.com",
+	"version": "1.0.0",
+	"license": "MIT",
+	"author": {
+		"name": "Christopher Apodaca",
+		"email": "capodacac@gmail.com",
+		"url": "https://christopher-apodaca.com"
+	},
+	"contributors": [
+		{
+			"name": "Dylan Kinzer",
+			"email": "D.Kinzer998@student.nu.edu"
+		},
+		{
+			"name": "Elliot Brown",
+			"email": "E.Brown999@student.nu.edu"
+		},
+		{
+			"name": "Wilbur Agullana",
+			"email": "j.agullana517@student.nu.edu"
+		}
+	],
+	"main": "./server/server.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cr1tterp0wer/FoolStackApp"
+	},
+	"scripts": {
+		"server-install": "cd server && npm install",
+		"client-install": "cd client && npm install --dev",
+		"dev": "concurrently -k \"nodemon --signal SIGTERM ./server/server.js\" \"npm run serve --prefix client\"",
+		"start": "cd server && node server.js",
+		"serve": "cd server && forever start server.js",
+		"build": "cd client && npm run build",
+		"heroku-prebuild": "export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=; export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=development; export YARN_PRODUCTION=false;",
+		"heroku-install": "npm run server-install && npm run client-install",
+		"heroku-postbuild": "npm run heroku-install && npm run build"
+	},
+	"dependencies": {
+		"@hapi/joi": "^17.1.1",
+		"bcrypt": "^5.0.0",
+		"body-parser": "^1.19.0",
+		"bootstrap": "^5.3.0",
+		"connect-history-api-fallback": "^1.6.0",
+		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"forever": "^4.0.3",
+		"heroku-ssl-redirect": "^0.1.1",
+		"history": "^5.0.0",
+		"joi": "^17.3.0",
+		"joi-objectid": "^3.0.1",
+		"mongodb": "^3.6.3",
+		"mongoose": "^5.11.2",
+		"mongoose-error-handler": "^1.1.0",
+		"morgan": "^1.10.0",
+		"nodemailer": "^6.4.17",
+		"socket.io": "^3.1.1",
+		"ssl-express-www": "^3.0.7",
+		"uuid-mongodb": "^2.4.1"
+	},
+	"devDependencies": {
+		"concurrently": "^5.3.0",
+		"eslint": "^7.18.0",
+		"eslint-config-airbnb-base": "^14.2.1",
+		"eslint-plugin-import": "^2.22.1",
+		"kill-port": "^1.6.1",
+		"nodemon": "^2.0.6"
+	}
 }

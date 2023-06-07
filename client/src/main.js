@@ -33,7 +33,7 @@ if (serverURL) {
   axios.defaults.baseURL = serverURL;
 }
 
-axios.defaults.headers.post["Content-Type"] = "application/json";
+axios.defaults.headers.post["Content-Type"] = "Application/Json";
 axios.interceptors.request.use((req) => {
   req.headers.authorization = store.state.token || ""; // eslint-disable-line no-param-reassign
 
@@ -56,10 +56,11 @@ axios.interceptors.response.use(
   }
 );
 
-export default bus;
 new Vue({
   mixins: [mixins],
-  router,
   store,
+  router,
   render: (element) => element(App),
 }).$mount("#app");
+
+export default bus;

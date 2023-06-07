@@ -6,7 +6,8 @@ const path = require("path");
  * @type {import('@vue/cli-service').ProjectOptions}
  */
 module.exports = {
-	lintOnSave: false,
+  lintOnSave: false,
+  publicPath: process.env.NODE_ENV == "production" ? "/dist" : "",
   configureWebpack: {
     plugins: [
       new HardSourceWebpackPlugin({
@@ -25,7 +26,7 @@ module.exports = {
         },
         cachePrune: {
           maxAge: 2 * 24 * 60 * 60 * 1000,
-          sizeThreshold: 50 * 1024 * 1024
+          sizeThreshold: 50 * 1024 * 1024,
         },
       }),
 
@@ -35,13 +36,9 @@ module.exports = {
         },
         {
           test: /my-loader/,
-          include: path.join(
-__dirname,
-"vendor"
-),
+          include: path.join(__dirname, "vendor"),
         },
       ]),
-
-    ]
-  }
+    ],
+  },
 };

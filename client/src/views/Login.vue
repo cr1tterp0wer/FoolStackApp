@@ -39,7 +39,7 @@
             <b-collapse id="nuForgotPasswordArea">
               <b-form @submit="onForgotPassword" class="text-left">
                 <b-form-input
-                  id="nuInputEmailValidation"
+                  id="nuInputEmailValidationForgot"
                   type="email"
                   v-model="form.emailValidationForgotPassword"
                   placeholder="National University Email"
@@ -59,7 +59,7 @@
             <b-collapse id="nuValidateArea">
               <b-form @submit="onEmailValidation" class="text-left">
                 <b-form-input
-                  id="nuInputEmailValidation"
+                  id="nuInputEmailValidationResend"
                   type="email"
                   v-model="form.emailValidation"
                   placeholder="National University Email"
@@ -128,7 +128,7 @@ export default {
             user: res.data.user,
             token: res.data.token,
           });
-          this.$router.push("/");
+          this.$router.push("/Home");
         })
         .catch((error) => {
           this.$refs.modal.show([{ body: error.message }, { body: error.response.data.message }]);

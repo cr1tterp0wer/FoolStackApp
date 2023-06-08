@@ -3,23 +3,17 @@ const Joi = require("@hapi/joi");
 const mongooseErrorHandler = require("mongoose-error-handler");
 const User = require("../db/models/User");
 const Session = require("../db/models/Session");
-const TTL = parseInt(process.env.SESSION_TTL_DAYS,
-	10);
+const TTL = parseInt(process.env.SESSION_TTL_DAYS, 1);
 
 // SessionLogin Param validation schema
 const sessionLoginParams = Joi.object({
-	email: Joi.string().trim()
-		.required(),
-	password: Joi.string().trim()
-		.required()
-		.min(6)
-		.max(50),
+	email: Joi.string().trim().required(),
+	password: Joi.string().trim().required().min(6).max(50),
 });
 
 // SessionLogout Param validation schema
 const sessionLogoutParams = Joi.object({
-	token: Joi.string().trim()
-		.required(),
+	token: Joi.string().trim().required(),
 });
 
 /**
@@ -38,10 +32,7 @@ const sessionsNew = async (req, res) => {
 	} else {
 		const userModel = new User();
 
-		User.findOne({ $or: [
-			{ email: value.email },
-			{ username: value.email }
-		] })
+		User.findOne({ $or: [{ email: value.email }, { username: value.email }] })
 			.then((userStatus) => {
 				if (!userStatus) {
 					res
@@ -82,8 +73,7 @@ const sessionsNew = async (req, res) => {
 							.catch((error) => {
 								res.status(403).json({
 									success: false,
-									message: mongooseErrorHandler.set(error,
-										req.t),
+									message: mongooseErrorHandler.set(error, req.t),
 								});
 							});
 					} else {
@@ -129,8 +119,7 @@ const sessionsDestroy = async (req, res) => {
 			.catch((error) => {
 				res.status(400).json({
 					success: false,
-					message: mongooseErrorHandler.set(error,
-						req.t),
+					message: mongooseErrorHandler.set(error, req.t),
 				});
 			});
 	}

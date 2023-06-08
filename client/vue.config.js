@@ -17,27 +17,27 @@ module.exports = {
         environmentHash: {
           root: process.cwd(),
           directories: [],
-          files: ["package-lock.json", "yarn.lock"]
+          files: ["package-lock.json", "yarn.lock"],
         },
         info: {
           mode: "none",
-          level: "debug"
+          level: "debug",
         },
         cachePrune: {
           maxAge: 2 * 24 * 60 * 60 * 1000,
-          sizeThreshold: 50 * 1024 * 1024
-        }
+          sizeThreshold: 50 * 1024 * 1024,
+        },
       }),
 
       new HardSourceWebpackPlugin.ExcludeModulePlugin([
         {
-          test: /mini-css-extract-plugin[\\/]dist[\\/]loader/
+          test: /mini-css-extract-plugin[\\/]dist[\\/]loader/,
         },
         {
           test: /my-loader/,
-          include: path.join(__dirname, "vendor")
-        }
-      ])
-    ]
-  }
+          include: path.join(__dirname, "vendor"),
+        },
+      ]),
+    ],
+  },
 };

@@ -1,90 +1,87 @@
 <template>
-    <div class='nuPostCard mb-3 card'>
-      <div class='card-header'>
-        <div class="author">
-          <div class="profilePic">
-            <div class='letter'>{{post.author[0].toUpperCase()}}</div>
-          </div>
-          <div class="lead">{{ post.author }}</div>
+  <div class="nuPostCard mb-3 card">
+    <div class="card-header">
+      <div class="author">
+        <div class="profilePic">
+          <div class="letter">{{ post.author[0].toUpperCase() }}</div>
         </div>
-          <div class='nuCardEditGroup'>
-            <b-link v-if='isPostOwner' @click='editMode = !editMode' class='card-link nuEditCard'>
-              <b-icon icon='pencil'></b-icon>
-            </b-link>
+        <div class="lead">{{ post.author }}</div>
+      </div>
+      <div class="nuCardEditGroup">
+        <b-link v-if="isPostOwner" @click="editMode = !editMode" class="card-link nuEditCard">
+          <b-icon icon="pencil"></b-icon>
+        </b-link>
 
-            <b-link v-if='isPostOwner' @click='deletePost()' class='m-1 card-link nuDeleteCard'>
-              <b-icon icon='trash'></b-icon>
-            </b-link>
+        <b-link v-if="isPostOwner" @click="deletePost()" class="m-1 card-link nuDeleteCard">
+          <b-icon icon="trash"></b-icon>
+        </b-link>
+      </div>
+    </div>
+
+    <b-card-body>
+      <div v-if="editMode">
+        <VueEditor
+          class="richTextEditor"
+          v-model="post.text"
+          :placeholder="editorOptions.placeholder"
+        />
+        <b-button variant="primary" @click="editPost()">Save</b-button>
+        <b-button variant="danger" @click="editMode = false">Cancel</b-button>
+      </div>
+
+      <b-card-text v-else v-html="post.text" class="postBody text-left"> </b-card-text>
+
+      <div class="lead timeStamps">
+        <p>{{ this.$root.stringToLocaleDate(post.updatedAt ? post.updatedAt : post.createdAt) }}</p>
+      </div>
+      <hr />
+
+      <div id="nuCardMetaGroup" class="w-100 m-auto">
+        <div class="nuLike">
+          <p :class="{ liked: userLiked }" class="px-2 py1" @click="togglePostLike()">
+            <b-icon icon="hand-thumbs-up"></b-icon> {{ post.likes.length }}
+          </p>
+        </div>
+
+        <div class="nuCommentLink">
+          <b-link @click="showComments = !showComments" class="card-link">
+            <b-icon icon="chat-quote-fill"></b-icon> {{ post.comments.length }}
+          </b-link>
         </div>
       </div>
 
-      <b-card-body>
-        <div v-if='editMode'>
-           <VueEditor
-            class="richTextEditor"
-            v-model='post.text'
-            :placeholder="editorOptions.placeholder"
-           />
-          <b-button variant='primary' @click='editPost()'>Save</b-button>
-          <b-button variant='danger' @click='editMode = false'>Cancel</b-button>
-        </div>
+      <div v-if="showComments">
+        <Comment
+          v-for="comment in post.comments"
+          :key="comment._id"
+          :Comment="comment"
+          :postID="post._id"
+          :userID="userID"
+        />
+      </div>
 
-        <b-card-text v-else v-html="post.text" class='postBody text-left'>
-        </b-card-text>
+      <VueEditor
+        class="richTextComment"
+        v-model="newCommentText"
+        :placeholder="editorOptions.placeholder"
+				:editorOptions="customToolbar"
+      />
 
-        <div class="lead timeStamps">
-        <p>{{ this.$root.stringToLocaleDate(post.updatedAt ? post.updatedAt : post.createdAt) }}</p>
-        </div>
-        <hr />
-
-        <div id='nuCardMetaGroup' class='w-100 m-auto'>
-          <div class='nuLike '>
-            <p :class='{ liked: userLiked }' class='px-2 py1' @click='togglePostLike()'>
-              <b-icon icon='hand-thumbs-up'></b-icon> {{ post.likes.length }}
-            </p>
-          </div>
-
-          <div class='nuCommentLink'>
-            <b-link @click='showComments = !showComments' class='card-link'>
-              <b-icon icon='chat-quote-fill'></b-icon> {{ post.comments.length }}
-            </b-link>
-          </div>
-        </div>
-
-        <div v-if='showComments'>
-          <Comment
-            v-for='comment in post.comments'
-            :key='comment._id'
-            :Comment='comment'
-            :postID='post._id'
-            :userID='userID'
-          />
-        </div>
-
-         <VueEditor
-            class="richTextComment"
-            v-model='newCommentText'
-            :placeholder="editorOptions.placeholder"
-           />
-
-        <b-button variant='primary' @click='createNewComment()'>
-          Comment
-        </b-button>
-      </b-card-body>
-    <Modal ref='postModal' />
-    </div>
-
+      <b-button variant="primary" @click="createNewComment()"> Comment </b-button>
+    </b-card-body>
+    <Modal ref="postModal" />
+  </div>
 </template>
 
 <script>
-import axios from 'axios';
-import { VueEditor } from 'vue2-editor';
-import Comment from './Comment.vue';
-import Modal from './modal/Modal.vue';
-import Bus from '../main';
+import axios from "axios";
+import { VueEditor } from "vue2-editor";
+import Comment from "./Comment.vue";
+import Modal from "./modal/Modal.vue";
+import Bus from "../main";
 
 export default {
-  name: 'PostCard',
+  name: "PostCard",
 
   components: {
     Comment,
@@ -99,28 +96,30 @@ export default {
 
   data() {
     return {
-      author: '',
+      author: "",
       isPostOwner: false,
       post: this.postObj,
-      newCommentText: '',
-      showComments: false,
+      newCommentText: "",
+      showComments: true,
       editMode: false,
       editorOptions: {
-        placeholder: 'Add a comment!',
+        placeholder: "Add a comment!",
       },
       customToolbar: [
-        ['bold', 'italic', 'underline'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
+        ["bold", "italic", "underline"],
+        [{ list: "ordered" }, { list: "bullet" }],
+				["image", "code-block"]
       ],
     };
   },
 
   created() {
-    Bus.$on('commentDeleted', this.removeComment);
+    Bus.$on("commentDeleted", this.removeComment);
   },
 
   mounted() {
     this.isPostOwner = this.post.userID === this.$store.state.userID;
+    if (this.post.comments && this.post.comments.length > 5) this.showComments = false;
   },
 
   methods: {
@@ -134,13 +133,13 @@ export default {
         text: this.newCommentText,
       };
       axios
-        .post('/api/posts/comments', data)
+        .post("/api/posts/comments", data)
         .then((comment) => {
           this.post.comments.push(comment.data.comments[0]);
 
           this.$refs.postModal.show(
-            [{ body: 'Great Work!' }, { body: 'Your comments have been added.' }],
-            false,
+            [{ body: "Great Work!" }, { body: "Your comments have been added." }],
+            false
           );
         })
         .catch((error) => {
@@ -149,7 +148,7 @@ export default {
             { body: error.response.data.message },
           ]);
         });
-      this.newCommentText = '';
+      this.newCommentText = "";
     },
 
     /**
@@ -159,7 +158,7 @@ export default {
       const likeData = { data: { userID: this.userID, postID: this.post._id } };
       if (this.userLiked) {
         axios
-          .delete('/api/posts/likes', likeData)
+          .delete("/api/posts/likes", likeData)
           .then(() => {
             this.post.likes.splice(this.post.likes.indexOf(this.userLiked), 1);
           })
@@ -171,7 +170,7 @@ export default {
           });
       } else {
         axios
-          .post('/api/posts/likes', likeData.data)
+          .post("/api/posts/likes", likeData.data)
           .then((post) => {
             this.post.likes.push(post.data.likes[0]);
           })
@@ -189,7 +188,7 @@ export default {
      */
     editPost() {
       axios
-        .patch('/api/posts', {
+        .patch("/api/posts", {
           postID: this.post._id,
           userID: this.post.userID,
           text: this.post.text,
@@ -209,9 +208,9 @@ export default {
      */
     deletePost() {
       axios
-        .delete('/api/posts', { data: { postID: this.post._id, userID: this.userID } })
+        .delete("/api/posts", { data: { postID: this.post._id, userID: this.userID } })
         .then(() => {
-          Bus.$emit('postDeleted', this.post._id);
+          Bus.$emit("postDeleted", this.post._id);
         })
         .catch((error) => {
           this.$refs.postModal.show([
@@ -248,18 +247,17 @@ export default {
   font-size: 1.3rem;
 }
 
-.timeStamps{
+.timeStamps {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  p{
+  p {
     margin: 0;
   }
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
-.postBody{
+.postBody {
   max-height: 400px;
   overflow-y: auto;
 }
-
 </style>

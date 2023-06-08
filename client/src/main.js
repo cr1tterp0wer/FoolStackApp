@@ -34,16 +34,16 @@ if (serverURL) {
 }
 
 axios.defaults.headers.post["Content-Type"] = "Application/Json";
-axios.interceptors.request.use((req) => {
+axios.interceptors.request.use(async (req) => {
+  store.dispatch("refreshAuth");
   req.headers.authorization = store.state.token || ""; // eslint-disable-line no-param-reassign
 
   return req;
 });
 
 axios.interceptors.response.use(
-  (res) => {
+  async (res) => {
     store.dispatch("refreshIsLogged");
-
     return res;
   },
   (error) => {

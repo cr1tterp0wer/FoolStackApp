@@ -7,21 +7,15 @@
     >
       <div class="pattern height-resize">
         <div class="container">
-          <h1 class="site-title" style="color:white !important;">
-            NU Social
-          </h1>
+          <h1 class="site-title" style="color: white !important">NU Social</h1>
           <!-- /.site-title -->
-          <h3 class="section-name" style="color:white !important;">
-            <span>
-              We Are
-            </span>
+          <h3 class="section-name" style="color: white !important">
+            <span> We Are </span>
           </h3>
           <!-- /.section-name -->
-          <h2 class="section-title" style="color:white !important;">
-            Coming Soon
-          </h2>
+          <h2 class="section-title" style="color: white !important">Coming Soon</h2>
           <!-- /.Section-title  -->
-          <div id="time_countdown" style="color:white !important;" class="time-count-container">
+          <div id="time_countdown" style="color: white !important" class="time-count-container">
             <div class="col-sm-3">
               <div class="time-box">
                 <div
@@ -132,6 +126,9 @@ export default {
       this.timerCount(this.start, this.end);
     }, 1000);
   },
+  unmounted() {
+    this.style.remove();
+  },
   methods: {
     timerCount(start, end) {
       // Get todays date and time, Find the distance between now an the count down date
@@ -160,7 +157,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style ="AboutStyle" lang="scss">
 @import "../assets/kite/assets/css/style.css";
 @import "../assets/kite/assets/css/font-awesome.min.css";
 @import "../assets/kite/assets/css/bootstrap.min.css";

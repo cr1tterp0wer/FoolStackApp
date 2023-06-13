@@ -33,7 +33,7 @@ const unAuthGuard = (to, from, next) => {
 
 const routes = [
   {
-    path: "/*",
+    path: "/",
     name: HOME,
     beforeEnter: unAuthGuard,
     component: () => import(/* webpackChunkName: 'Home' */ "../views/Home.vue"),

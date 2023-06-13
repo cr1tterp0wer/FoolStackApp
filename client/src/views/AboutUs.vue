@@ -126,9 +126,6 @@ export default {
       this.timerCount(this.start, this.end);
     }, 1000);
   },
-  unmounted() {
-    this.style.remove();
-  },
   methods: {
     timerCount(start, end) {
       // Get todays date and time, Find the distance between now an the count down date
@@ -156,8 +153,7 @@ export default {
   },
 };
 </script>
-
-<style ="AboutStyle" lang="scss">
+<style id="AboutUs" lang="scss">
 @import "../assets/kite/assets/css/style.css";
 @import "../assets/kite/assets/css/font-awesome.min.css";
 @import "../assets/kite/assets/css/bootstrap.min.css";

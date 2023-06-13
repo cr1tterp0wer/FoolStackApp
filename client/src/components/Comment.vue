@@ -24,6 +24,7 @@
               class="richTextComment"
               v-model='comment.text'
               :placeholder="editorOptions.placeholder"
+							:editorToolbar="customToolbar"
              />
             <b-button class='' variant="primary"
             @click="editComment()">Save</b-button>

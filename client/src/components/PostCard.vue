@@ -24,6 +24,7 @@
           class="richTextEditor"
           v-model="post.text"
           :placeholder="editorOptions.placeholder"
+					:editorToolbar="customToolbar"
         />
         <b-button variant="primary" @click="editPost()">Save</b-button>
         <b-button variant="danger" @click="editMode = false">Cancel</b-button>
@@ -64,7 +65,8 @@
         class="richTextComment"
         v-model="newCommentText"
         :placeholder="editorOptions.placeholder"
-				:editorOptions="customToolbar"
+				:editorOptions="editorOptions"
+				:editorToolbar="customToolbar"
       />
 
       <b-button variant="primary" @click="createNewComment()"> Comment </b-button>
@@ -106,9 +108,8 @@ export default {
         placeholder: "Add a comment!",
       },
       customToolbar: [
-        ["bold", "italic", "underline"],
+        ["bold", "italic", "underline", "image", "code-block" ],
         [{ list: "ordered" }, { list: "bullet" }],
-				["image", "code-block"]
       ],
     };
   },

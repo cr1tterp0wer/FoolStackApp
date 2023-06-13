@@ -118,9 +118,6 @@ export default {
       let areaHeight = this.$refs.chatTextArea.scrollHeight,
         currentHeight = this.$refs.chatTextArea.style.height;
 
-      console.log(areaHeight);
-      console.log(currentHeight);
-
       if (reset) {
         this.$refs.chatTextArea.style.height = "52px";
       } else if (areaHeight < 125 && areaHeight > currentHeight.split("px")[0]) {

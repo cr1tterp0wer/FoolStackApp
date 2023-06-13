@@ -9,6 +9,7 @@
 								class="richTextEditor"
 								v-model="newPostText"
 								:placeholder="editorOptions.placeholder"
+								:editorToolbar="customToolbar"
 							/>
 							<b-button block variant="primary" @click="createNewPost">Post</b-button>
 						</b-col>
@@ -69,7 +70,10 @@ export default {
 			editorOptions: {
 				placeholder: "What's on your mind",
 			},
-			customToolbar: [["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }]],
+      customToolbar: [
+        ["bold", "italic", "underline", "image", "code-block" ],
+        [{ list: "ordered" }, { list: "bullet" }],
+      ],
 			userID: this.$store.state.userID,
 		};
 	},
@@ -113,15 +117,6 @@ export default {
 
 		removePost(postID) {
 			Vue.delete(this.posts, postID);
-		},
-
-		/**
-		 * Deletes all Posts
-		 */
-		DeleteAllPosts() {
-			axios.delete("/api/drop-posts").then(() => {
-				this.posts = {};
-			});
 		},
 	},
 };

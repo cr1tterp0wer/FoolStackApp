@@ -1,7 +1,7 @@
 <template>
   <div id="nuLogin" class="vh-100 w-100">
-    <b-container class="h-100" align-v="center">
-      <b-row class="nuLoginColumn pt-5 h-100" align-h="center" cols="4">
+    <b-container id="login-form-container" class="h-100" align-v="center">
+      <b-row class="nuLoginColumn pt-2">
         <b-form @submit="onSubmit" class="text-left w-100">
           <b-row cols="2">
             <b-col cols="6">
@@ -190,12 +190,11 @@ export default {
 
 <style lang="scss" scoped>
 #nuLogin {
-  background: #3a3f44;
+  background-image: linear-gradient(135deg, #5700db, #002741, #29f273);
 }
 .nuLoginColumn {
   display: flex;
   align-items: center;
-  background: #3a3f44;
 }
 a {
   text-decoration: none;

@@ -8,7 +8,7 @@
               <b-form-input
                 id="nuInputEmail"
                 v-model="form.email"
-                placeholder="Email"
+                placeholder="Email or Username"
                 required
               ></b-form-input>
             </b-form-group>

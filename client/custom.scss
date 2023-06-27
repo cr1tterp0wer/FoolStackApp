@@ -220,8 +220,31 @@ body {
 	border-radius: 0.2rem;
 }
 
+#login-form-container {
+	display: flex;
+	justify-content: center;
+}
+
+#nuLoginColumn {
+	align-self: center;
+}
+
+.form-control {
+	color: white;
+
+	&::placeholder {
+		color: #e83283;
+		font-weight: bold;
+	}
+
+	&:focus {
+		color: white;
+	}
+}
+
 #menu-icon {
 	width: 75px;
+	height: 75px;
 	border: black;
 	border-color: black;
 	border-style: solid;
@@ -243,6 +266,10 @@ body {
 
 .router-link-active {
 	font-weight: bold;
+}
+
+#nuLogin {
+	transition: 250ms;
 }
 
 #footer-section {

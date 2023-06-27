@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-navbar type="dark" variant="primary" class="navbar-expand-lg">
-      <b-navbar-brand href="/">NuSocial</b-navbar-brand>
+      <b-navbar-brand id="menu-icon" href="/"><img src="/baku-round.png" /></b-navbar-brand>
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>

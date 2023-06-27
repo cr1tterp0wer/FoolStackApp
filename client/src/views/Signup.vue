@@ -33,7 +33,7 @@
               required
               v-model="form.email"
               type="email"
-              placeholder="National University Email"
+              placeholder="Email"
             ></b-form-input>
           </b-form-group>
 
@@ -164,7 +164,7 @@ export default {
         )
       ) {
         validation.errors.push({ body: "Email: is not valid!" });
-        validation.errors.push({ body: "Email: Must be a valid National University Email" });
+        validation.errors.push({ body: "Email: Must be a valid Email" });
       }
 
       if (!inputs.password) {

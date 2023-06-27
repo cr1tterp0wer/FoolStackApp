@@ -8,7 +8,7 @@
               <b-form-input
                 id="nuInputEmail"
                 v-model="form.email"
-                placeholder="National University Email"
+                placeholder="Email"
                 required
               ></b-form-input>
             </b-form-group>
@@ -42,7 +42,7 @@
                   id="nuInputEmailValidationForgot"
                   type="email"
                   v-model="form.emailValidationForgotPassword"
-                  placeholder="National University Email"
+                  placeholder="Email"
                   required
                 ></b-form-input>
                 <b-button type="submit" variant="primary" class="w-100">
@@ -62,7 +62,7 @@
                   id="nuInputEmailValidationResend"
                   type="email"
                   v-model="form.emailValidation"
-                  placeholder="National University Email"
+                  placeholder="Email"
                   required
                 ></b-form-input>
                 <b-button type="submit" variant="primary" class="w-100">
